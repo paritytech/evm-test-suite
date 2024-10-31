@@ -21,7 +21,23 @@ echo $chain
 if [ "$chain" = '--acala' ]; then
   npx @acala-network/eth-rpc-adapter -e wss://acala-rpc-2.aca-api.network/ws &
   sleep 10
-  npx hardhat test
+  npx hardhat compile &&
+  npx hardhat test &&
+  cd ./contracts/v3-core/ &&
+  yarn install &&
+  yarn test &&
+  cd ../v3-periphery/ &&
+  yarn install &&
+  yarn compile &&
+  yarn test
 else
+  npx hardhat compile &&
   npx hardhat test
+  cd ./contracts/v3-core/ &&
+  yarn install &&
+  yarn test &&
+  cd ../v3-periphery/ &&
+  yarn install &&
+  yarn compile &&
+  yarn test
 fi
