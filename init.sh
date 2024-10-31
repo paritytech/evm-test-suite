@@ -23,7 +23,7 @@ if [ "$chain" = '--acala' ]; then
   sleep 10
   npx hardhat compile &&
   npx hardhat test &&
-  cd ./contracts/v3-core/ &&
+  cd ./v3-core/ &&
   yarn install &&
   yarn test &&
   cd ../v3-periphery/ &&
@@ -33,7 +33,7 @@ if [ "$chain" = '--acala' ]; then
 else
   npx hardhat compile &&
   npx hardhat test
-  cd ./contracts/v3-core/ &&
+  cd ./v3-core/ &&
   yarn install &&
   yarn test &&
   cd ../v3-periphery/ &&
