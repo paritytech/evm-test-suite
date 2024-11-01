@@ -7,7 +7,6 @@ import { expect } from "chai";
 import hre from "hardhat";
 
 describe("Block", function () {
-    // We define a fixture to reuse the same setup in every test.
     async function deployBlockFixture() {
         const Block = await hre.ethers.getContractFactory("Block");
         const block = await Block.deploy();
