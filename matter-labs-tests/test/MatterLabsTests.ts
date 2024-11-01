@@ -196,7 +196,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
             const { name: testCaseName } = testCase;
             
             for (const input of testCase.inputs) {
-                if (skipInvalidCase(input, testCaseName, filePath, skippedTests)) {
+                if (skipTestCase(input, testCaseName, filePath, skippedTests)) {
                     continue;
                 }
                 // default #deployer cases
@@ -818,7 +818,7 @@ const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, file
     return calldata;
 }
 
-const skipInvalidCase = (testCaseInput: Input, testCaseName: string, filePath: string, skippedTests: any[]) => {
+const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string, skippedTests: any[]) => {
     if (
         filePath === "contracts/basefee.sol"
        || filePath === "contracts/blockhash.sol"
