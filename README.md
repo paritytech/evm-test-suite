@@ -21,7 +21,7 @@ Currently the available options for `CHAIN` to test against are:
 With `--ethereum` being the default option.
 
 As for `TEST`, you can specify either `--mater-labs` to run the `matter-labs`
-tests or `--smart-contracts` to run the test that deploy and check against the
+tests or `--smart-contracts` to run the tests that deploy and check against the
 smart contracts (Uniswap V3 and some generic smart contracts, more tba). Not
 specifying the test will result in both suites being executed consecutively.
 
