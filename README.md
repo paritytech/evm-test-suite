@@ -9,6 +9,25 @@ tests derived from Smart Contracts (such as Uniswap V3) and lower level testing 
 To run the tests, simply run the script `init.sh`:
 
 ```sh
-~ ./init.sh
+~ ./init.sh <CHAIN> <TEST>
 ```
-This will install the necessary packages and run the tests in order.
+Currently the available options for `CHAIN` to test against are:
+* `--acala`
+* `--moonbeam`
+* `--astar`
+* `--ethereum`
+* `--polygon`
+
+With `--ethereum` being the default option.
+
+As for `TEST`, you can specify either `--mater-labs` to run the `matter-labs`
+tests or `--smart-contracts` to run the tests that deploy and check against the
+smart contracts (Uniswap V3 and some generic smart contracts, more tba). Not
+specifying the test will result in both suites being executed consecutively.
+
+This script will install the necessary packages and run the tests in order.
+
+**NOTE**
+
+As things are now, running both suites at the same time will result in timeouts.
+Some tests are expected to fail, and being actively worked on.
