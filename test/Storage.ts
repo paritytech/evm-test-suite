@@ -6,7 +6,6 @@ import { expect } from "chai";
 import hre from "hardhat";
 
 describe("Storage", function () {
-    // We define a fixture to reuse the same setup in every test.
     async function deployStorageFixture() {
         const Storage = await hre.ethers.getContractFactory("Storage");
         const storage = await Storage.deploy();
@@ -24,11 +23,8 @@ describe("Storage", function () {
 
             const key = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';
             const empty = '0x0000000000000000000000000000000000000000000000000000000000000000';
-
             const result = await storage.getStorage(key);
 
-            // Since the ecrecover address is mocked, we need to know what to expect here.
-            // Assuming it echoes back the input for the purpose of this example.
             expect(result).to.equal(empty);
         });
 

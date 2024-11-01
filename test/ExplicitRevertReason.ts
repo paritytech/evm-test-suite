@@ -6,7 +6,6 @@ import { expect } from "chai";
 import hre from "hardhat";
 
 describe("ExplicitRevertReason", function () {
-    // We define a fixture to reuse the same setup in every test.
     async function deployExplicitRevertReasonFixture() {
         const ExplicitRevertReason = await hre.ethers.getContractFactory("ExplicitRevertReason");
         const explicitRevertReason = await ExplicitRevertReason.deploy();
