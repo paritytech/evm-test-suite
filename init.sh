@@ -1,13 +1,14 @@
 #!/bin/sh
 
 chain=$1
+tests=$2
 
 if [ "$chain" = '--acala' ]; then
   export NETWORK_URL="http://localhost:8545"
 elif [ "$chain" = '--ethereum' ]; then
   export NETWORK_URL="https://ethereum-rpc.publicnode.com"
 elif [ "$chain" = '--moonbeam' ]; then
-  export NETWORK_URL="https://moonbeam-rpc.dwellir.com"
+  export NETWORK_URL="https://moonbeam.public.blastapi.io"
 elif [ "$chain" = '--astar' ]; then
   export NETWORK_URL="https://rpc.astar.network"
 elif [ "$chain" = '--polygon' ]; then
@@ -30,6 +31,9 @@ if [ "$chain" = '--acala' ]; then
   yarn install &&
   yarn compile &&
   yarn test
+elif [ "$tests" = '--matter-labs' ]; then
+  cd ./matter-labs-tests/ &&
+  npx hardhat test ./test/MatterLabsTests.ts
 else
   npx hardhat compile &&
   npx hardhat test
