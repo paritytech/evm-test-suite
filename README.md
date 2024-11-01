@@ -15,7 +15,7 @@ Currently the available options for `CHAIN` to test against are:
 * `--acala`
 * `--moonbeam`
 * `--astar`
-* `--ehtereum`
+* `--ethereum`
 * `--polygon`
 
 With `--ethereum` being the default option.
