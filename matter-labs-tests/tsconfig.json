@@ -9,8 +9,6 @@
     "typeRoots": ["./typechain", "./node_modules/@types"],
     "types": ["@nomiclabs/hardhat-ethers"]
   },
-  // "include": ["./scripts"],//only the "scripts" part.
-  // "files": ["./hardhat.config.ts"]
-  "include": ["./deploy/*.ts", "./test/*.ts", "./scripts/*.ts"],
+  "include": ["./test"],
   "files": ["./hardhat.config.ts"]
 }

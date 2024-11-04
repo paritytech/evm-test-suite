@@ -10,6 +10,8 @@ import readline from 'readline';
 const chai = require('chai');
 chai.use(chaiSubset);
 
+import chalk from 'chalk';
+
 import { Contract, Result } from "ethers";
 const SIMPLE_TESTS_INSTANCE = "Test";
 
@@ -569,15 +571,16 @@ async function metadataFromStr(filePath: string): Promise<Metadata> {
 describe('Matter Labs EVM Tests', () => {
     it('Run Test Suite', async () => {
         const matterLabsTestPath = 'contracts';
+
         const passedTests: any[] = [];
         const failedTests: any[] = [];
         const skippedTests: any[] = [];
 
         await runMatterLabsTests(matterLabsTestPath, failedTests, passedTests, skippedTests);
 
-        console.log(`Passed: ${passedTests.length}`)
-        console.log(`Failed: ${failedTests.length}`)
-        console.log(`Skipped: ${skippedTests.length}`)
+        console.log(chalk.green(`Passed: ${passedTests.length}`));
+        console.log(chalk.red(`Failed: ${failedTests.length}`));
+        console.log(chalk.yellow(`Skipped: ${skippedTests.length}`));
 
         fs.writeFileSync("testResults/failedTests.json", JSON.stringify({NumFailed: failedTests.length, failedTests}), {encoding:'utf8', flag:'w'});
         fs.writeFileSync("testResults/passedTests.json", JSON.stringify({NumPassed: passedTests.length, passedTests}), {encoding:'utf8', flag:'w'});
