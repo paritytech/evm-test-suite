@@ -6,7 +6,7 @@ tests=$3
 
 case "$chain" in
   --acala)
-    export NETWORK_URL="http://localhost:8545"
+    export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
     ;;
   --ethereum)
     export NETWORK_URL="https://ethereum-rpc.publicnode.com"
@@ -30,11 +30,6 @@ case "$chain" in
     export NETWORK_URL="https://ethereum-rpc.publicnode.com"
     ;;
 esac
-
-if [ "$chain" = '--acala' ]; then
-  npx @acala-network/eth-rpc-adapter -e wss://acala-rpc-2.aca-api.network/ws &
-  sleep 10
-fi
 
 if [ "$tests" = '--matter-labs' ]; then
   cd ./matter-labs-tests/ &&
