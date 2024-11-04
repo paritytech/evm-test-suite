@@ -13,6 +13,8 @@ elif [ "$chain" = '--astar' ]; then
   export NETWORK_URL="https://rpc.astar.network"
 elif [ "$chain" = '--polygon' ]; then
   export NETWORK_URL="https://polygon-amoy-bor-rpc.publicnode.com"
+elif [ "$chain" = '--westend' ]; then
+  export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io"
 else
   export NETWORK_URL="https://ethereum-rpc.publicnode.com"
 fi
