@@ -838,31 +838,31 @@ const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, file
 
 const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string, skippedTests: any[]) => {
     if (
-        filePath === "contracts/basefee.sol"
-       || filePath === "contracts/blockhash.sol"
-       || filePath === "contracts/chainid.sol"
-       || filePath === "contracts/codecopy.sol"
-       || filePath === "contracts/codesize.sol"
-       || filePath === "contracts/coinbase.sol"
-       || filePath === "contracts/difficulty.sol"
-       || filePath === "contracts/gaslimit.sol"
-       || filePath === "contracts/gasprice.sol"
-       || filePath === "contracts/keccak256.sol"
-       || (filePath === "contracts/msize.sol" && testCaseName === "ordinar")
-       || (filePath === "contracts/number.sol" && testCaseName === "default")
-       || filePath === "contracts/origin.sol"
-       || filePath === "contracts/prevrandao.sol"
-       || filePath === "contracts/return.sol"
-       || filePath === "contracts/returndatacopy.sol"
-       || (filePath === "contracts/returndatasize.sol" && testCaseName === "initial" && testCaseInput.method === "initial")
-       || filePath === "contracts/revert.sol"
-       || filePath === "contracts/pop.sol"
-       || filePath === "contracts/sar.sol"
-       || filePath === "contracts/sdiv.sol"
-       || filePath === "contracts/selfbalance.sol"
-       || filePath === "contracts/smod.sol"
-       || filePath === "contracts/stop.sol"
-       || filePath === "contracts/timestamp.sol"
+        filePath === "contracts/yul_instructions/basefee.sol"
+       || filePath === "contracts/yul_instructions/blockhash.sol"
+       || filePath === "contracts/yul_instructions/chainid.sol"
+       || filePath === "contracts/yul_instructions/codecopy.sol"
+       || filePath === "contracts/yul_instructions/codesize.sol"
+       || filePath === "contracts/yul_instructions/coinbase.sol"
+       || filePath === "contracts/yul_instructions/difficulty.sol"
+       || filePath === "contracts/yul_instructions/gaslimit.sol"
+       || filePath === "contracts/yul_instructions/gasprice.sol"
+       || filePath === "contracts/yul_instructions/keccak256.sol"
+       || (filePath === "contracts/yul_instructions/msize.sol" && testCaseName === "ordinar")
+       || (filePath === "contracts/yul_instructions/number.sol" && testCaseName === "default")
+       || filePath === "contracts/yul_instructions/origin.sol"
+       || filePath === "contracts/yul_instructions/prevrandao.sol"
+       || filePath === "contracts/yul_instructions/return.sol"
+       || filePath === "contracts/yul_instructions/returndatacopy.sol"
+       || (filePath === "contracts/yul_instructions/returndatasize.sol" && testCaseName === "initial" && testCaseInput.method === "initial")
+       || filePath === "contracts/yul_instructions/revert.sol"
+       || filePath === "contracts/yul_instructions/pop.sol"
+       || filePath === "contracts/yul_instructions/sar.sol"
+       || filePath === "contracts/yul_instructions/sdiv.sol"
+       || filePath === "contracts/yul_instructions/selfbalance.sol"
+       || filePath === "contracts/yul_instructions/smod.sol"
+       || filePath === "contracts/yul_instructions/stop.sol"
+       || filePath === "contracts/yul_instructions/timestamp.sol"
    ) {
         console.log(`Skipped ${testCaseName} from ${filePath}`);
        skippedTests.push({filePath, testCaseName, method: testCaseInput.method, inputs: []});

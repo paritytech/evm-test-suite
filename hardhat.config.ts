@@ -7,6 +7,14 @@ const config: HardhatUserConfig = {
   solidity: { version: '0.8.27' },
   networks: {
     hardhat: {
+      chains: {
+        1: {
+          hardforkHistory: {
+            berlin: 10000000,
+            london: 20000000,
+          },
+        }
+      },
       forking: {
         url: `${rpcUrl}`
       }

@@ -13,8 +13,17 @@ const config: HardhatUserConfig = {
       'contracts/yul_instructions/basefee.sol': {version: '0.8.7'},
       'contracts/yul_instructions/difficulty.sol': {version: '0.8.17'},
     }
-  },  networks: {
+  },
+  networks: {
     hardhat: {
+      chains: {
+        1: {
+          hardforkHistory: {
+            berlin: 10000000,
+            london: 20000000,
+          },
+        }
+      },
       forking: {
         url: `${rpcUrl}`
       },
