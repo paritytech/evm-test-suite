@@ -4,7 +4,7 @@ chain=$1
 tests=$2
 
 if [ "$chain" = '--acala' ]; then
-  export NETWORK_URL="http://localhost:8545"
+  export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
 elif [ "$chain" = '--ethereum' ]; then
   export NETWORK_URL="https://ethereum-rpc.publicnode.com"
 elif [ "$chain" = '--moonbeam' ]; then
@@ -18,11 +18,6 @@ else
 fi
 
 echo $chain
-
-if [ "$chain" = '--acala' ]; then
-  npx @acala-network/eth-rpc-adapter -e wss://acala-rpc-2.aca-api.network/ws &
-  sleep 10
-fi
 
 if [ "$tests" = '--matter-labs' ]; then
   cd ./matter-labs-tests/ &&
