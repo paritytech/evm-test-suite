@@ -1,7 +1,8 @@
 #!/bin/sh
 
 chain=$1
-tests=$2
+url=$2
+tests=$3
 
 run_matter_labs_tests()
 {
