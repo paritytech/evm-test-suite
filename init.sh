@@ -1,35 +1,49 @@
 #!/bin/sh
 
-chain=$1
-tests=$2
+case "$1" in
+  --acala)
+    export NETWORK_URL="http://localhost:8545"
+    export TEST_CASE="$2"
+    ;;
+  --ethereum)
+    export NETWORK_URL="https://ethereum-rpc.publicnode.com"
+    export TEST_CASE="$2"
+    ;;
+  --moonbeam)
+    export NETWORK_URL="https://moonbeam.public.blastapi.io"
+    export TEST_CASE="$2"
+    ;;
+  --astar)
+    export NETWORK_URL="https://rpc.astar.network"
+    export TEST_CASE="$2"
+    ;;
+  --polygon)
+    export NETWORK_URL="https://polygon-amoy-bor-rpc.publicnode.com"
+    export TEST_CASE="$2"
+    ;;
+  --westend)
+    export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io/"
+    export TEST_CASE="$2"
+    ;;
+  --endpoint | -e)
+    export NETWORK_URL="$2"
+    export TEST_CASE="$3"
+    ;;
+  *)
+    export NETWORK_URL="https://ethereum-rpc.publicnode.com"
+    export TEST_CASE="$2"
+    ;;
+esac
 
-if [ "$chain" = '--acala' ]; then
-  export NETWORK_URL="http://localhost:8545"
-elif [ "$chain" = '--ethereum' ]; then
-  export NETWORK_URL="https://ethereum-rpc.publicnode.com"
-elif [ "$chain" = '--moonbeam' ]; then
-  export NETWORK_URL="https://moonbeam.public.blastapi.io"
-elif [ "$chain" = '--astar' ]; then
-  export NETWORK_URL="https://rpc.astar.network"
-elif [ "$chain" = '--polygon' ]; then
-  export NETWORK_URL="https://polygon-amoy-bor-rpc.publicnode.com"
-elif [ "$chain" = '--westend' ]; then
-  export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io"
-else
-  export NETWORK_URL="https://ethereum-rpc.publicnode.com"
-fi
-
-echo $chain
-
-if [ "$chain" = '--acala' ]; then
+if [ "$1" = '--acala' ]; then
   npx @acala-network/eth-rpc-adapter -e wss://acala-rpc-2.aca-api.network/ws &
   sleep 10
 fi
 
-if [ "$tests" = '--matter-labs' ]; then
+if [ "$TEST_CASE" = '--matter-labs' ]; then
   cd ./matter-labs-tests/ &&
   npx hardhat test ./test/MatterLabsTests.ts
-elif [ "$tests" = '--smart-contracts' ]; then
+elif [ "$TEST_CASE" = '--smart-contracts' ]; then
   npx hardhat compile &&
   npx hardhat test &&
   cd ./v3-core/ &&
