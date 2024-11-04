@@ -24,8 +24,8 @@ Currently the available options for `CHAIN` to test against are:
 With `--ethereum` being the default option.
 
 When passing `--endpoint` or `-e`, the second argument must be the `http` endpoint
-of the node you are connecting to. If choosing from a preset chain, `--` should
-be passed.
+of the node you are connecting to. If choosing from a preset chain and specifying
+a test, `--` should be passed for the `<URL>` argument.
 
 As for `TEST`, you can specify either `--matter-labs` to run the `matter-labs`
 tests or `--smart-contracts` to run the tests that deploy and check against the
