@@ -51,6 +51,14 @@ const DEFAULT_COMPILER_SETTINGS = {
 export default {
   networks: {
     hardhat: {
+      chains: {
+        1: {
+          hardforkHistory: {
+            berlin: 10000000,
+            london: 20000000,
+          },
+        }
+      },
       forking: {
         url: `${rpcUrl}`
       }

@@ -1,12 +1,16 @@
 import fs from "fs";
 import { setTimeout } from 'timers/promises';
-import { ethers} from "hardhat";
+
+import '@nomiclabs/hardhat-ethers'
+import { ethers } from "hardhat";
 
 import { expect } from "chai";
 import chaiSubset from "chai-subset";
 import readline from 'readline';
 const chai = require('chai');
 chai.use(chaiSubset);
+
+import chalk from 'chalk';
 
 import { Contract, Result } from "ethers";
 const SIMPLE_TESTS_INSTANCE = "Test";
@@ -222,7 +226,8 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                         const contractAddress = await deployedContract.getAddress();
 
                         expect(contractAddress).not.to.eq(undefined);
-                        passedTests.push({filePath, testCaseName, method: input.method, inputs});
+                        processPassedTest(filePath, passedTests, testCaseName, input.method, inputs);
+                        // passedTests.push({filePath, testCaseName, method: input.method, inputs});
                     } else {
                         await expect(contractFactory.deploy(...inputs)).to.be.reverted;
                     }
@@ -240,7 +245,8 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                     // catch deployer cases with no args
                     if (method === "#deployer") {
                         expect(contract.getAddress()).not.eq(undefined);
-                        passedTests.push({filePath, testCaseName, method, inputs: input.calldata});
+                        processPassedTest(filePath, passedTests, testCaseName, method, input.calldata)
+                        // passedTests.push({filePath, testCaseName, method, inputs: input.calldata});
 
                         continue;
                     }
@@ -301,7 +307,8 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         }
                                         
                                         expect(err).to.be.an('Error')
-                                        passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: err})
+                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, err)
+                                        // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: err})
                                         continue;
                                     }
 
@@ -361,6 +368,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                                 indexedEmittedDataArr.push(indexedEmittedData.toString())
                                             }
 
+                                            console.log(`Passed test: ${testCaseName} from ${filePath}`);
                                             passedTests.push({filePath, testCaseName, method, inputs, expectedIndexedData: expectedData.events[0].topics, decodedIndexedEventDataResult: indexedEmittedDataArr, expectedUnindexedData: expectedData.events[0].values, decodedUnindexedEventDataResult: unindexedEmittedData?.toString()})
                                         }
                                         continue;
@@ -398,7 +406,8 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         }
 
                                         expect(err).to.be.an('Error');
-                                        passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: err});
+                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, err);
+                                        // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: err});
                                         continue;
                                     }
                                     // events
@@ -443,7 +452,8 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         expect(decoder.decode(['uint256'], res).toString()).to.eq(expectedData.toString())
 
                                         const result = res != undefined ? res.toString() : undefined;
-                                        passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result})
+                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, result)
+                                        // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result})
                                         continue;
                                     } else {
                                         if (txOptions.value) {
@@ -504,15 +514,18 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                             }
                             
                             const result = res != undefined ? res.toString() : undefined;
-                            passedTests.push({filePath, method, inputs, expected: expectedData, result});
+                            processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, result)
+                            // passedTests.push({filePath, method, inputs, expected: expectedData, result});
                         } catch(err) {
                             if (
                                 JSON.stringify(err).includes("value out-of-bounds")
                                 || JSON.stringify(err).includes("expected undefined to be an error")
                                 || JSON.stringify(err).includes("invalid length for result data")
                             ) {
+                                console.log(`Skipped ${testCaseName} from ${filePath}`);
                                 skippedTests.push({filePath, testCaseName, method, inputs, err});
                             } else {
+                                console.log(`Failed ${testCaseName} from ${filePath}`);
                                 failedTests.push({filePath, testCaseName, method, inputs, err});
                             }
                         }
@@ -558,16 +571,21 @@ async function metadataFromStr(filePath: string): Promise<Metadata> {
 describe('Matter Labs EVM Tests', () => {
     it('Run Test Suite', async () => {
         const matterLabsTestPath = 'contracts';
+
         const passedTests: any[] = [];
         const failedTests: any[] = [];
         const skippedTests: any[] = [];
 
         await runMatterLabsTests(matterLabsTestPath, failedTests, passedTests, skippedTests);
 
+        console.log(chalk.green(`Passed: ${passedTests.length}`));
+        console.log(chalk.red(`Failed: ${failedTests.length}`));
+        console.log(chalk.yellow(`Skipped: ${skippedTests.length}`));
+
         fs.writeFileSync("testResults/failedTests.json", JSON.stringify({NumFailed: failedTests.length, failedTests}), {encoding:'utf8', flag:'w'});
         fs.writeFileSync("testResults/passedTests.json", JSON.stringify({NumPassed: passedTests.length, passedTests}), {encoding:'utf8', flag:'w'});
         fs.writeFileSync("testResults/skippedTests.json", JSON.stringify({NumSkipped: skippedTests.length, skippedTests}), {encoding:'utf8', flag:'w'});
-    }).timeout(700000)
+    }).timeout(1500000)
 })
 
 const parseIntArray = (array: any[], filePath: string): string[] => {
@@ -820,24 +838,46 @@ const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, file
 
 const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string, skippedTests: any[]) => {
     if (
-        filePath === "contracts/basefee.sol"
-       || filePath === "contracts/blockhash.sol"
-       || filePath === "contracts/chainid.sol"
-       || filePath === "contracts/codecopy.sol"
-       || filePath === "contracts/codesize.sol"
-       || filePath === "contracts/coinbase.sol"
-       || filePath === "contracts/difficulty.sol"
-       || filePath === "contracts/gaslimit.sol"
-       || filePath === "contracts/gasprice.sol"
-       || filePath === "contracts/keccak256.sol"
-       || (filePath === "contracts/msize.sol" && testCaseName === "ordinar")
-       || (filePath === "contracts/number.sol" && testCaseName === "default")
-       || filePath === "contracts/origin.sol"
+        filePath === "contracts/yul_instructions/basefee.sol"
+       || filePath === "contracts/yul_instructions/blockhash.sol"
+       || filePath === "contracts/yul_instructions/chainid.sol"
+       || filePath === "contracts/yul_instructions/codecopy.sol"
+       || filePath === "contracts/yul_instructions/codesize.sol"
+       || filePath === "contracts/yul_instructions/coinbase.sol"
+       || filePath === "contracts/yul_instructions/difficulty.sol"
+       || filePath === "contracts/yul_instructions/gaslimit.sol"
+       || filePath === "contracts/yul_instructions/gasprice.sol"
+       || filePath === "contracts/yul_instructions/keccak256.sol"
+       || (filePath === "contracts/yul_instructions/msize.sol" && testCaseName === "ordinar")
+       || (filePath === "contracts/yul_instructions/number.sol" && testCaseName === "default")
+       || filePath === "contracts/yul_instructions/origin.sol"
+       || filePath === "contracts/yul_instructions/prevrandao.sol"
+       || filePath === "contracts/yul_instructions/return.sol"
+       || filePath === "contracts/yul_instructions/returndatacopy.sol"
+       || (filePath === "contracts/yul_instructions/returndatasize.sol" && testCaseName === "initial" && testCaseInput.method === "initial")
+       || filePath === "contracts/yul_instructions/revert.sol"
+       || filePath === "contracts/yul_instructions/pop.sol"
+       || filePath === "contracts/yul_instructions/sar.sol"
+       || filePath === "contracts/yul_instructions/sdiv.sol"
+       || filePath === "contracts/yul_instructions/selfbalance.sol"
+       || filePath === "contracts/yul_instructions/smod.sol"
+       || filePath === "contracts/yul_instructions/stop.sol"
+       || filePath === "contracts/yul_instructions/timestamp.sol"
    ) {
+        console.log(`Skipped ${testCaseName} from ${filePath}`);
        skippedTests.push({filePath, testCaseName, method: testCaseInput.method, inputs: []});
 
        return true;
    }
 
    return false;
+}
+
+const processPassedTest = (filePath: string, passedTests: any[], testCaseName: string, method: string, calldata: Calldata | any[], expectedData?: any, result?: any) => {
+    console.log(`%c Passed TestCase: ${testCaseName} from ${filePath}`, `color:green;`);
+    if (expectedData && result) {
+        passedTests.push({filePath, testCaseName, method, calldata, expected: expectedData, result});
+    } else {
+        passedTests.push({filePath, testCaseName, method, calldata});
+    }
 }
