@@ -1,23 +1,35 @@
 #!/bin/sh
 
 chain=$1
-tests=$2
+url=$2
+tests=$3
 
-if [ "$chain" = '--acala' ]; then
-  export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
-elif [ "$chain" = '--ethereum' ]; then
-  export NETWORK_URL="https://ethereum-rpc.publicnode.com"
-elif [ "$chain" = '--moonbeam' ]; then
-  export NETWORK_URL="https://moonbeam.public.blastapi.io"
-elif [ "$chain" = '--astar' ]; then
-  export NETWORK_URL="https://rpc.astar.network"
-elif [ "$chain" = '--polygon' ]; then
-  export NETWORK_URL="https://polygon-amoy-bor-rpc.publicnode.com"
-else
-  export NETWORK_URL="https://ethereum-rpc.publicnode.com"
-fi
-
-echo $chain
+case "$chain" in
+  --acala)
+    export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
+    ;;
+  --ethereum)
+    export NETWORK_URL="https://ethereum-rpc.publicnode.com"
+    ;;
+  --moonbeam)
+    export NETWORK_URL="https://moonbeam.public.blastapi.io"
+    ;;
+  --astar)
+    export NETWORK_URL="https://rpc.astar.network"
+    ;;
+  --polygon)
+    export NETWORK_URL="https://polygon-amoy-bor-rpc.publicnode.com"
+    ;;
+  --westend)
+    export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io/"
+    ;;
+  --endpoint | -e)
+    export NETWORK_URL="$2"
+    ;;
+  *)
+    export NETWORK_URL="https://ethereum-rpc.publicnode.com"
+    ;;
+esac
 
 if [ "$tests" = '--matter-labs' ]; then
   cd ./matter-labs-tests/ &&
