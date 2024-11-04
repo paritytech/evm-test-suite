@@ -9,7 +9,7 @@ tests derived from Smart Contracts (such as Uniswap V3) and lower level testing 
 To run the tests, simply run the script `init.sh`:
 
 ```sh
-~ ./init.sh <CHAIN> <TEST>
+~ ./init.sh <CHAIN> <URL> <TEST>
 ```
 
 Currently the available options for `CHAIN` to test against are:
@@ -18,8 +18,14 @@ Currently the available options for `CHAIN` to test against are:
 * `--astar`
 * `--ethereum`
 * `--polygon`
+* `--westend`
+* `--endpoint` or `-e`
 
 With `--ethereum` being the default option.
+
+When passing `--endpoint` or `-e`, the second argument must be the `http` endpoint
+of the node you are connecting to. If choosing from a preset chain, `--` should
+be passed.
 
 As for `TEST`, you can specify either `--matter-labs` to run the `matter-labs`
 tests or `--smart-contracts` to run the tests that deploy and check against the
