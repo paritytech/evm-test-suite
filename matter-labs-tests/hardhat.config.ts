@@ -14,13 +14,6 @@ const config: HardhatUserConfig = {
       'contracts/yul_instructions/difficulty.sol': {version: '0.8.17'},
       'contracts/immutable/trycatch.sol': {version: '0.8.19'}
     },
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 1000000,
-      },
-      viaIR: true,
-    }
   },
   networks: {
     hardhat: {

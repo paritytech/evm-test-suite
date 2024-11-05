@@ -901,8 +901,6 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
        || filePath === "contracts/yul_instructions/smod.sol"
        || filePath === "contracts/yul_instructions/stop.sol"
        || filePath === "contracts/yul_instructions/timestamp.sol"
-       || filePath.includes("contracts/fat_ptr")
-       || filePath.includes("contracts/function")
        || filePath === "contracts/immutable/inheritance/immutables6_yul.sol"
    ) {
        console.log(`Skipped ${testCaseName} from ${filePath}`);
