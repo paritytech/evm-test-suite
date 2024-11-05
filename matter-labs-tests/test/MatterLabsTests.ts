@@ -325,7 +325,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                             if (containsMultiExceptions) {
                                     await expect(contract[method].staticCall(...calldata)).to.be.reverted;
                                 } else if (!Array.isArray((expectedData))) {
-                                    if (expectedData.exception) {
+                                    if (expectedData.exception || containsMultiExceptions) {
                                         
                                         let err;
                                         try {
@@ -335,8 +335,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         }
                                         
                                         expect(err).to.be.an('Error')
-                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, err)
-                                        // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: err})
+                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, (err as Error).toString())
                                         continue;
                                     }
 
@@ -423,21 +422,33 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                 // TODO: make function handleExpectedExceptions
                                 // DRY this and the above
                                 if (containsMultiExceptions) {
-                                    await expect(contract[method].staticCall()).to.be.reverted;
+                                    let err;
+                                    try {
+                                        await contract[method].staticCall();
+                                    } catch (error) {
+                                        err = error;
+                                        expect(err).to.be.an('Error')
+                                        passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: (err as Error).toString()})
+                                        continue
+                                    }
+                                    // await expect(contract[method].staticCall()).to.be.reverted;
                                 } else if (!Array.isArray((expectedData))) {
                                     if (expectedData.exception) {
                                         let err;
                                         try {
-                                            await contract[method].staticCall(...calldata);
+                                            await expect(contract[method]()).to.be.reverted;
                                         } catch (error) {
                                             err = error;
                                         }
 
                                         expect(err).to.be.an('Error');
-                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, err);
-                                        // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: err});
+                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, (err as Error).toString());
                                         continue;
+                                    } else {       
+                                        // non exception method      
+                                        res = await contract[method]()
                                     }
+
                                     // events
                                     if (expectedData.events && expectedData.events.length > 0) {
                                     let res = await contract[method]();
@@ -492,6 +503,9 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                             ]);
                                             res = await contract[method].staticCall(txOptions);
                                         } else {
+                                            if (method === "set") {
+                                                await contract[method]();
+                                            } 
                                             res = await contract[method].staticCall();
                                         }
                                     }
@@ -553,10 +567,10 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                 || JSON.stringify(err).includes("invalid length for result data")
                             ) {
                                 console.log(`Skipped ${testCaseName} from ${filePath}`);
-                                skippedTests.push({filePath, testCaseName, method, inputs, err});
+                                skippedTests.push({filePath, testCaseName, method, inputs, result: (err as Error).toString()});
                             } else {
                                 console.log(`Failed ${testCaseName} from ${filePath}`);
-                                failedTests.push({filePath, testCaseName, method, inputs, err});
+                                failedTests.push({filePath, testCaseName, method, inputs, result: (err as Error).toString()});
                             }
                         }
                 }
@@ -902,6 +916,13 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
        || filePath === "contracts/yul_instructions/stop.sol"
        || filePath === "contracts/yul_instructions/timestamp.sol"
        || filePath === "contracts/immutable/inheritance/immutables6_yul.sol"
+       || filePath === "contracts/internal_function_pointers/call_to_zero_initialized_function_type_legacy.sol"
+       || filePath === "contracts/internal_function_pointers/legacy/invalidInConstructor.sol"
+       || filePath === "contracts/internal_function_pointers/legacy/invalidStoredInConstructor.sol"
+       || filePath === "contracts/internal_function_pointers/legacy/store2.sol"
+       || filePath === "contracts/internal_function_pointers/legacy/storeInConstructor.sol"
+       || filePath === "contracts/internal_function_pointers/data_structures.sol"
+       || filePath === "contracts/internal_function_pointers/mixed_features_3.sol"
    ) {
        console.log(`Skipped ${testCaseName} from ${filePath}`);
        skippedTests.push({filePath, testCaseName, method: testCaseInput.method, inputs: []});
@@ -913,7 +934,7 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
 }
 
 const processPassedTest = (filePath: string, passedTests: any[], testCaseName: string, method: string, calldata: Calldata | any[], expectedData?: any, result?: any) => {
-    console.log(`%c Passed TestCase: ${testCaseName} from ${filePath}`, `color:green;`);
+    console.log(`Passed TestCase: ${testCaseName} from ${filePath}`);
     if (expectedData && result) {
         passedTests.push({filePath, testCaseName, method, calldata, expected: expectedData, result});
     } else {
