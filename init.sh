@@ -20,6 +20,7 @@ run_smart_contracts_tests()
   npx hardhat test &&
   cd ./v3-core/ &&
   yarn install &&
+  yarn compile &&
   yarn test &&
 
   echo "Running Smart Contract Periphery Tests" &&
@@ -27,6 +28,12 @@ run_smart_contracts_tests()
   yarn install &&
   yarn compile &&
   yarn test &&
+
+  echo "Running Smart Contract CCTP Tests" &&
+  cd ../evm-cctp-contracts/ &&
+  git submodule update --init --recursive &&
+  yarn install &&
+  forge test --rpc-url $NETWORK_URL --private-key $PRIVATE_KEY &&
 
   echo "Test Run Complete"
 }
@@ -53,6 +60,7 @@ run_matter_labs_and_then_smart_contracts_tests()
     echo "Test Run Complete"
 }
 
+
 case "$chain" in
   --acala)
     export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
@@ -67,13 +75,13 @@ case "$chain" in
     export NETWORK_URL="https://rpc.astar.network"
     ;;
   --polygon)
-    export NETWORK_URL="https://polygon-mainnet.infura.io/v3/4127c5d52a2b461fa8c41fa85707ef31"
+    export NETWORK_URL="https://polygon-mainnet.infura.io/v3/${PRIVATE_KEY}"
     ;;
   --westend)
     export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io/"
     ;;
   --arbitrum)
-    export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/4127c5d52a2b461fa8c41fa85707ef31"
+    export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/${PRIVATE_KEY}"
     ;;
   --endpoint | -e)
     export NETWORK_URL="$2"
