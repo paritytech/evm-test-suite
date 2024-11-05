@@ -4,6 +4,18 @@ Set of generic tests to check for chain compatibility. It covers higher level
 tests derived from Smart Contracts (such as Uniswap V3) and lower level testing inspired by [`Matter Labs`]
 (https://github.com/matter-labs).
 
+## Requirements
+
+This is a hybrid test suite that uses both [Hardhat](https://hardhat.org/) and
+[Foundry](https://book.getfoundry.sh/). In order to run the [CCTP tests](https://github.com/circlefin/evm-cctp-contracts),
+you need to first have Foundry installed. You can do that by running:
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+```
+
+And then following the onscreen instructions.
+
 ## Execution
 
 To run the tests, simply run the script `init.sh`:
