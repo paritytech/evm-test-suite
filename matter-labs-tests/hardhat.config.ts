@@ -12,7 +12,8 @@ const config: HardhatUserConfig = {
     overrides: {
       'contracts/yul_instructions/basefee.sol': {version: '0.8.7'},
       'contracts/yul_instructions/difficulty.sol': {version: '0.8.17'},
-    }
+      'contracts/immutable/trycatch.sol': {version: '0.8.19'}
+    },
   },
   networks: {
     hardhat: {

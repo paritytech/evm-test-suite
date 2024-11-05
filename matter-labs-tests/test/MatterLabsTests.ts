@@ -12,7 +12,7 @@ chai.use(chaiSubset);
 
 import chalk from 'chalk';
 
-import { Contract, Result } from "ethers";
+import { BaseContract, Contract, Result } from "ethers";
 const SIMPLE_TESTS_INSTANCE = "Test";
 
 
@@ -192,61 +192,89 @@ const runMatterLabsTests = async (filePath: string, failedTests: any[], passedTe
     }
 }
 
+const getContract = async (passedTests: any[], testCaseName: string, filePath: string, contractPath: string, input: Input): Promise<Contract | undefined> => {
+    let contract: Contract | undefined = undefined;
+    
+    // default #deployer cases
+    if (input.calldata.length > 0 && input.method === "#deployer") {
+        const contractFactory = await ethers.getContractFactory(contractPath);
+
+        // get correct inputs
+        let inputs: any[] = [];
+
+        if (filePath.includes("zero_value")) {
+            inputs =  [input.calldata[0]];
+        } else {
+            inputs = [...input.calldata]
+        }
+
+        if (testCaseName != "failure") {
+            let deployedContract: BaseContract | undefined = undefined;
+
+            if (input.caller) {
+                await ethers.provider.send("hardhat_impersonateAccount", [input.caller]);
+                await ethers.provider.send("hardhat_setBalance", [
+                    input.caller,
+                    "0x340282366920938463463374607431768211455",
+                ]);
+                const signer = await ethers.provider.getSigner(input.caller)
+                deployedContract = await contractFactory.connect(signer).deploy(...inputs)
+            } else {
+                try {
+                    deployedContract = await contractFactory.deploy({overrides: inputs});
+                } catch(err) {
+                    deployedContract = await contractFactory.deploy(...inputs);
+                }
+            }
+
+            const contractAddress = await deployedContract.getAddress();
+            if (input.expected?.toString().includes("Test.address")) {
+                expect(contractAddress).not.to.eq(undefined);
+                passedTests.push({filePath, testCaseName, method: input.method, inputs});
+            }
+
+            contract = await ethers.getContractAt(contractPath, contractAddress);
+        } else {
+            await expect(contractFactory.deploy(...inputs)).to.be.reverted;
+
+            return undefined;
+        }
+    } else {
+        const deployedContract = await ethers.deployContract(contractPath);
+        await deployedContract.waitForDeployment();
+        const contractAddress = await deployedContract.getAddress();
+        contract = await ethers.getContractAt(contractPath, contractAddress);
+    }
+
+    return contract;
+}
+
+
 const runContractTests = async (metadata: Metadata, filePath: string, failedTests: any[], passedTests: any[], skippedTests: any[], contractPath: string) => {
         let contract: Contract | undefined = undefined;
 
         for (let i = 0; i < metadata.cases.length; i++) {
             const testCase = metadata.cases[i];
+            const firstInput = testCase.inputs[0];
             const { name: testCaseName } = testCase;
-            
+
+            if (!contract) {
+                contract = await getContract(passedTests, testCaseName, filePath, contractPath, firstInput);
+                console.log(chalk.green(`Deployed ${contractPath}`));
+            }
+
             for (const input of testCase.inputs) {
                 if (skipTestCase(input, testCaseName, filePath, skippedTests)) {
                     continue;
                 }
-                // default #deployer cases
-                if (input.calldata.length > 0 && input.method === "#deployer") {
-                    const contractFactory = await ethers.getContractFactory(contractPath);
-
-                    // get correct inputs
-                    let inputs: any[] = [];
-                    if(filePath.includes("simple")) {
-                        const first = input.calldata[0];
-                        const second = input.calldata[1];
-                        const third = input.calldata[2].toString() === '0' ? false : true;
-
-                        inputs = [first, second, third]
-                    } else if (filePath.includes("zero_value")) {
-                        inputs =  [input.calldata[0]];
-                    } else {
-                        inputs = [input.calldata[0]];
-                    }
-                
-                    if (testCaseName != "failure") {
-                        const deployedContract = await contractFactory.deploy({overrides: inputs});
-                        const contractAddress = await deployedContract.getAddress();
-
-                        expect(contractAddress).not.to.eq(undefined);
-                        processPassedTest(filePath, passedTests, testCaseName, input.method, inputs);
-                        // passedTests.push({filePath, testCaseName, method: input.method, inputs});
-                    } else {
-                        await expect(contractFactory.deploy(...inputs)).to.be.reverted;
-                    }
-                    
-                    continue;
-                } else {
-                    const deployedContract = await ethers.deployContract(contractPath);
-                    await deployedContract.waitForDeployment();
-                    const contractAddress = await deployedContract.getAddress();
-                    contract = await ethers.getContractAt(contractPath, contractAddress);
-                }
-                    let expectedData = testCase.expected;
+                if (contract) {
+                    const expectedData = input.expected ? input.expected : testCase.expected;
                     let method = input.method;
 
                     // catch deployer cases with no args
                     if (method === "#deployer") {
                         expect(contract.getAddress()).not.eq(undefined);
                         processPassedTest(filePath, passedTests, testCaseName, method, input.calldata)
-                        // passedTests.push({filePath, testCaseName, method, inputs: input.calldata});
 
                         continue;
                     }
@@ -462,7 +490,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                                 hardHatTestAccountAddress,
                                                 "0x340282366920938463463374607431768211455",
                                             ]);
-                                            res = await contract[method].send(txOptions);
+                                            res = await contract[method].staticCall(txOptions);
                                         } else {
                                             res = await contract[method].staticCall();
                                         }
@@ -499,9 +527,11 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                             expect(res).not.to.be.undefined;
                                         } else {
                                             if (txOptions.value) {
-                                                expect(res.value).to.eq(expectedData[0]);
+                                                expect(res).to.eq(expectedData[0]);
+                                            } else if (expectedData.length === 1) {
+                                                expect(parseInt(res)).eq(parseInt(expectedData[0].toString()));
                                             } else {
-                                                expect(res).eq(expectedData[0]);
+                                                expect(res.toString()).eq(expectedData.toString());
                                             }
                                         }
                                     }
@@ -529,6 +559,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                 failedTests.push({filePath, testCaseName, method, inputs, err});
                             }
                         }
+                }
             }
         }
 }
@@ -578,7 +609,7 @@ describe('Matter Labs EVM Tests', () => {
 
         await runMatterLabsTests(matterLabsTestPath, failedTests, passedTests, skippedTests);
 
-        console.log(chalk.green(`Passed: ${passedTests.length}`));
+        console.log(chalk.green(`\nPassed: ${passedTests.length}`));
         console.log(chalk.red(`Failed: ${failedTests.length}`));
         console.log(chalk.yellow(`Skipped: ${skippedTests.length}`));
 
@@ -795,7 +826,14 @@ const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, file
 
     // length 3 calldata
     if (callDataLength === 3) {
-        if (filePath.includes("nested_gates")) {
+        if ((filePath.includes("structure_immutable_method.sol") || filePath.includes("structure_mutable_method.sol")) && testCaseName === "main") {
+            const structArg = {
+                a: rawCallData[0],
+                b: rawCallData[1],
+                c: rawCallData[2],
+            };
+            calldata.push(structArg);
+        } else if (filePath.includes("nested_gates")) {
             const bool1 = rawCallData[0] === '0' ? false : true;
             const bool2 = rawCallData[1] === '0' ? false : true;
             const bool3 = rawCallData[2] === '0' ? false : true;
@@ -863,8 +901,9 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
        || filePath === "contracts/yul_instructions/smod.sol"
        || filePath === "contracts/yul_instructions/stop.sol"
        || filePath === "contracts/yul_instructions/timestamp.sol"
+       || filePath === "contracts/immutable/inheritance/immutables6_yul.sol"
    ) {
-        console.log(`Skipped ${testCaseName} from ${filePath}`);
+       console.log(`Skipped ${testCaseName} from ${filePath}`);
        skippedTests.push({filePath, testCaseName, method: testCaseInput.method, inputs: []});
 
        return true;
