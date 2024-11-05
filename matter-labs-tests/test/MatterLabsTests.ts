@@ -431,7 +431,6 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: (err as Error).toString()})
                                         continue
                                     }
-                                    // await expect(contract[method].staticCall()).to.be.reverted;
                                 } else if (!Array.isArray((expectedData))) {
                                     if (expectedData.exception) {
                                         let err;
