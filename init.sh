@@ -16,7 +16,7 @@ run_matter_labs_tests() {
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
     TEST_LOG="$LOG_DIR/matter-labs-tests.log" &&
-    npx hardhat test ./test/MatterLabsTests.ts >"$TEST_LOG" 2>&1
+    npx hardhat test ./test/MatterLabsTests.ts | tee "$TEST_LOG"
   parse_hardhat_test_results "$TEST_LOG"
 }
 
@@ -46,27 +46,27 @@ run_smart_contracts_tests() {
   yarn install &&
     echo "Running Smart Contract V3 Tests" &&
     npx hardhat compile &&
-    npx hardhat test >"$LOG_DIR/smart-contract-v3-tests.log" 2>&1
+    npx hardhat test | tee "$LOG_DIR/smart-contract-v3-tests.log"
   parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
 
   cd ./v3-core/ &&
     yarn install &&
     yarn compile &&
-    yarn test >"../$LOG_DIR/v3-core-tests.log" 2>&1
+    yarn test | tee "../$LOG_DIR/v3-core-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
 
   echo "Running Smart Contract Periphery Tests" &&
     cd ../v3-periphery/ &&
     yarn install &&
     yarn compile &&
-    yarn test >"../$LOG_DIR/v3-periphery-tests.log" 2>&1
+    yarn test | tee "../$LOG_DIR/v3-periphery-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
 
   echo "Running Smart Contract CCTP Tests" &&
     cd ../evm-cctp-contracts/ &&
     git submodule update --init --recursive &&
     yarn install &&
-    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" >"../$LOG_DIR/evm-cctp-tests.log" 2>&1
+    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
   parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
 
   echo "Smart Contracts Test Run Complete"
@@ -76,7 +76,7 @@ run_matter_labs_and_then_smart_contracts_tests() {
   yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
-    npx hardhat test ./test/MatterLabsTests.ts >"$LOG_DIR/matter-labs-tests.log" 2>&1
+    npx hardhat test ./test/MatterLabsTests.ts | tee "$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "$LOG_DIR/matter-labs-tests.log"
 
   cd ..
@@ -105,20 +105,20 @@ run_matter_labs_and_then_smart_contracts_tests() {
 
   echo "Running Smart Contract V3 Tests" &&
     npx hardhat compile &&
-    npx hardhat test >"$LOG_DIR/smart-contract-v3-tests.log" 2>&1
+    npx hardhat test | tee "$LOG_DIR/smart-contract-v3-tests.log"
   parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
 
   cd ./v3-core/ &&
     yarn install &&
     yarn compile &&
-    yarn test >"../$LOG_DIR/v3-core-tests.log" 2>&1
+    yarn test | tee "../$LOG_DIR/v3-core-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
 
   echo "Running Smart Contract Periphery Tests" &&
     cd ../v3-periphery/ &&
     yarn install &&
     yarn compile &&
-    yarn test >"../$LOG_DIR/v3-periphery-tests.log" 2>&1
+    yarn test | tee "../$LOG_DIR/v3-periphery-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
 
   echo "Running Smart Contract CCTP Tests" &&
@@ -126,7 +126,7 @@ run_matter_labs_and_then_smart_contracts_tests() {
     git submodule update --init --recursive &&
     yarn install &&
     forge build &&
-    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" >"../$LOG_DIR/evm-cctp-tests.log" 2>&1
+    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
   parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
 
   echo "Test Run Complete"
@@ -136,6 +136,15 @@ parse_hardhat_test_results() {
   log_file=$1
   passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
   failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
+  
+  if [ -z "$passed" ]; then
+    passed=0
+  fi
+  
+  if [ -z "$failed" ]; then
+    failed=0
+  fi
+  
   total=$((passed + failed))
 
   total_passed=$((total_passed + passed))
@@ -150,6 +159,15 @@ parse_forge_test_results() {
   log_file=$1
   passed=$(grep -o 'Passed' "$log_file" | wc -l)
   failed=$(grep -o 'Failed' "$log_file" | wc -l)
+
+  if [ -z "$passed" ]; then
+    passed=0
+  fi
+  
+  if [ -z "$failed" ]; then
+    failed=0
+  fi
+  
   total=$((passed + failed))
 
   total_passed=$((total_passed + passed))

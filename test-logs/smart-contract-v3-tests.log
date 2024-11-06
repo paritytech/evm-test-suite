@@ -3,9 +3,9 @@
   Block
     Functionality
 Storage deployed to: undefined
-      1) Should return the correct value when multiplying
+      ✔ Should return the correct value when multiplying (12047ms)
       ✔ Should return the correct baseFee
-      2) Should return the correct chainId
+      ✔ Should return the correct chainId
       ✔ Should return the correct timestamp
       ✔ Should return the correct gasLimit
       ✔ Should return the correct blocknumber
@@ -13,15 +13,15 @@ Storage deployed to: undefined
 
   ExplicitRevertReason
     Functionality
-      ✔ Should fail with revert reason (294ms)
+      ✔ Should fail with revert reason (1405ms)
       ✔ Should return the given input
 
   Lock
     Deployment
-      ✔ Should set the right unlockTime (1012ms)
+      ✔ Should set the right unlockTime (712ms)
       ✔ Should set the right owner
       ✔ Should receive and store the funds to lock
-      ✔ Should fail if the unlockTime is not in the future (214ms)
+      ✔ Should fail if the unlockTime is not in the future (2155ms)
     Withdrawals
       Validations
         ✔ Should revert with the right error if called too soon
@@ -35,36 +35,9 @@ Storage deployed to: undefined
   Storage
     Functionality
 Storage deployed to: undefined
-      ✔ Should return the empty data when storage is called for the first time (535ms)
+      ✔ Should return the empty data when storage is called for the first time (676ms)
       ✔ Should return the input data
 
 
-  18 passing (9s)
-  2 failing
-
-  1) Block
-       Functionality
-         Should return the correct value when multiplying:
-
-      AssertionError: expected 49 to equal 50.
-      + expected - actual
-
-      -49
-      +50
-      
-      at Context.<anonymous> (test/Block.ts:29:31)
-
-  2) Block
-       Functionality
-         Should return the correct chainId:
-
-      AssertionError: expected '0xC014BA5EC014ba5ec014Ba5EC014ba5Ec01…' to equal 's'
-      + expected - actual
-
-      -0xC014BA5EC014ba5ec014Ba5EC014ba5Ec014bA5E
-      +s
-      
-      at Context.<anonymous> (test/Block.ts:45:31)
-
-
+  20 passing (17s)
 
