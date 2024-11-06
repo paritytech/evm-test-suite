@@ -268,7 +268,20 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                     continue;
                 }
                 if (contract) {
-                    const expectedData = input.expected ? input.expected : testCase.expected;
+                    // let expectedData: any | undefined = undefined;
+                    // if ((input.expected as Extended)?.return_data) {
+                    //     expectedData = (input.expected as Extended).return_data[0][0]
+                    //     console.log("EXPECTED AS RETURN DATA", expectedData)
+                    // } else {
+                        // expectedData = input.expected ? input.expected 
+                        // : (Array.isArray(testCase.expected) && testCase.expected.length === 1) ? (testCase.expected[0] as Extended).return_data
+                        // : testCase.expected;
+                        const expectedData = input.expected ? input.expected : testCase.expected;
+                        // let method = input.method;
+                    // }
+            
+                    console.log("EXPECTED IS---", expectedData)
+                    // const expectedData = input.expected ? input.expected : input.expected.return_data ? (input.expected as unknown as Extended).return_data[0]: testCase.expected;
                     let method = input.method;
 
                     // catch deployer cases with no args
@@ -285,7 +298,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                     }
 
                     let numberOfExpectedArgs = 0;
-                    if (contract[method].fragment) {
+                    if (contract[method]?.fragment) {
                         numberOfExpectedArgs = contract[method].fragment.inputs.length;
                     };
 
@@ -368,7 +381,6 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
 
                                             // assert unindexed event data matches
                                             let unindexedEmittedData: Result | string | undefined = undefined;
-                                            let decodedExpectedData: Result | string | undefined = undefined;
                                             if (eventData.length > 0) {
                                                 const decodeArgs: string[] = [];
                                                 for (let count = 0; count < expectedData.events[i].values.length; count++) {
@@ -382,7 +394,6 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                                     decodeArgs.pop();
                                                 }
                                                 unindexedEmittedData = parseInt(eventData) === 0 ? new Result([0]).toString() : decoder.decode(decodeArgs, eventData)
-                                                decodedExpectedData = parseInt(eventData) === 0 ? new Result([0]).toString() : decoder.decode(decodeArgs, formattedExpectedData)
                                             }
 
                                             // assert indexed event data matches
@@ -412,6 +423,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                                 || (!Array.isArray(calldata[0]) && !methodInputIsArray)
                                             ) {
                                                 res = await contract[method].staticCall(calldata[0]);
+                                                console.log("RES---", res)
                                             } else if (methodInputIsArray) {
                                                 res = await contract[method].staticCall(calldata);
                                             }
@@ -491,7 +503,6 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
 
                                         const result = res != undefined ? res.toString() : undefined;
                                         processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, result)
-                                        // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result})
                                         continue;
                                     } else {
                                         if (txOptions.value) {
@@ -551,7 +562,10 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                 }
                                 }
                             } else {
-                                if (!expectedData.exception && !expectedData.events && !expectedData.return_data) {
+                                if (expectedData.return_data) {
+                                    console.log("THIS IS FOR 264")
+                                    expect(res).eq(expectedData.return_data[0])
+                                } else if (!expectedData.exception && !expectedData.events && !expectedData.return_data) {
                                     expect(res).eq(expectedData);
                                 }
                             }

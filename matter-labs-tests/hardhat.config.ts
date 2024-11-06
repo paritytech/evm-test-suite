@@ -21,6 +21,19 @@ const config: HardhatUserConfig = {
       'contracts/internal_function_pointers/legacy/store2.sol': {version: '0.4.21'},
       'contracts/internal_function_pointers/legacy/storeInConstructor.sol': {version: '0.4.21'}
     },
+    settings: {
+      viaIR: true,
+      optimizer: {
+        enabled: true,
+        runs: 800,
+      },
+      metadata: {
+        // do not include the metadata hash, since this is machine dependent
+        // and we want all generated code to be deterministic
+        // https://docs.soliditylang.org/en/v0.7.6/metadata.html
+        bytecodeHash: 'none',
+      },
+    },
   },
   networks: {
     hardhat: {
