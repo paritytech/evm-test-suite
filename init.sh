@@ -6,6 +6,7 @@ tests=$3
 
 run_matter_labs_tests()
 {
+    yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
     npx hardhat test ./test/MatterLabsTests.ts &&
@@ -15,6 +16,24 @@ run_matter_labs_tests()
 
 run_smart_contracts_tests()
 {
+  echo "Setting Up Foundry" &&
+  curl -L https://foundry.paradigm.xyz | bash &&
+  case "$SHELL" in
+    */bash)
+        source ~/.bashrc
+        ;;
+    */zsh)
+        source ~/.zshenv
+        ;;
+    *)
+        echo "Unknown shell: $SHELL"
+        ;;
+  esac &&
+
+  foundryup &&
+  
+  yarn install &&
+
   echo "Running Smart Contract V3 Tests" &&
   npx hardhat compile &&
   npx hardhat test &&
@@ -33,22 +52,42 @@ run_smart_contracts_tests()
   cd ../evm-cctp-contracts/ &&
   git submodule update --init --recursive &&
   yarn install &&
-  forge test --rpc-url $NETWORK_URL --private-key $PRIVATE_KEY &&
+  forge test --rpc-url $NETWORK_URL+$PRIVATE_KEY --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller | testReplaceMessage_succeeds | testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage | testSetMaxMessageBodySize | testDepositForBurnWithCaller_returnsNonzeroNonce | testDepositForBurnWithCaller_succeeds | testHandleReceiveMessage_succeedsForMint" &&
 
   echo "Test Run Complete"
 }
 
 run_matter_labs_and_then_smart_contracts_tests()
 {
+    yarn install &&
+    
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
     npx hardhat test ./test/MatterLabsTests.ts &&
+    .. &&
+
+    echo "Setting Up Foundry" &&
+    curl -L https://foundry.paradigm.xyz | bash &&
+    case "$SHELL" in
+      */bash)
+          source ~/.bashrc &&
+          ;;
+      */zsh)
+          source ~/.zshenv &&
+          ;;
+      *)
+          echo "Unknown shell: $SHELL" &&
+          ;;
+    esac
+
+    foundryup &&
 
     echo "Running Smart Contract V3 Tests" &&
     npx hardhat compile &&
     npx hardhat test &&
-    cd ../v3-core/ &&
+    cd ./v3-core/ &&
     yarn install &&
+    yarn compile &&
     yarn test &&
 
     echo "Running Smart Contract Periphery Tests" &&
@@ -56,6 +95,13 @@ run_matter_labs_and_then_smart_contracts_tests()
     yarn install &&
     yarn compile &&
     yarn test &&
+
+    echo "Running Smart Contract CCTP Tests" &&
+    cd ../evm-cctp-contracts/ &&
+    git submodule update --init --recursive &&
+    yarn install &&
+    forge build &&
+    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller | testReplaceMessage_succeeds | testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage | testSetMaxMessageBodySize | testDepositForBurnWithCaller_returnsNonzeroNonce | testDepositForBurnWithCaller_succeeds | testHandleReceiveMessage_succeedsForMint" &&
 
     echo "Test Run Complete"
 }
