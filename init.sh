@@ -4,12 +4,20 @@ chain=$1
 url=$2
 tests=$3
 
+total_tests=0
+total_passed=0
+total_failed=0
+
+LOG_DIR="./test-logs"
+mkdir -p $LOG_DIR
+
 run_matter_labs_tests() {
   yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
-    npx hardhat test ./test/MatterLabsTests.ts &&
-    echo "Test Run Complete"
+    TEST_LOG="$LOG_DIR/matter-labs-tests.log" &&
+    npx hardhat test ./test/MatterLabsTests.ts >"$TEST_LOG" 2>&1
+  parse_hardhat_test_results "$TEST_LOG"
 }
 
 run_smart_contracts_tests() {
@@ -38,71 +46,118 @@ run_smart_contracts_tests() {
   yarn install &&
     echo "Running Smart Contract V3 Tests" &&
     npx hardhat compile &&
-    npx hardhat test &&
-    cd ./v3-core/ &&
+    npx hardhat test >"$LOG_DIR/smart-contract-v3-tests.log" 2>&1
+  parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
+
+  cd ./v3-core/ &&
     yarn install &&
     yarn compile &&
-    yarn test || true && 
-    echo "Running Smart Contract Periphery Tests" &&
+    yarn test >"../$LOG_DIR/v3-core-tests.log" 2>&1
+  parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
+
+  echo "Running Smart Contract Periphery Tests" &&
     cd ../v3-periphery/ &&
     yarn install &&
     yarn compile &&
-    yarn test &&
-    echo "Running Smart Contract CCTP Tests" &&
+    yarn test >"../$LOG_DIR/v3-periphery-tests.log" 2>&1
+  parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
+
+  echo "Running Smart Contract CCTP Tests" &&
     cd ../evm-cctp-contracts/ &&
     git submodule update --init --recursive &&
     yarn install &&
-    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" &&
-    echo "Test Run Complete"
+    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" >"../$LOG_DIR/evm-cctp-tests.log" 2>&1
+  parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
+
+  echo "Smart Contracts Test Run Complete"
 }
 
 run_matter_labs_and_then_smart_contracts_tests() {
   yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
-    npx hardhat test ./test/MatterLabsTests.ts &&
-    .. &&
-    if ! command -v forge >/dev/null 2>&1; then
-      echo "Setting Up Foundry..."
+    npx hardhat test ./test/MatterLabsTests.ts >"$LOG_DIR/matter-labs-tests.log" 2>&1
+  parse_hardhat_test_results "$LOG_DIR/matter-labs-tests.log"
 
-      curl -L https://foundry.paradigm.xyz | bash
+  cd ..
 
-      case "$SHELL" in
-      */bash)
-        source ~/.bashrc
-        ;;
-      */zsh)
-        source ~/.zshenv
-        ;;
-      *)
-        echo "Unknown shell: $SHELL"
-        ;;
-      esac
+  if ! command -v forge >/dev/null 2>&1; then
+    echo "Setting Up Foundry..."
 
-      foundryup
-    else
-      echo "Foundry is already installed. Skipping installation."
-    fi
+    curl -L https://foundry.paradigm.xyz | bash
+
+    case "$SHELL" in
+    */bash)
+      source ~/.bashrc
+      ;;
+    */zsh)
+      source ~/.zshenv
+      ;;
+    *)
+      echo "Unknown shell: $SHELL"
+      ;;
+    esac
+
+    foundryup
+  else
+    echo "Foundry is already installed. Skipping installation."
+  fi
 
   echo "Running Smart Contract V3 Tests" &&
     npx hardhat compile &&
-    npx hardhat test &&
-    cd ./v3-core/ &&
+    npx hardhat test >"$LOG_DIR/smart-contract-v3-tests.log" 2>&1
+  parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
+
+  cd ./v3-core/ &&
     yarn install &&
     yarn compile &&
-    yarn test || true && 
-    echo "Running Smart Contract Periphery Tests" &&
+    yarn test >"../$LOG_DIR/v3-core-tests.log" 2>&1
+  parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
+
+  echo "Running Smart Contract Periphery Tests" &&
     cd ../v3-periphery/ &&
     yarn install &&
     yarn compile &&
-    yarn test &&
-    echo "Running Smart Contract CCTP Tests" &&
+    yarn test >"../$LOG_DIR/v3-periphery-tests.log" 2>&1
+  parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
+
+  echo "Running Smart Contract CCTP Tests" &&
     cd ../evm-cctp-contracts/ &&
     git submodule update --init --recursive &&
     yarn install &&
     forge build &&
-    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" &&
-    echo "Test Run Complete"
+    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" >"../$LOG_DIR/evm-cctp-tests.log" 2>&1
+  parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
+
+  echo "Test Run Complete"
+}
+
+parse_hardhat_test_results() {
+  log_file=$1
+  passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
+  failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
+  total=$((passed + failed))
+
+  total_passed=$((total_passed + passed))
+  total_failed=$((total_failed + failed))
+  total_tests=$((total_tests + total))
+
+  echo "Hardhat Test Summary from $log_file:"
+  echo "Total: $total | Passed: $passed | Failed: $failed"
+}
+
+parse_forge_test_results() {
+  log_file=$1
+  passed=$(grep -o 'Passed' "$log_file" | wc -l)
+  failed=$(grep -o 'Failed' "$log_file" | wc -l)
+  total=$((passed + failed))
+
+  total_passed=$((total_passed + passed))
+  total_failed=$((total_failed + failed))
+  total_tests=$((total_tests + total))
+
+  echo "Foundry Test Summary from $log_file:"
+  echo "Total: $total | Passed: $passed | Failed: $failed"
 }
 
 case "$chain" in
@@ -167,3 +222,6 @@ elif [ "$tests" = '--smart-contracts' ]; then
 else
   run_matter_labs_and_then_smart_contracts_tests
 fi
+
+echo "Final Test Summary:"
+echo "Total: $total_tests | Passed: $total_passed | Failed: $total_failed"
