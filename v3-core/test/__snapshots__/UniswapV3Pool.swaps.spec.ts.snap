@@ -3360,6 +3360,22 @@ Object {
 }
 `;
 
+exports[`UniswapV3Pool swap tests medium fee, token1 liquidity only swap exactly 1.0000 token0 for token1 2`] = `
+Object {
+  "amount0Before": "0",
+  "amount0Delta": "1000000000000000000",
+  "amount1Before": "1995041008271423675",
+  "amount1Delta": "-665331998665331998",
+  "executionPrice": "0.66533",
+  "feeGrowthGlobal0X128Delta": "510423550381407695195061911147652317",
+  "feeGrowthGlobal1X128Delta": "0",
+  "poolPriceAfter": "0.44533",
+  "poolPriceBefore": "1.0000",
+  "tickAfter": -8090,
+  "tickBefore": 0,
+}
+`;
+
 exports[`UniswapV3Pool swap tests medium fee, token1 liquidity only swap exactly 1.0000 token0 for token1 to price 0.50000 1`] = `
 Object {
   "amount0Before": "0",
