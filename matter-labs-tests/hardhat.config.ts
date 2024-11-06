@@ -12,7 +12,14 @@ const config: HardhatUserConfig = {
     overrides: {
       'contracts/yul_instructions/basefee.sol': {version: '0.8.7'},
       'contracts/yul_instructions/difficulty.sol': {version: '0.8.17'},
-      'contracts/immutable/trycatch.sol': {version: '0.8.19'}
+      'contracts/immutable/trycatch.sol': {version: '0.8.19'},
+      'contracts/internal_function_pointers/legacy/basic.sol': {version: '0.4.21'},
+      'contracts/internal_function_pointers/legacy/inherited_1.sol': {version: '0.4.21'},
+      'contracts/internal_function_pointers/legacy/inherited_2.sol': {version: '0.4.21'},
+      'contracts/internal_function_pointers/legacy/invalidInConstructor.sol': {version: '0.4.21'},
+      'contracts/internal_function_pointers/legacy/invalidStoredInConstructor.sol': {version: '0.4.21'},
+      'contracts/internal_function_pointers/legacy/store2.sol': {version: '0.4.21'},
+      'contracts/internal_function_pointers/legacy/storeInConstructor.sol': {version: '0.4.21'}
     },
   },
   networks: {
