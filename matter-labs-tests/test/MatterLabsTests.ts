@@ -395,7 +395,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                                 indexedEmittedDataArr.push(indexedEmittedData.toString())
                                             }
 
-                                            console.log(`Passed test: ${testCaseName} from ${filePath}`);
+                                            console.log(`Passed Test Case: ${testCaseName} from ${filePath}`);
                                             passedTests.push({filePath, testCaseName, method, inputs, expectedIndexedData: expectedData.events[0].topics, decodedIndexedEventDataResult: indexedEmittedDataArr, expectedUnindexedData: expectedData.events[0].values, decodedUnindexedEventDataResult: unindexedEmittedData?.toString()})
                                         }
                                         continue;
@@ -945,7 +945,7 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
 }
 
 const processPassedTest = (filePath: string, passedTests: any[], testCaseName: string, method: string, calldata: Calldata | any[], expectedData?: any, result?: any) => {
-    console.log(`Passed TestCase: ${testCaseName} from ${filePath}`);
+    console.log(`Passed Test Case: ${testCaseName} from ${filePath}`);
     if (expectedData && result) {
         passedTests.push({filePath, testCaseName, method, calldata, expected: expectedData, result});
     } else {
