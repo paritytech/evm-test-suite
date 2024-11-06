@@ -268,20 +268,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                     continue;
                 }
                 if (contract) {
-                    // let expectedData: any | undefined = undefined;
-                    // if ((input.expected as Extended)?.return_data) {
-                    //     expectedData = (input.expected as Extended).return_data[0][0]
-                    //     console.log("EXPECTED AS RETURN DATA", expectedData)
-                    // } else {
-                        // expectedData = input.expected ? input.expected 
-                        // : (Array.isArray(testCase.expected) && testCase.expected.length === 1) ? (testCase.expected[0] as Extended).return_data
-                        // : testCase.expected;
-                        const expectedData = input.expected ? input.expected : testCase.expected;
-                        // let method = input.method;
-                    // }
-            
-                    console.log("EXPECTED IS---", expectedData)
-                    // const expectedData = input.expected ? input.expected : input.expected.return_data ? (input.expected as unknown as Extended).return_data[0]: testCase.expected;
+                    const expectedData = input.expected ? input.expected : testCase.expected;
                     let method = input.method;
 
                     // catch deployer cases with no args
@@ -356,7 +343,9 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         let decoder = new ethers.AbiCoder()
                                         let res = await contract[method].staticCall(...calldata);
 
-                                        expect(decoder.encode(['uint256'], expectedData.return_data), decoder.encode(['uint256'], [res]))
+                                        expect(decoder.encode(['uint256'], expectedData.return_data)).to.eq(decoder.encode(['uint256'], [res]))
+                                        processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, res.toString())
+                                        continue;
                                     }
 
                                     // expectedData events
@@ -423,7 +412,6 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                                 || (!Array.isArray(calldata[0]) && !methodInputIsArray)
                                             ) {
                                                 res = await contract[method].staticCall(calldata[0]);
-                                                console.log("RES---", res)
                                             } else if (methodInputIsArray) {
                                                 res = await contract[method].staticCall(calldata);
                                             }
@@ -447,7 +435,7 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                     if (expectedData.exception) {
                                         let err;
                                         try {
-                                            await expect(contract[method]()).to.be.reverted;
+                                            await contract[method]()
                                         } catch (error) {
                                             err = error;
                                         }
@@ -456,8 +444,11 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                         processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, (err as Error).toString());
                                         continue;
                                     } else {       
-                                        // non exception method      
-                                        res = await contract[method]()
+                                        // non exception method with return_data  
+                                        if (method === "set") {
+                                            await contract[method](); // call set contract data
+                                        } 
+                                        res = await contract[method].staticCall(); // get set return result  
                                     }
 
                                     // events
@@ -553,7 +544,12 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                             if (txOptions.value) {
                                                 expect(res).to.eq(expectedData[0]);
                                             } else if (expectedData.length === 1) {
-                                                expect(parseInt(res)).eq(parseInt(expectedData[0].toString()));
+                                                if ((expectedData as unknown as [{return_data: string[]}])[0].return_data) {
+                                                    const return_data = (expectedData as unknown as [{return_data: string[]}])[0].return_data
+                                                    expect(parseInt(res)).eq(parseInt(return_data[0]));
+                                                } else {
+                                                    expect(parseInt(res)).eq(parseInt(expectedData[0].toString()));
+                                                }
                                             } else {
                                                 expect(res.toString()).eq(expectedData.toString());
                                             }
@@ -563,8 +559,11 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                                 }
                             } else {
                                 if (expectedData.return_data) {
-                                    console.log("THIS IS FOR 264")
-                                    expect(res).eq(expectedData.return_data[0])
+                                    if (Array.isArray(res) && res.length === expectedData.return_data.length) {
+                                        expect(res).deep.eq(expectedData.return_data);
+                                    } else {
+                                        expect(res).eq(expectedData.return_data[0]);
+                                    }
                                 } else if (!expectedData.exception && !expectedData.events && !expectedData.return_data) {
                                     expect(res).eq(expectedData);
                                 }
@@ -572,12 +571,11 @@ const runContractTests = async (metadata: Metadata, filePath: string, failedTest
                             
                             const result = res != undefined ? res.toString() : undefined;
                             processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, result)
-                            // passedTests.push({filePath, method, inputs, expected: expectedData, result});
                         } catch(err) {
                             if (
-                                JSON.stringify(err).includes("value out-of-bounds")
-                                || JSON.stringify(err).includes("expected undefined to be an error")
-                                || JSON.stringify(err).includes("invalid length for result data")
+                               (err as Error).toString().includes("value out-of-bounds")
+                                || (err as Error).toString().includes("expected undefined to be an error")
+                                || (err as Error).toString().includes("invalid length for result data")
                             ) {
                                 console.log(`Skipped ${testCaseName} from ${filePath}`);
                                 skippedTests.push({filePath, testCaseName, method, inputs, result: (err as Error).toString()});

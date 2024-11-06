@@ -19,7 +19,8 @@ const config: HardhatUserConfig = {
       'contracts/internal_function_pointers/legacy/invalidInConstructor.sol': {version: '0.4.21'},
       'contracts/internal_function_pointers/legacy/invalidStoredInConstructor.sol': {version: '0.4.21'},
       'contracts/internal_function_pointers/legacy/store2.sol': {version: '0.4.21'},
-      'contracts/internal_function_pointers/legacy/storeInConstructor.sol': {version: '0.4.21'}
+      'contracts/internal_function_pointers/legacy/storeInConstructor.sol': {version: '0.4.21'},
+      'contracts/system/difficulty_returndata.sol': {version: '0.8.17'}
     },
     settings: {
       viaIR: true,

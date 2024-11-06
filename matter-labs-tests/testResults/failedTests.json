@@ -1,1 +1,1 @@
-{"NumFailed":1,"failedTests":[{"filePath":"contracts/simple_casting.sol","testCaseName":"second","method":"second","inputs":["11"],"result":"AssertionError: expected 264 to equal NaN"}]}
+{"NumFailed":0,"failedTests":[]}
