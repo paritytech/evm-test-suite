@@ -4,84 +4,38 @@ chain=$1
 url=$2
 tests=$3
 
-run_matter_labs_tests()
-{
-    yarn install &&
+run_matter_labs_tests() {
+  yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
     npx hardhat test ./test/MatterLabsTests.ts &&
-    
     echo "Test Run Complete"
 }
 
-run_smart_contracts_tests()
-{
-  echo "Setting Up Foundry" &&
-  curl -L https://foundry.paradigm.xyz | bash &&
-  case "$SHELL" in
-    */bash)
-        source ~/.bashrc
-        ;;
-    */zsh)
-        source ~/.zshenv
-        ;;
-    *)
-        echo "Unknown shell: $SHELL"
-        ;;
-  esac &&
+run_smart_contracts_tests() {
+  if ! command -v forge >/dev/null 2>&1; then
+    echo "Setting Up Foundry..."
 
-  foundryup &&
-  
-  yarn install &&
+    curl -L https://foundry.paradigm.xyz | bash
 
-  echo "Running Smart Contract V3 Tests" &&
-  npx hardhat compile &&
-  npx hardhat test &&
-  cd ./v3-core/ &&
-  yarn install &&
-  yarn compile &&
-  yarn test &&
-
-  echo "Running Smart Contract Periphery Tests" &&
-  cd ../v3-periphery/ &&
-  yarn install &&
-  yarn compile &&
-  yarn test &&
-
-  echo "Running Smart Contract CCTP Tests" &&
-  cd ../evm-cctp-contracts/ &&
-  git submodule update --init --recursive &&
-  yarn install &&
-  forge test --rpc-url $NETWORK_URL+$PRIVATE_KEY --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller | testReplaceMessage_succeeds | testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage | testSetMaxMessageBodySize | testDepositForBurnWithCaller_returnsNonzeroNonce | testDepositForBurnWithCaller_succeeds | testHandleReceiveMessage_succeedsForMint" &&
-
-  echo "Test Run Complete"
-}
-
-run_matter_labs_and_then_smart_contracts_tests()
-{
-    yarn install &&
-    
-    echo "Running Matter Labs EVM Tests" &&
-    cd ./matter-labs-tests/ &&
-    npx hardhat test ./test/MatterLabsTests.ts &&
-    .. &&
-
-    echo "Setting Up Foundry" &&
-    curl -L https://foundry.paradigm.xyz | bash &&
     case "$SHELL" in
-      */bash)
-          source ~/.bashrc &&
-          ;;
-      */zsh)
-          source ~/.zshenv &&
-          ;;
-      *)
-          echo "Unknown shell: $SHELL" &&
-          ;;
+    */bash)
+      source ~/.bashrc
+      ;;
+    */zsh)
+      source ~/.zshenv
+      ;;
+    *)
+      echo "Unknown shell: $SHELL"
+      ;;
     esac
 
-    foundryup &&
+    foundryup
+  else
+    echo "Foundry is already installed. Skipping installation."
+  fi
 
+  yarn install &&
     echo "Running Smart Contract V3 Tests" &&
     npx hardhat compile &&
     npx hardhat test &&
@@ -89,52 +43,96 @@ run_matter_labs_and_then_smart_contracts_tests()
     yarn install &&
     yarn compile &&
     yarn test &&
-
     echo "Running Smart Contract Periphery Tests" &&
     cd ../v3-periphery/ &&
     yarn install &&
     yarn compile &&
     yarn test &&
+    echo "Running Smart Contract CCTP Tests" &&
+    cd ../evm-cctp-contracts/ &&
+    git submodule update --init --recursive &&
+    yarn install &&
+    forge test --rpc-url $NETWORK_URL+$PRIVATE_KEY --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller | testReplaceMessage_succeeds | testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage | testSetMaxMessageBodySize | testDepositForBurnWithCaller_returnsNonzeroNonce | testDepositForBurnWithCaller_succeeds | testHandleReceiveMessage_succeedsForMint" &&
+    echo "Test Run Complete"
+}
 
+run_matter_labs_and_then_smart_contracts_tests() {
+  yarn install &&
+    echo "Running Matter Labs EVM Tests" &&
+    cd ./matter-labs-tests/ &&
+    npx hardhat test ./test/MatterLabsTests.ts &&
+    .. &&
+    if ! command -v forge >/dev/null 2>&1; then
+      echo "Setting Up Foundry..."
+
+      curl -L https://foundry.paradigm.xyz | bash
+
+      case "$SHELL" in
+      */bash)
+        source ~/.bashrc
+        ;;
+      */zsh)
+        source ~/.zshenv
+        ;;
+      *)
+        echo "Unknown shell: $SHELL"
+        ;;
+      esac
+
+      foundryup
+    else
+      echo "Foundry is already installed. Skipping installation."
+    fi
+
+  echo "Running Smart Contract V3 Tests" &&
+    npx hardhat compile &&
+    npx hardhat test &&
+    cd ./v3-core/ &&
+    yarn install &&
+    yarn compile &&
+    yarn test &&
+    echo "Running Smart Contract Periphery Tests" &&
+    cd ../v3-periphery/ &&
+    yarn install &&
+    yarn compile &&
+    yarn test &&
     echo "Running Smart Contract CCTP Tests" &&
     cd ../evm-cctp-contracts/ &&
     git submodule update --init --recursive &&
     yarn install &&
     forge build &&
     forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller | testReplaceMessage_succeeds | testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage | testSetMaxMessageBodySize | testDepositForBurnWithCaller_returnsNonzeroNonce | testDepositForBurnWithCaller_succeeds | testHandleReceiveMessage_succeedsForMint" &&
-
     echo "Test Run Complete"
 }
 
-
 case "$chain" in
-  --acala)
-    export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
-    ;;
-  --ethereum)
-    export NETWORK_URL="http://localhost:8545"
-    ;;
-  --moonbeam)
-    export NETWORK_URL="https://moonbeam.public.blastapi.io"
-    ;;
-  --astar)
-    export NETWORK_URL="https://rpc.astar.network"
-    ;;
-  --polygon)
-    export NETWORK_URL="https://polygon-mainnet.infura.io/v3/${PRIVATE_KEY}"
-    ;;
-  --westend)
-    export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io/"
-    ;;
-  --arbitrum)
-    export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/${PRIVATE_KEY}"
-    ;;
-  --endpoint | -e)
-    export NETWORK_URL="$2"
-    ;;
-  *)
-    export NETWORK_URL="https://ethereum-rpc.publicnode.com"
-    ;;
+--acala)
+  export NETWORK_URL="https://eth-rpc-acala.aca-api.network"
+  ;;
+--ethereum)
+  export NETWORK_URL="http://localhost:8545"
+  ;;
+--moonbeam)
+  export NETWORK_URL="https://moonbeam.public.blastapi.io"
+  ;;
+--astar)
+  export NETWORK_URL="https://rpc.astar.network"
+  ;;
+--polygon)
+  export NETWORK_URL="https://polygon-mainnet.infura.io/v3/${PRIVATE_KEY}"
+  ;;
+--westend)
+  export NETWORK_URL="https://westend-asset-hub-eth-rpc.polkadot.io/"
+  ;;
+--arbitrum)
+  export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/${PRIVATE_KEY}"
+  ;;
+--endpoint | -e)
+  export NETWORK_URL="$2"
+  ;;
+*)
+  export NETWORK_URL="https://ethereum-rpc.publicnode.com"
+  ;;
 esac
 
 echo $chain
@@ -146,7 +144,7 @@ if [ "$chain" = '--ethereum' ]; then
 fi
 
 if [ "$chain" = '--ethereum' ]; then
-  if [ "$tests" = '--matter-labs' ]; then 
+  if [ "$tests" = '--matter-labs' ]; then
     run_matter_labs_tests
     sleep 1
     kill -9 $(lsof -t -i:30304)
@@ -156,7 +154,7 @@ if [ "$chain" = '--ethereum' ]; then
     sleep 1
     kill -9 $(lsof -t -i:30304)
     echo "Geth Ethereum Node Stopped"
-  else 
+  else
     run_matter_labs_and_then_smart_contracts_tests
     sleep 1
     kill -9 $(lsof -t -i:30304)
