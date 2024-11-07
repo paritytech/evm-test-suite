@@ -20,3 +20,6 @@ ignition/deployments/chain-31337
 
 # networks
 networks/ethereum/node1/*
+
+# Tests logs
+test-logs
