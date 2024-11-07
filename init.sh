@@ -16,9 +16,9 @@ run_matter_labs_tests() {
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/contracts &&
     git submodule update --init --recursive &&
-    TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
-    npx hardhat test ./test/MatterLabsTests.ts | tee "$TEST_LOG"
-  parse_hardhat_test_results "$LOG_DIR/matter-labs-tests.log"
+    TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
+    npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
+  parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
 }
 
 run_smart_contracts_tests() {

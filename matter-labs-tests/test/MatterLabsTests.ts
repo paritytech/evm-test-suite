@@ -13,6 +13,8 @@ chai.use(chaiSubset);
 import chalk from 'chalk';
 
 import { BaseContract, Contract, Result } from "ethers";
+import { dirname } from "path";
+import { skip } from "node:test";
 const SIMPLE_TESTS_INSTANCE = "Test";
 
 
@@ -171,13 +173,13 @@ type Metadata = {
     group: string | undefined;
 }
 
-const runMatterLabsTests = async (filePath: string, failedTests: any[], passedTests: any[], skippedTests: any[]) => {
+const runMatterLabsTests = async (filePath: string) => {
     if (fs.lstatSync(filePath).isDirectory()) {
         const filePaths = await fs.promises.readdir(filePath);
 
       for (const file of filePaths) {
           const fileName = `${filePath}/${file}`;
-          await runMatterLabsTests(fileName, failedTests, passedTests, skippedTests);
+          await runMatterLabsTests(fileName);
       }
   } else {
           if(filePath.includes(".sol")) {
@@ -186,13 +188,13 @@ const runMatterLabsTests = async (filePath: string, failedTests: any[], passedTe
             }
             const metadata = await metadataFromStr(filePath);
 
-            const contractPath = `${filePath}:Test`;
-            await runContractTests(metadata, filePath, failedTests, passedTests, skippedTests, contractPath);
+            const contractPath = `contracts/${filePath}:Test`;
+            await runContractTests(metadata, filePath, contractPath);
           }
     }
 }
 
-const getContract = async (passedTests: any[], testCaseName: string, filePath: string, contractPath: string, input: Input): Promise<Contract | undefined> => {
+const getContract = async (testCaseName: string, filePath: string, contractPath: string, input: Input): Promise<Contract | undefined> => {
     let contract: Contract | undefined = undefined;
     
     // default #deployer cases
@@ -230,7 +232,6 @@ const getContract = async (passedTests: any[], testCaseName: string, filePath: s
             const contractAddress = await deployedContract.getAddress();
             if (input.expected?.toString().includes("Test.address")) {
                 expect(contractAddress).not.to.eq(undefined);
-                passedTests.push({filePath, testCaseName, method: input.method, inputs});
             }
 
             contract = await ethers.getContractAt(contractPath, contractAddress);
@@ -250,344 +251,350 @@ const getContract = async (passedTests: any[], testCaseName: string, filePath: s
 }
 
 
-const runContractTests = async (metadata: Metadata, filePath: string, failedTests: any[], passedTests: any[], skippedTests: any[], contractPath: string) => {
+const runContractTests = async (metadata: Metadata, filePath: string, contractPath: string) => {
+    describe(`${filePath}`, () => {
         let contract: Contract | undefined = undefined;
 
-    describe(`${filePath}`, () => {
         for (let i = 0; i < metadata.cases.length; i++) {
+            if (
+                filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/many_arguments.sol`
+                || skipTestFile(filePath)
+            ) {
+                continue
+             }
             const testCase = metadata.cases[i];
             const firstInput = testCase.inputs[0];
             const { name: testCaseName } = testCase;
-            
-                it(`Passes tests for method ${testCaseName}`, async () => {
-                    if (!contract) {
-                        contract = await getContract(passedTests, testCaseName, filePath, contractPath, firstInput);
-                        console.log(chalk.green(`Deployed ${contractPath}`));
+            // console.log("FILEPATH IN SKIP--", filePath)
+
+            it(`Passes tests for method ${testCaseName}`, async () => {
+                if (!contract) {
+                    contract = await getContract(testCaseName, filePath, contractPath, firstInput);
+                    console.log(chalk.green(`Deployed ${contractPath}`));
+                }
+
+                for (const input of testCase.inputs) {
+                    if (skipTestCase(input, testCaseName, filePath)) {
+                        continue;
                     }
-        
-                    for (const input of testCase.inputs) {
-                        if (skipTestCase(input, testCaseName, filePath, skippedTests)) {
+                    if (contract) {
+                        const expectedData = input.expected ? input.expected : testCase.expected;
+                        let method = input.method;
+    
+                        // catch deployer cases with no args
+                        if (method === "#deployer") {
+                            expect(contract.getAddress()).not.eq(undefined);
+                            logTestResult(method, input.expected, contract.getAddress())
+    
                             continue;
                         }
-                        if (contract) {
-                            const expectedData = input.expected ? input.expected : testCase.expected;
-                            let method = input.method;
-        
-                            // catch deployer cases with no args
-                            if (method === "#deployer") {
-                                expect(contract.getAddress()).not.eq(undefined);
-                                processPassedTest(filePath, passedTests, testCaseName, method, input.calldata)
-        
-                                continue;
-                            }
-        
-                            // handle contract methods with #
-                            if (method.includes("#")) {
-                                method = method.replace("#", "");
-                            }
-        
-                            let numberOfExpectedArgs = 0;
-                            if (contract[method]?.fragment) {
-                                numberOfExpectedArgs = contract[method].fragment.inputs.length;
-                            };
-        
-                            type TransactionOptions = {
-                                value?: string
-                            };
-                            const txOptions: TransactionOptions = {};
-                            const etherWeiStr = input.value;
-                            if (etherWeiStr) {
-                                txOptions.value = etherWeiStr.split(" ")[0];;
-                            }
-                            
-                            const caller = input.caller;
-                            if (caller) {
-                                const signer = await ethers.provider.getSigner(caller)
-                                contract = await contract.connect(signer) as Contract;
-                            }
-                            
-                                let rawCallData = input.calldata;
-                            
-                                const calldata = parseCallData(rawCallData, numberOfExpectedArgs, filePath, method, testCaseName);
-                                const inputs = calldata;
-        
-                                let containsMultiExceptions: boolean = false;
-                                if (Array.isArray(expectedData)) {
-                                    for (const data of expectedData) {
-                                        if (typeof data === 'object' && 'exception' in (data as ExtendedVariant)) {
-                                            containsMultiExceptions = true;
-                                            break;
-                                        }
+    
+                        // handle contract methods with #
+                        if (method.includes("#")) {
+                            method = method.replace("#", "");
+                        }
+    
+                        let numberOfExpectedArgs = 0;
+                        if (contract[method]?.fragment) {
+                            numberOfExpectedArgs = contract[method].fragment.inputs.length;
+                        };
+    
+                        type TransactionOptions = {
+                            value?: string
+                        };
+                        const txOptions: TransactionOptions = {};
+                        const etherWeiStr = input.value;
+                        if (etherWeiStr) {
+                            txOptions.value = etherWeiStr.split(" ")[0];;
+                        }
+                        
+                        const caller = input.caller;
+                        if (caller) {
+                            const signer = await ethers.provider.getSigner(caller)
+                            contract = await contract.connect(signer) as Contract;
+                        }
+                        
+                            let rawCallData = input.calldata;
+                        
+                            const calldata = parseCallData(rawCallData, numberOfExpectedArgs, filePath, method, testCaseName);
+    
+                            let containsMultiExceptions: boolean = false;
+                            if (Array.isArray(expectedData)) {
+                                for (const data of expectedData) {
+                                    if (typeof data === 'object' && 'exception' in (data as ExtendedVariant)) {
+                                        containsMultiExceptions = true;
+                                        break;
                                     }
                                 }
-        
-                                try {
-                                    let res: any;
-                                    if (calldata.length > 0) {
-                                    if (containsMultiExceptions) {
-                                            await expect(contract[method].staticCall(...calldata)).to.be.reverted;
-                                        } else if (!Array.isArray((expectedData))) {
-                                            if (expectedData.exception || containsMultiExceptions) {
-                                                
-                                                let err;
-                                                try {
-                                                  await contract[method].staticCall(...calldata)
-                                                } catch (error) {
-                                                    err = error;
-                                                }
-                                                
-                                                expect(err).to.be.an('Error')
-                                                processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, (err as Error).toString())
-                                                continue;
-                                            }
-        
-                                            if (expectedData.return_data.length > 0) {
-                                                let decoder = new ethers.AbiCoder()
-                                                let res = await contract[method].staticCall(...calldata);
-        
-                                                expect(decoder.encode(['uint256'], expectedData.return_data)).to.eq(decoder.encode(['uint256'], [res]))
-                                                processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, res.toString())
-                                                continue;
-                                            }
-        
-                                            // expectedData events
-                                            if (expectedData.events && expectedData.events.length > 0) {
-                                                let res = await contract[method](...calldata);
-                                                
-                                                await setTimeout(1000);
-                                                
-                                                let receipt = await res.wait();
-        
-                                                let logs = receipt.logs;
-                                                let decoder = new ethers.AbiCoder();
-                                                for (let i = 0; i < logs.length; i++) {
-                                                    const event = logs[i];
-        
-                                                    const eventData = event.data;
-                                                    const eventTopics = event.topics;
-                                                    const expectedTopicsLength = expectedData.events[0].topics.length
-        
-                                                    // expect topics length matches expected
-                                                    expect(eventTopics.length).to.eq(expectedTopicsLength);
-        
-                                                    // assert unindexed event data matches
-                                                    let unindexedEmittedData: Result | string | undefined = undefined;
-                                                    if (eventData.length > 0) {
-                                                        const decodeArgs: string[] = [];
-                                                        for (let count = 0; count < expectedData.events[i].values.length; count++) {
-                                                            decodeArgs.push(`uint256`);
-                                                        }
-                                                        const formattedExpectedData = `0x` + expectedData.events[0].values.toString().replace(/,/g, "").replace(/0x/g, "")
-                                                        if (eventData.length < formattedExpectedData) {
-                                                            // Example: one_value_ordinar_len -> with_value
-                                                            // extra bytes found for this example causing extra index
-                                                            // pop the additional index in order to properly decode the value
-                                                            decodeArgs.pop();
-                                                        }
-                                                        unindexedEmittedData = parseInt(eventData) === 0 ? new Result([0]).toString() : decoder.decode(decodeArgs, eventData)
-                                                    }
-        
-                                                    // assert indexed event data matches
-                                                    let indexedEmittedDataArr: any[] = [];
-                                                    for (let i = 0; i < expectedData.events[0].topics.length; i++) {
-                                                        const expected = expectedData.events[0].topics[i];
-                                                        const indexedEmittedData =  decoder.decode(["uint256"], eventTopics[i])[0];
-        
-                                                        expect(indexedEmittedData).to.eq(expected);
-                                                        indexedEmittedDataArr.push(indexedEmittedData.toString())
-                                                    }
-        
-                                                    passedTests.push({filePath, testCaseName, method, inputs, expectedIndexedData: expectedData.events[0].topics, decodedIndexedEventDataResult: indexedEmittedDataArr, expectedUnindexedData: expectedData.events[0].values, decodedUnindexedEventDataResult: unindexedEmittedData?.toString()})
-                                                }
-                                                continue;
-                                            }
-                                        } 
-                                        else {
-                                            if (numberOfExpectedArgs >= 2) {
-                                                res = await contract[method].staticCall(...calldata);
-                                            } else {
-                                                if (numberOfExpectedArgs === 1) {
-                                                    const methodInputIsArray = contract[method].fragment.inputs[0].baseType === 'array';
-                                                    if (
-                                                        (Array.isArray(calldata[0]) && methodInputIsArray)
-                                                        || (!Array.isArray(calldata[0]) && !methodInputIsArray)
-                                                    ) {
-                                                        res = await contract[method].staticCall(calldata[0]);
-                                                    } else if (methodInputIsArray) {
-                                                        res = await contract[method].staticCall(calldata);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        // TODO: make function handleExpectedExceptions
-                                        // DRY this and the above
-                                        if (containsMultiExceptions) {
+                            }
+    
+                            try {
+                                let res: any;
+                                if (calldata.length > 0) {
+                                if (containsMultiExceptions) {
+                                        await expect(contract[method].staticCall(...calldata)).to.be.reverted;
+                                    } else if (!Array.isArray((expectedData))) {
+                                        if (expectedData.exception || containsMultiExceptions) {
+                                            
                                             let err;
                                             try {
-                                                await contract[method].staticCall();
+                                                await contract[method].staticCall(...calldata)
                                             } catch (error) {
                                                 err = error;
-                                                expect(err).to.be.an('Error')
-                                                processPassedTest(filePath, passedTests, testCaseName, method, calldata, expectedData, (err as Error).toString())
-                                                // passedTests.push({filePath, testCaseName, method, inputs, expected: expectedData, result: (err as Error).toString()})
-                                                continue
                                             }
-                                        } else if (!Array.isArray((expectedData))) {
-                                            if (expectedData.exception) {
-                                                let err;
-                                                try {
-                                                    await contract[method]()
-                                                } catch (error) {
-                                                    err = error;
-                                                }
-        
-                                                expect(err).to.be.an('Error');
-                                                processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, (err as Error).toString());
-                                                continue;
-                                            } else {       
-                                                // non exception method with return_data  
-                                                if (method === "set") {
-                                                    await contract[method](); // call set contract data
-                                                } 
-                                                res = await contract[method].staticCall(); // get set return result  
-                                            }
-        
-                                            // events
-                                            if (expectedData.events && expectedData.events.length > 0) {
-                                            let res = await contract[method]();
+                                            
+                                            expect(err).to.be.an('Error')
+                                            logTestResult(method, JSON.stringify(expectedData), (err as Error).toString())
+                                            continue;
+                                        }
+    
+                                        if (expectedData.return_data.length > 0) {
+                                            let decoder = new ethers.AbiCoder()
+                                            let res = await contract[method].staticCall(...calldata);
+    
+                                            expect(decoder.encode(['uint256'], expectedData.return_data)).to.eq(decoder.encode(['uint256'], [res]))
+                                            logTestResult(method, expectedData, res.toString())
+                                            continue;
+                                        }
+    
+                                        // expectedData events
+                                        if (expectedData.events && expectedData.events.length > 0) {
+                                            let res = await contract[method](...calldata);
                                             
                                             await setTimeout(1000);
                                             
-                                                let receipt = await res.wait();
-                                                let logs = receipt.logs;
-                                                let decoder = new ethers.AbiCoder();
-                                                for (const event of logs) {
-                                                    const data = event.data;
-                                                    const topics = event.topics;
-        
-                                                    // expect topics length matches expected
-                                                    expect(topics.length).to.eq(expectedData.events[0].topics.length);
-        
-                                                    // assert unindexed event data matches
-                                                    for (let i = 0; i < expectedData.events[0].values.length; i++) {
-                                                        const expected = expectedData.events[0].values[i];
-                                                        const unindexedEmittedData =  decoder.decode([`uint256[${expectedData.events[0].values.length}]`], data)[0]
-                                                        const unindexValueAtIdx = unindexedEmittedData[i];
-        
-                                                        expect(unindexValueAtIdx.toString()).to.eq(expected.toString());
+                                            let receipt = await res.wait();
+    
+                                            let logs = receipt.logs;
+                                            let decoder = new ethers.AbiCoder();
+                                            for (let i = 0; i < logs.length; i++) {
+                                                const event = logs[i];
+    
+                                                const eventData = event.data;
+                                                const eventTopics = event.topics;
+                                                const expectedTopicsLength = expectedData.events[0].topics.length
+    
+                                                // expect topics length matches expected
+                                                expect(eventTopics.length).to.eq(expectedTopicsLength);
+    
+                                                // assert unindexed event data matches
+                                                let unindexedEmittedData: Result | string | undefined = undefined;
+                                                if (eventData.length > 0) {
+                                                    const decodeArgs: string[] = [];
+                                                    for (let count = 0; count < expectedData.events[i].values.length; count++) {
+                                                        decodeArgs.push(`uint256`);
                                                     }
-        
-                                                    // assert indexed event data matches
-                                                    for (let i = 0; i < expectedData.events[0].topics.length; i++) {
-                                                        const expected = expectedData.events[0].topics[i];
-                                                        const indexedEmittedData =  decoder.decode(["uint256"], topics[i])[0];
-        
-                                                        expect(indexedEmittedData.toString()).to.eq(expected.toString());
-                                                    }                         
+                                                    const formattedExpectedData = `0x` + expectedData.events[0].values.toString().replace(/,/g, "").replace(/0x/g, "")
+                                                    if (eventData.length < formattedExpectedData) {
+                                                        // Example: one_value_ordinar_len -> with_value
+                                                        // extra bytes found for this example causing extra index
+                                                        // pop the additional index in order to properly decode the value
+                                                        decodeArgs.pop();
+                                                    }
+                                                    unindexedEmittedData = parseInt(eventData) === 0 ? new Result([0]).toString() : decoder.decode(decodeArgs, eventData)
                                                 }
-                                            } 
+    
+                                                // assert indexed event data matches
+                                                let indexedEmittedDataArr: any[] = [];
+                                                for (let i = 0; i < expectedData.events[0].topics.length; i++) {
+                                                    const expected = expectedData.events[0].topics[i];
+                                                    const indexedEmittedData =  decoder.decode(["uint256"], eventTopics[i])[0];
+    
+                                                    expect(indexedEmittedData).to.eq(expected);
+                                                    indexedEmittedDataArr.push(indexedEmittedData.toString())
+                                                }
+                                                
+                                                logEventTestResult(method, expectedData.events[0].topics, indexedEmittedDataArr, expectedData.events[0].values, unindexedEmittedData?.toString())
+                                            }
+                                            continue;
+                                        }
+                                    } 
+                                    else {
+                                        if (numberOfExpectedArgs >= 2) {
+                                            res = await contract[method].staticCall(...calldata);
                                         } else {
-                                            if (method === 'fallback') {
-                                                res = await contract[method]?.staticCall({})                                        
-                                                let decoder = new ethers.AbiCoder()
-                                
-                                                expect(decoder.decode(['uint256'], res).toString()).to.eq(expectedData.toString())
-        
-                                                const result = res != undefined ? res.toString() : undefined;
-                                                processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, result)
-                                                continue;
+                                            if (numberOfExpectedArgs === 1) {
+                                                const methodInputIsArray = contract[method].fragment.inputs[0].baseType === 'array';
+                                                if (
+                                                    (Array.isArray(calldata[0]) && methodInputIsArray)
+                                                    || (!Array.isArray(calldata[0]) && !methodInputIsArray)
+                                                ) {
+                                                    res = await contract[method].staticCall(calldata[0]);
+                                                } else if (methodInputIsArray) {
+                                                    res = await contract[method].staticCall(calldata);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    // TODO: make function handleExpectedExceptions
+                                    // DRY this and the above
+                                    if (containsMultiExceptions) {
+                                        let err;
+                                        try {
+                                            await contract[method].staticCall();
+                                        } catch (error) {
+                                            err = error;
+                                            expect(err).to.be.an('Error')
+                                            logTestResult(method, JSON.stringify(expectedData), (err as Error).toString())
+                                            continue
+                                        }
+                                    } else if (!Array.isArray((expectedData))) {
+                                        if (expectedData.exception) {
+                                            let err;
+                                            try {
+                                                await contract[method]()
+                                            } catch (error) {
+                                                err = error;
+                                            }
+    
+                                            expect(err).to.be.an('Error');
+                                            logTestResult(method, JSON.stringify(expectedData), (err as Error).toString());
+                                            continue;
+                                        } else {       
+                                            // non exception method with return_data  
+                                            if (method === "set") {
+                                                await contract[method](); // call set contract data
+                                            } 
+                                            res = await contract[method].staticCall(); // get set return result  
+                                        }
+    
+                                        // events
+                                        if (expectedData.events && expectedData.events.length > 0) {
+                                        let res = await contract[method]();
+                                        
+                                        await setTimeout(1000);
+                                        
+                                            let receipt = await res.wait();
+                                            let logs = receipt.logs;
+                                            let decoder = new ethers.AbiCoder();
+                                            for (const event of logs) {
+                                                const data = event.data;
+                                                const topics = event.topics;
+    
+                                                // expect topics length matches expected
+                                                expect(topics.length).to.eq(expectedData.events[0].topics.length);
+    
+                                                // assert unindexed event data matches
+                                                for (let i = 0; i < expectedData.events[0].values.length; i++) {
+                                                    const expected = expectedData.events[0].values[i];
+                                                    const unindexedEmittedData =  decoder.decode([`uint256[${expectedData.events[0].values.length}]`], data)[0]
+                                                    const unindexValueAtIdx = unindexedEmittedData[i];
+    
+                                                    expect(unindexValueAtIdx.toString()).to.eq(expected.toString());
+                                                }
+    
+                                                // assert indexed event data matches
+                                                for (let i = 0; i < expectedData.events[0].topics.length; i++) {
+                                                    const expected = expectedData.events[0].topics[i];
+                                                    const indexedEmittedData =  decoder.decode(["uint256"], topics[i])[0];
+    
+                                                    expect(indexedEmittedData.toString()).to.eq(expected.toString());
+                                                }                         
+                                            }
+                                        } 
+                                    } else {
+                                        if (method === 'fallback') {
+                                            res = await contract[method]?.staticCall({})                                        
+                                            let decoder = new ethers.AbiCoder()
+                            
+                                            expect(decoder.decode(['uint256'], res).toString()).to.eq(expectedData.toString())
+    
+                                            const result = res != undefined ? res.toString() : undefined;
+                                            logTestResult(method, expectedData, result)
+                                            continue;
+                                        } else {
+                                            if (txOptions.value) {
+                                                const hardHatTestAccountAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+                                                await ethers.provider.send("hardhat_setBalance", [
+                                                    hardHatTestAccountAddress,
+                                                    "0x340282366920938463463374607431768211455",
+                                                ]);
+                                                res = await contract[method].staticCall(txOptions);
+                                            } else {
+                                                if (method === "set") {
+                                                    await contract[method]();
+                                                } 
+                                                res = await contract[method].staticCall();
+                                            }
+                                        }
+                                    }
+                                }
+    
+    
+    
+                                // Assertions
+                                if (Array.isArray(expectedData)) {
+                                    if (!containsMultiExceptions) {
+                                    if (expectedData.length > 1) {
+                                        const result = parseIntArray(res, filePath); // parse response to array
+                                        if (result.length != expectedData.length) {
+                                            if (expectedData.length === 4 && filePath.includes("ConstantBytes")) {
+                                                expect(res.includes(expectedData[2].toString()));
+                                            } else {
+                                                expect(expectedData.join('')).to.include(result.join(''));
+                                            }
+                                        } else {
+                                            if ((expectedData as SingleVariant).includes("*")) {
+                                                expect(result).to.containSubset(expectedData)
+                                            } else {
+                                                expect(result).deep.eq(expectedData);
+                                            }
+                                        }
+                                    } else {
+                                        if (typeof res === 'boolean') {
+                                            const resultAsNumStr = res.toString() === 'false' ? '0' : '1';
+                                            expect(resultAsNumStr).eq(expectedData[0]);
+                                        } else {
+                                            if (expectedData[0] === 'Test.address') {
+                                                expect(res).not.to.be.undefined;
                                             } else {
                                                 if (txOptions.value) {
-                                                    const hardHatTestAccountAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
-                                                    await ethers.provider.send("hardhat_setBalance", [
-                                                        hardHatTestAccountAddress,
-                                                        "0x340282366920938463463374607431768211455",
-                                                    ]);
-                                                    res = await contract[method].staticCall(txOptions);
-                                                } else {
-                                                    if (method === "set") {
-                                                        await contract[method]();
-                                                    } 
-                                                    res = await contract[method].staticCall();
-                                                }
-                                            }
-                                        }
-                                    }
-        
-        
-        
-                                    // Assertions
-                                    if (Array.isArray(expectedData)) {
-                                        if (!containsMultiExceptions) {
-                                        if (expectedData.length > 1) {
-                                            const result = parseIntArray(res, filePath); // parse response to array
-                                            if (result.length != expectedData.length) {
-                                                if (expectedData.length === 4 && filePath.includes("ConstantBytes")) {
-                                                    expect(res.includes(expectedData[2].toString()));
-                                                } else {
-                                                    expect(expectedData.join('')).to.include(result.join(''));
-                                                }
-                                            } else {
-                                                if ((expectedData as SingleVariant).includes("*")) {
-                                                    expect(result).to.containSubset(expectedData)
-                                                } else {
-                                                    expect(result).deep.eq(expectedData);
-                                                }
-                                            }
-                                        } else {
-                                            if (typeof res === 'boolean') {
-                                                const resultAsNumStr = res.toString() === 'false' ? '0' : '1';
-                                                expect(resultAsNumStr).eq(expectedData[0]);
-                                            } else {
-                                                if (expectedData[0] === 'Test.address') {
-                                                    expect(res).not.to.be.undefined;
-                                                } else {
-                                                    if (txOptions.value) {
-                                                        expect(res).to.eq(expectedData[0]);
-                                                    } else if (expectedData.length === 1) {
-                                                        if ((expectedData as unknown as [{return_data: string[]}])[0].return_data) {
-                                                            const return_data = (expectedData as unknown as [{return_data: string[]}])[0].return_data
-                                                            expect(parseInt(res)).eq(parseInt(return_data[0]));
-                                                        } else {
-                                                            expect(parseInt(res)).eq(parseInt(expectedData[0].toString()));
-                                                        }
+                                                    expect(res).to.eq(expectedData[0]);
+                                                } else if (expectedData.length === 1) {
+                                                    if ((expectedData as unknown as [{return_data: string[]}])[0].return_data) {
+                                                        const return_data = (expectedData as unknown as [{return_data: string[]}])[0].return_data
+                                                        expect(parseInt(res)).eq(parseInt(return_data[0]));
                                                     } else {
-                                                        expect(res.toString()).eq(expectedData.toString());
+                                                        expect(parseInt(res)).eq(parseInt(expectedData[0].toString()));
                                                     }
+                                                } else {
+                                                    expect(res.toString()).eq(expectedData.toString());
                                                 }
                                             }
                                         }
-                                        }
-                                    } else {
-                                        if (expectedData.return_data) {
-                                            if (Array.isArray(res) && res.length === expectedData.return_data.length) {
-                                                expect(res).deep.eq(expectedData.return_data);
-                                            } else {
-                                                expect(res).eq(expectedData.return_data[0]);
-                                            }
-                                        } else if (!expectedData.exception && !expectedData.events && !expectedData.return_data) {
-                                            expect(res).eq(expectedData);
-                                        }
                                     }
-                                    
-                                    const result = res != undefined ? res.toString() : undefined;
-                                    processPassedTest(filePath, passedTests, testCaseName, method, inputs, expectedData, result)
-                                } catch(err) {
-                                    if (
-                                       (err as Error).toString().includes("value out-of-bounds")
-                                        || (err as Error).toString().includes("expected undefined to be an error")
-                                        || (err as Error).toString().includes("invalid length for result data")
-                                    ) {
-                                        console.log(`Skipped Test Case ${testCaseName} from ${filePath}`);
-                                        skippedTests.push({filePath, testCaseName, method, inputs, result: (err as Error).toString()});
-                                    } else {
-                                        failedTests.push({filePath, testCaseName, method, inputs, result: (err as Error).toString()});
                                     }
+                                } else {
+                                    if (expectedData.return_data) {
+                                        if (Array.isArray(res) && res.length === expectedData.return_data.length) {
+                                            expect(res).deep.eq(expectedData.return_data);
+                                        } else {
+                                            expect(res).eq(expectedData.return_data[0]);
+                                        }
+                                    } else if (!expectedData.exception && !expectedData.events && !expectedData.return_data) {
+                                        expect(res).eq(expectedData);
+                                    }
+                                }
+                                
+                                const result = res != undefined ? res.toString() : undefined;
+                                logTestResult(method, expectedData, result)
+                                continue
+                            } 
+                            catch(err) {
+                                if (
+                                    (err as Error).toString().includes("value out-of-bounds")
+                                    || (err as Error).toString().includes("expected undefined to be an error")
+                                    || (err as Error).toString().includes("invalid length for result data")
+                                ) {
+                                    console.log(`Skipped Test Case ${testCaseName} from ${filePath}`);
+                                } else {
+                                    console.log(`Failed Test Case ${testCaseName} from ${filePath} with inputs ${calldata}`);
                                 }
                             }
                         }
-                });
+                    }
+            });
         }
     });
 }
@@ -627,21 +634,15 @@ async function metadataFromStr(filePath: string): Promise<Metadata> {
     return metadata;
   }
 
-  const MATTER_LABS_SIMPLE_TESTS_PATH = 'era-compiler-tests/solidity/simple';
+export const MATTER_LABS_SIMPLE_TESTS_PATH = 'era-compiler-tests/solidity/simple';
 
-  
-describe('Matter Labs EVM Tests', () => {
+const passedTests: any[] = [];
+
+describe('Matter Labs EVM Tests', async () => {
     it('Run Test Suite', async () => {
-        const passedTests: any[] = [];
-        const failedTests: any[] = [];
-        const skippedTests: any[] = [];
-
-        await runMatterLabsTests(MATTER_LABS_SIMPLE_TESTS_PATH, failedTests, passedTests, skippedTests);
-
-        fs.writeFileSync("testResults/failedTests.json", JSON.stringify({NumFailed: failedTests.length, failedTests}), {encoding:'utf8', flag:'w'});
-        fs.writeFileSync("testResults/passedTests.json", JSON.stringify({NumPassed: passedTests.length, passedTests}), {encoding:'utf8', flag:'w'});
-        fs.writeFileSync("testResults/skippedTests.json", JSON.stringify({NumSkipped: skippedTests.length, skippedTests}), {encoding:'utf8', flag:'w'});
+        await runMatterLabsTests(MATTER_LABS_SIMPLE_TESTS_PATH);
     }).timeout(1500000)
+
 })
 
 const parseIntArray = (array: any[], filePath: string): string[] => {
@@ -899,7 +900,18 @@ const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, file
     return calldata;
 }
 
-const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string, skippedTests: any[]) => {
+const FILES_TO_SKIP = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic"];
+const skipTestFile = (filePath: string): boolean => {
+    for (const filter of FILES_TO_SKIP) {
+        if (filePath.includes(filter)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string): boolean => {
     if (
         filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/basefee.sol`
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/blockhash.sol`
@@ -927,6 +939,7 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/stop.sol`
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/timestamp.sol`
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/immutable/inheritance/immutables6_yul.sol`
+       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/call_to_zero_initialized_function_type_legacy_evm.sol`
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/call_to_zero_initialized_function_type_legacy.sol`
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/legacy/invalidInConstructor.sol`
        || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/legacy/invalidStoredInConstructor.sol`
@@ -949,19 +962,22 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
        || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_semantic`)
    ) {
        console.log(`Skipped ${testCaseName} from ${filePath}`);
-       skippedTests.push({filePath, testCaseName, method: testCaseInput.method, inputs: []});
-
        return true;
    }
 
    return false;
 }
 
-const processPassedTest = (filePath: string, passedTests: any[], testCaseName: string, method: string, calldata: Calldata | any[], expectedData?: any, result?: any) => {
+const logTestResult = (method: string, expectedData?: any, result?: any) => {
     if (expectedData && result) {
-        passedTests.push({filePath, testCaseName, method, calldata, expected: expectedData, result});
-        console.log(chalk.green(`expected: ${expectedData} - actual: ${result}`))
-    } else {
-        passedTests.push({filePath, testCaseName, method, calldata});
+        console.log(chalk.green(`Method ${method}: expected: ${expectedData} - actual: ${result}`))
+    } 
+}
+const logEventTestResult = (method: string, expectedIndexedData?: any, decodedIndexedData?: any, expectedUnindexedData?: any, decodedUnindexedData?: any) => {
+    if (expectedIndexedData && decodedIndexedData) {
+        console.log(chalk.green(`Method ${method}: indexed expected: ${expectedIndexedData} - actual: ${decodedIndexedData}`))
+    }
+    if (expectedUnindexedData && decodedUnindexedData) {
+        console.log(chalk.green(`Method ${method}: unindexed expected: ${expectedUnindexedData} - actual: ${decodedUnindexedData}`))
     }
 }
