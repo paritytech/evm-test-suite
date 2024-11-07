@@ -41,6 +41,48 @@ This script will install the necessary packages and run the tests in order.
 The test logs will be saved to `/test-logs/`, in order to allow the user to review
 them after they are completed, since terminals may have a limited historical display.
 
+## Running locally
+
+### Install Dependencies
+
+Follow the instructions on [Installing Dependencies](https://wiki.polkadot.network/docs/build-guides-install-deps)
+from the Polkadot wiki up to the "Verifying Installation" section.
+
+### Clone the Polkadot SDK Repository
+
+Open your terminal and run the following commands to clone the Polkadot SDK repository:
+
+```bash
+git clone https://github.com/paritytech/polkadot-sdk
+
+```
+
+### Build and Run the Kitchensink Node
+
+To build and run the Kitchensink node, use the following command:
+
+```bash
+cd polkadot-sdk
+RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" cargo run --bin substrate-node -- --dev
+```
+
+### Build and Run Eth RPC Proxy
+
+This RPC proxy translates Ethereum-compatible requests into Substrate-compatible requests.
+
+It acts as a bridge between Ethereum tools, like MetaMask and Remix, and the Substrate based network, enabling Ethereum applications to interact seamlessly with Substrate based chains by interpreting Ethereum RPC calls and routing them to the appropriate Substrate functions. This way, developers can work with familiar Ethereum-based tools.
+
+Open another terminal window and navigate to the Eth RPC directory to start the Eth RPC node:
+
+```bash
+cd polkadot-sdk/substrate/frame/revive/rpc
+RUST_LOG="info,eth-rpc=debug" cargo run --bin eth-rpc -- --dev
+```
+
+### Run the tests
+
+Open a new terminal and run the script, setting `--kitchensink` as the chain.
+
 **NOTE**
 
 As things are now, running both suites at the same time will result in timeouts.
