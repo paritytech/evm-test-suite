@@ -4,19 +4,10 @@ Set of generic tests to check for chain compatibility. It covers higher level
 tests derived from Smart Contracts (such as Uniswap V3) and lower level testing inspired by [`Matter Labs`]
 (https://github.com/matter-labs).
 
-## Requirements
+## Execution
 
 This is a hybrid test suite that uses both [Hardhat](https://hardhat.org/) and
-[Foundry](https://book.getfoundry.sh/). In order to run the [CCTP tests](https://github.com/circlefin/evm-cctp-contracts),
-you need to first have Foundry installed. You can do that by running:
-
-```bash
-curl -L https://foundry.paradigm.xyz | bash
-```
-
-And then following the onscreen instructions.
-
-## Execution
+[Foundry](https://book.getfoundry.sh/).
 
 To run the tests, simply run the script `init.sh`:
 
@@ -26,9 +17,10 @@ To run the tests, simply run the script `init.sh`:
 
 Currently the available options for `CHAIN` to test against are:
 * `--acala`
-* `--moonbeam`
+* `--arbitrum`
 * `--astar`
 * `--ethereum`
+* `--moonbeam`
 * `--polygon`
 * `--westend`
 * `--endpoint` or `-e`
@@ -46,7 +38,18 @@ specifying the test will result in both suites being executed consecutively.
 
 This script will install the necessary packages and run the tests in order.
 
+The test logs will be saved to `/test-logs/`, in order to allow the user to review
+them after they are completed, since terminals may have a limited historical display.
+
 **NOTE**
 
 As things are now, running both suites at the same time will result in timeouts.
+
 Some tests are expected to fail, and being actively worked on.
+
+To run the tests with the default `--arbitrum` or `--polygon` options, you need
+to set the env variable `PRIVATE_KEY` with your Infura API key. 
+
+Tests take a while to run, and using the predetermined public endpoints may 
+result in them taking longer timeouts or being banned due to the amount of requests,
+so we highly recommend using the `-e` option.
