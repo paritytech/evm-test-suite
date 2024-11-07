@@ -133,29 +133,6 @@ run_matter_labs_and_then_smart_contracts_tests() {
   echo "Test Run Complete"
 }
 
-parse_matter_test_results() {
-  log_file=$1
-  passed=$(grep -o '[0-9]\+ passing' "$log_file" | grep -o 'Passed: [0-9]\+' "$log_file" | awk '{print $1}')
-  failed=$(grep -o '[0-9]\+ failing' "$log_file" | grep -o 'Failed: [0-9]\+' "$log_file" | awk '{print $1}')
-  
-  if [ -z "$passed" ]; then
-    passed=0
-  fi
-  
-  if [ -z "$failed" ]; then
-    failed=0
-  fi
-  
-  total=$((passed + failed))
-
-  total_passed=$((total_passed + passed))
-  total_failed=$((total_failed + failed))
-  total_tests=$((total_tests + total))
-
-  echo "Hardhat Test Summary from $log_file:"
-  echo "Total: $total | Passed: $passed | Failed: $failed"
-}
-
 parse_hardhat_test_results() {
   log_file=$1
   passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
