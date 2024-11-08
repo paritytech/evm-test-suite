@@ -200,6 +200,9 @@ case "$chain" in
 --arbitrum)
   export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/${PRIVATE_KEY}"
   ;;
+  --kitchensink)
+  export NETWORK_URL="http://localhost:8545"
+  ;;
 --endpoint | -e)
   export NETWORK_URL="$2"
   ;;
