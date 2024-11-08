@@ -12,9 +12,9 @@ LOG_DIR="./test-logs"
 mkdir -p $LOG_DIR
 
 run_matter_labs_tests() {
-  yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/contracts &&
+    yarn install &&
     git submodule update --init --recursive &&
     TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
     npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
@@ -74,9 +74,9 @@ run_smart_contracts_tests() {
 }
 
 run_matter_labs_and_then_smart_contracts_tests() {
-  yarn install &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/ &&
+    yarn install &&
     npx hardhat test ./test/MatterLabsTests.ts | tee "$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "$LOG_DIR/matter-labs-tests.log"
 
