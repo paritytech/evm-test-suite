@@ -13,10 +13,7 @@ chai.use(chaiSubset);
 import chalk from 'chalk';
 
 import { BaseContract, Contract, Result } from "ethers";
-import { dirname } from "path";
-import { skip } from "node:test";
 const SIMPLE_TESTS_INSTANCE = "Test";
-
 
 type CalldataValue = string;
 type CalldataList = string[];
