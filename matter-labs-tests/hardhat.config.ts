@@ -17,7 +17,8 @@ const rpcUrl = process.env.NETWORK_URL;
 
 const config: HardhatUserConfig = {
  paths: {
-    sources: "./contracts/era-compiler-tests/solidity/simple",
+    sources: "./contracts",
+    // sources: "./contracts/era-compiler-tests/solidity/simple",
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts"
