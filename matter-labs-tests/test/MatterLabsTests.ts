@@ -13,10 +13,7 @@ chai.use(chaiSubset);
 import chalk from 'chalk';
 
 import { BaseContract, Contract, Result } from "ethers";
-import { dirname } from "path";
-import { skip } from "node:test";
 const SIMPLE_TESTS_INSTANCE = "Test";
-
 
 type CalldataValue = string;
 type CalldataList = string[];
@@ -265,9 +262,8 @@ const runContractTests = async (metadata: Metadata, filePath: string, contractPa
             const testCase = metadata.cases[i];
             const firstInput = testCase.inputs[0];
             const { name: testCaseName } = testCase;
-            // console.log("FILEPATH IN SKIP--", filePath)
 
-            it(`Passes tests for method ${testCaseName}`, async () => {
+            it(`Test for method ${testCaseName}`, async () => {
                 if (!contract) {
                     contract = await getContract(testCaseName, filePath, contractPath, firstInput);
                     console.log(chalk.green(`Deployed ${contractPath}`));
@@ -636,14 +632,11 @@ async function metadataFromStr(filePath: string): Promise<Metadata> {
 
 export const MATTER_LABS_SIMPLE_TESTS_PATH = 'era-compiler-tests/solidity/simple';
 
-const passedTests: any[] = [];
-
 describe('Matter Labs EVM Tests', async () => {
     it('Run Test Suite', async () => {
         await runMatterLabsTests(MATTER_LABS_SIMPLE_TESTS_PATH);
-    }).timeout(1500000)
-
-})
+    }).timeout(1500000);
+});
 
 const parseIntArray = (array: any[], filePath: string): string[] => {
     const arr: string[] = [];
