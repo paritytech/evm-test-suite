@@ -14,10 +14,11 @@ mkdir -p $LOG_DIR
 run_matter_labs_tests() {
   yarn install &&
     echo "Running Matter Labs EVM Tests" &&
-    cd ./matter-labs-tests/ &&
-    TEST_LOG="$LOG_DIR/matter-labs-tests.log" &&
-    npx hardhat test ./test/MatterLabsTests.ts | tee "$TEST_LOG"
-  parse_hardhat_test_results "$TEST_LOG"
+    cd ./matter-labs-tests/contracts &&
+    git submodule update --init --recursive &&
+    TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
+    npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
+  parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
 }
 
 run_smart_contracts_tests() {
