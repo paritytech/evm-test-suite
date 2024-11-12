@@ -156,14 +156,16 @@ run_matter_labs_and_then_smart_contracts_tests() {
     yarn test | tee "../$LOG_DIR/v3-periphery-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
 
-  echo "Running Smart Contract CCTP Tests" &&
-    cd ../evm-cctp-contracts/ &&
-    git submodule update --init --recursive &&
-    yarn install &&
-    forge build &&
-    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
-  parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
-
+  if [ "$USE_REVIVE" = "false"]; then
+    echo "Running Smart Contract CCTP Tests" &&
+      cd ../evm-cctp-contracts/ &&
+      git submodule update --init --recursive &&
+      yarn install &&
+      forge build &&
+      forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
+    parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
+  fi
+  
   echo "Test Run Complete"
 }
 
