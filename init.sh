@@ -18,9 +18,9 @@ run_matter_labs_tests() {
     git submodule update --init --recursive &&
     TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/revive.config.ts 
+      npx hardhat compile --config ../config/matter-labs/revive.config.ts 
     else
-      npx hardhat compile --config ../config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/matter-labs/${HARDHAT_CONFIG_NAME}
     fi
     npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
   parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
@@ -52,9 +52,9 @@ run_smart_contracts_tests() {
   yarn install &&
     echo "Running Smart Contract V3 Tests" &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ./config/revive.config.ts 
+      npx hardhat compile --config ./config/general/revive.config.ts 
     else
-      npx hardhat compile --config ./config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ./config/general/${HARDHAT_CONFIG_NAME}
     fi
     npx hardhat test | tee "$LOG_DIR/smart-contract-v3-tests.log"
   parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
@@ -62,9 +62,9 @@ run_smart_contracts_tests() {
   cd ./v3-core/ &&
     yarn install &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/revive.config.ts 
+      npx hardhat compile --config ../config/v3-core/revive.config.ts 
     else
-      npx hardhat compile --config ../config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-core/${HARDHAT_CONFIG_NAME}
     fi
     yarn test | tee "../$LOG_DIR/v3-core-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
@@ -73,19 +73,21 @@ run_smart_contracts_tests() {
     cd ../v3-periphery/ &&
     yarn install &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/revive.config.ts 
+      npx hardhat compile --config ../config/v3-periphery/revive.config.ts 
     else
-      npx hardhat compile --config ../config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME}
     fi
     yarn test | tee "../$LOG_DIR/v3-periphery-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
 
-  echo "Running Smart Contract CCTP Tests" &&
-    cd ../evm-cctp-contracts/ &&
-    git submodule update --init --recursive &&
-    yarn install &&
-    forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
-  parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
+  if [ "${USE_REVIVE}" = "false"]; then
+    echo "Running Smart Contract CCTP Tests" &&
+      cd ../evm-cctp-contracts/ &&
+      git submodule update --init --recursive &&
+      yarn install &&
+      forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
+    parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
+  fi
 
   echo "Smart Contracts Test Run Complete"
 }
@@ -95,9 +97,9 @@ run_matter_labs_and_then_smart_contracts_tests() {
     cd ./matter-labs-tests/ &&
     yarn install &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/revive.config.ts 
+      npx hardhat compile --config ../config/matter-labs/revive.config.ts 
     else
-      npx hardhat compile --config ../config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/matter-labs/${HARDHAT_CONFIG_NAME}
     fi
     npx hardhat test ./test/MatterLabsTests.ts | tee "$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "$LOG_DIR/matter-labs-tests.log"
@@ -126,11 +128,11 @@ run_matter_labs_and_then_smart_contracts_tests() {
     echo "Foundry is already installed. Skipping installation."
   fi
 
-  echo "Running Smart Contract V3 Tests" &&
+  echo "Running Smart Contract Tests" &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ./revive.config.ts 
+      npx hardhat compile --config ./config/general/revive.config.ts 
     else
-      npx hardhat compile      
+      npx hardhat compile --config ./config/general/${HARDHAT_CONFIG_NAME}
     fi
     npx hardhat test | tee "$LOG_DIR/smart-contract-v3-tests.log"
   parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
@@ -138,9 +140,9 @@ run_matter_labs_and_then_smart_contracts_tests() {
   cd ./v3-core/ &&
     yarn install &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/revive.config.ts 
+      npx hardhat compile --config ../config/v3-core/revive.config.ts 
     else
-      npx hardhat compile --config ../config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-core/${HARDHAT_CONFIG_NAME}
     fi
     yarn test | tee "../$LOG_DIR/v3-core-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
@@ -149,9 +151,9 @@ run_matter_labs_and_then_smart_contracts_tests() {
     cd ../v3-periphery/ &&
     yarn install &&
     if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/revive.config.ts 
+      npx hardhat compile --config ../config/v3-periphery/revive.config.ts 
     else
-      npx hardhat compile --config ../config/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME}
     fi
     yarn test | tee "../$LOG_DIR/v3-periphery-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
@@ -165,7 +167,7 @@ run_matter_labs_and_then_smart_contracts_tests() {
       forge test --rpc-url $NETWORK_URL --no-match-test "testReceiveMessage_succeedsWithNonzeroDestinationCaller|testReplaceMessage_succeeds|testReplaceMessage_succeedsButFailsToReserveNonceInReceiveMessage|testSetMaxMessageBodySize|testDepositForBurnWithCaller_returnsNonzeroNonce|testDepositForBurnWithCaller_succeeds|testHandleReceiveMessage_succeedsForMint" | tee "../$LOG_DIR/evm-cctp-tests.log"
     parse_forge_test_results "../$LOG_DIR/evm-cctp-tests.log"
   fi
-  
+
   echo "Test Run Complete"
 }
 
