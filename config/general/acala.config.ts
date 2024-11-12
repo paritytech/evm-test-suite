@@ -1,20 +1,17 @@
 import "@nomicfoundation/hardhat-toolbox";
-
 import { HardhatUserConfig } from "hardhat/config";
-
-import '../hardhat-revive/compile'
 
 const rpcUrl = process.env.NETWORK_URL;
 
 const config: HardhatUserConfig = {
-  solidity: undefined,
+  solidity: { version: '0.8.27' },
   networks: {
-    revive: {
+    acala: {
       accounts: {
-        mnemonic: "bottom drive obey lake curtain smoke basket hold race lonely fit walk",
+        mnemonic: "fox sight canyon orphan hotel grow hedgehog build bless august weather swarm",
         path:"m/44'/60'/0'/0"
       },
-      chainId: 420420421,
+      chainId: 787,
       url: `${rpcUrl}`
     },
   },
