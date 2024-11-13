@@ -18,10 +18,10 @@ run_matter_labs_tests() {
     yarn install &&
     git submodule update --init --recursive &&
     TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
-    if [ "$USE_REVIVE" = "true"]; then
-      npx hardhat compile --config ../config/matter-labs/revive.config.ts
+    if [ "$USE_REVIVE" = "true" ]; then
+      npx hardhat compile --config ../../config/matter-labs/revive.config.ts
     else
-      npx hardhat compile --config ../config/matter-labs/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME}
     fi
   npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
   parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
