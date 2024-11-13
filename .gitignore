@@ -23,3 +23,4 @@ networks/ethereum/node1/*
 
 # Tests logs
 test-logs
+output-logs
