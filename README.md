@@ -19,6 +19,7 @@ Currently the available options for `CHAIN` to test against are:
 * `--acala`
 * `--arbitrum`
 * `--astar`
+* `--kitchensink`
 * `--ethereum`
 * `--moonbeam`
 * `--polygon`
@@ -28,8 +29,14 @@ Currently the available options for `CHAIN` to test against are:
 With `--ethereum` being the default option.
 
 When passing `--endpoint` or `-e`, the second argument must be the `http` endpoint
-of the node you are connecting to. If choosing from a preset chain and specifying
-a test, `--` should be passed for the `<URL>` argument.
+of the node you are connecting to. You must also set the
+`USE_REVIVE` env var to either `true` or `false`, in order to enable compilation
+to PolkaVM instead of EVM. If `USE_REVIVE` is set to `false`, it will use the
+configuration inside of the projects' `hardhat.config.ts`.
+
+If choosing from a preset chain and specifying
+a test, `--` should be passed for the `<URL>` argument, and the `USE_REVIVE` env
+var is set automatically depending on the chain.
 
 As for `TEST`, you can specify either `--matter-labs` to run the `matter-labs`
 tests or `--smart-contracts` to run the tests that deploy and check against the
@@ -40,44 +47,6 @@ This script will install the necessary packages and run the tests in order.
 
 The test logs will be saved to `/test-logs/`, in order to allow the user to review
 them after they are completed, since terminals may have a limited historical display.
-
-## Running locally
-
-### Install Dependencies
-
-Follow the instructions on [Installing Dependencies](https://wiki.polkadot.network/docs/build-guides-install-deps)
-from the Polkadot wiki up to the "Verifying Installation" section.
-
-### Clone the Polkadot SDK Repository
-
-Open your terminal and run the following commands to clone the Polkadot SDK repository:
-
-```bash
-git clone https://github.com/paritytech/polkadot-sdk
-
-```
-
-### Build and Run the Kitchensink Node
-
-To build and run the Kitchensink node, use the following command:
-
-```bash
-cd polkadot-sdk
-RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" cargo run --bin substrate-node -- --dev
-```
-
-### Build and Run Eth RPC Proxy
-
-This RPC proxy translates Ethereum-compatible requests into Substrate-compatible requests.
-
-It acts as a bridge between Ethereum tools, like MetaMask and Remix, and the Substrate based network, enabling Ethereum applications to interact seamlessly with Substrate based chains by interpreting Ethereum RPC calls and routing them to the appropriate Substrate functions. This way, developers can work with familiar Ethereum-based tools.
-
-Open another terminal window and navigate to the Eth RPC directory to start the Eth RPC node:
-
-```bash
-cd polkadot-sdk/substrate/frame/revive/rpc
-RUST_LOG="info,eth-rpc=debug" cargo run --bin eth-rpc -- --dev
-```
 
 ### Run the tests
 

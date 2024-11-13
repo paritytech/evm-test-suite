@@ -10,6 +10,7 @@
     "@nomicfoundation/hardhat-verify": "^2.0.0",
     "@nomicfoundation/ignition-core": "^0.15.7",
     "@openzeppelin/contracts": "3.4.2-solc-0.7",
+    "@parity/revive": "^0.0.5",
     "@typechain/ethers-v6": "^0.5.0",
     "@typechain/hardhat": "^9.0.0",
     "@types/chai": "^4.2.0",
@@ -28,5 +29,11 @@
     "ts-node": "^10.9.2",
     "typechain": "^8.3.0",
     "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@acala-network/api": "^6.2.0",
+    "@acala-network/chopsticks": "^1.0.1",
+    "@acala-network/eth-rpc-adapter": "^2.9.2",
+    "@acala-network/types": "^6.2.0"
   }
 }
