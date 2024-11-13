@@ -12,9 +12,6 @@ LOG_DIR="./test-logs"
 mkdir -p $LOG_DIR
 mkdir -p "./output-logs"
 
-chmod +x ./networks/westend/eth-rpc
-chmod +x ./networks/westend/substrate-node
-
 OS_NAME=$(uname)
 
 case "$OS_NAME" in
@@ -31,6 +28,9 @@ case "$OS_NAME" in
     chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
     ;;
 esac
+
+chmod +x ./networks/westend/${NETWORK_DIR}/eth-rpc
+chmod +x ./networks/westend/${NETWORK_DIR}/substrate-node
 
 run_matter_labs_tests() {
   echo "Running Matter Labs EVM Tests" &&
@@ -390,7 +390,7 @@ case "$chain" in
 
   --kitchensink)
     echo "Starting Kitchensink Node"
-    RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" ./networks/westend/substrate-node --dev > ./output-logs/node-output.log 2>&1 &
+    RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" ./networks/westend/${NETWORK_DIR}/substrate-node --dev > ./output-logs/node-output.log 2>&1 &
 
 
     while ! grep -q "Running JSON-RPC server:" ./output-logs/node-output.log; do
@@ -399,7 +399,7 @@ case "$chain" in
     echo "Kitchensink node running"
 
     echo "Starting Eth RPC Adapter"
-    RUST_LOG="info,eth-rpc=debug" ./networks/westend/eth-rpc --node-rpc-url ws://127.0.0.1:9944 --dev > ./output-logs/eth-rpc-output.log 2>&1 &
+    RUST_LOG="info,eth-rpc=debug" ./networks/westend/${NETWORK_DIR}/eth-rpc --node-rpc-url ws://127.0.0.1:9944 --dev > ./output-logs/eth-rpc-output.log 2>&1 &
     
     while ! grep -q "Running JSON-RPC server:" ./output-logs/eth-rpc-output.log; do
       sleep 1
@@ -420,7 +420,7 @@ case "$chain" in
 
     echo "Chopsticks instance now running on ws://[::]:8000."
     echo "Starting Eth RPC Adapter"
-    RUST_LOG="info,eth-rpc=debug" ./networks/westend/eth-rpc --node-rpc-url ws://127.0.0.1:8000 --dev > ./output-logs/revive-rpc-output.log 2>&1 &
+    RUST_LOG="info,eth-rpc=debug" ./networks/westend/${NETWORK_DIR}/eth-rpc --node-rpc-url ws://127.0.0.1:8000 --dev > ./output-logs/revive-rpc-output.log 2>&1 &
     sleep 15
     ;;
 
