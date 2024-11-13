@@ -13,7 +13,7 @@ mkdir -p $LOG_DIR
 mkdir -p "./output-logs"
 
 chmod +x ./networks/westend/eth-rpc
-chomd +x ./networks/westend/substrate-node
+chmod +x ./networks/westend/substrate-node
 
 run_matter_labs_tests() {
   echo "Running Matter Labs EVM Tests" &&
