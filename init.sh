@@ -368,11 +368,22 @@ case "$chain" in
 
   --kitchensink)
     echo "Starting Kitchensink Node"
-    RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" ./networks/westend/substrate-node --dev &
+    RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" ./networks/westend/substrate-node --dev > ./output-logs/node-output.log 2>&1 &
+
+
+    while ! grep -q "Running JSON-RPC server:" ./output-logs/node-output.log; do
+      sleep 1
+    done
+    echo "Kitchensink node running"
 
     echo "Starting Eth RPC Adapter"
-    RUST_LOG="info,eth-rpc=debug" ./networks/westend/eth-rpc --node-rpc-url ws://127.0.0.1:8000 --dev > ./output-logs/chopsticks-output.log 2>&1 &
-    sleep 15
+    RUST_LOG="info,eth-rpc=debug" ./networks/westend/eth-rpc --node-rpc-url ws://127.0.0.1:9944 --dev > ./output-logs/eth-rpc-output.log 2>&1 &
+    
+    while ! grep -q "Running JSON-RPC server:" ./output-logs/eth-rpc-output.log; do
+      sleep 1
+    done
+
+    echo "Eth RPC Adapter running"
     ;;
 
   --westend)
