@@ -131,22 +131,23 @@ run_smart_contracts_tests() {
 
 run_matter_labs_and_then_smart_contracts_tests() {
   echo "Running Matter Labs EVM Tests" &&
-  cd ./matter-labs-tests/ &&
-  yarn install
+  cd ./matter-labs-tests/contracts &&
+  yarn install &&
+  git submodule update --init --recursive &&
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ../config/matter-labs/revive.config.ts
+      npx hardhat compile --config ../../config/matter-labs/revive.config.ts
       ;;
     *)
-      npx hardhat compile --config ../config/matter-labs/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME}
       ;;
   esac
 
-  npx hardhat test ./test/MatterLabsTests.ts | tee "$LOG_DIR/matter-labs-tests.log"
-  parse_hardhat_test_results "$LOG_DIR/matter-labs-tests.log"
+  npx hardhat test ../test/MatterLabsTests.ts | tee "../../$LOG_DIR/matter-labs-tests.log"
+  parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
 
-  cd ..
+  cd ...
 
   if ! command -v forge >/dev/null 2>&1; then
     echo "Setting Up Foundry..."
