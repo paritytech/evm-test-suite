@@ -15,6 +15,20 @@ mkdir -p "./output-logs"
 chmod +x ./networks/westend/eth-rpc
 chmod +x ./networks/westend/substrate-node
 
+OS_NAME=$(uname)
+
+case "$OS_NAME" in
+  "Darwin")
+    export NETWORK_DIR="macOS"
+    ;;
+  "Linux")
+    export NETWORK_DIR="linux"
+    ;;
+  *)
+    export NETWORK_DIR="linux"
+    ;;
+esac
+
 run_matter_labs_tests() {
   echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests/contracts &&
@@ -322,11 +336,16 @@ echo $chain
 case "$chain" in
   --ethereum)
     echo "Starting Geth Ethereum Node"
-    ./networks/ethereum/build/bin/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json && \
-      ./networks/ethereum/build/bin/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
+    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json && \
+      ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
       --port 30304 --http --http.addr "localhost" --http.port 8545 --http.corsdomain="*" \
-      --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 &
-    sleep 10
+      --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 > ./output-logs/geth-output.log 2>&1 &
+    
+    echo "Waiting for the Geth to start..."
+
+    while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
+      sleep 1
+    done
     ;;
 
   --acala)
