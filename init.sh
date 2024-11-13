@@ -147,7 +147,7 @@ run_matter_labs_and_then_smart_contracts_tests() {
   npx hardhat test ../test/MatterLabsTests.ts | tee "../../$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
 
-  cd ...
+  cd ../..
 
   if ! command -v forge >/dev/null 2>&1; then
     echo "Setting Up Foundry..."
@@ -339,6 +339,8 @@ echo $chain
 
 case "$chain" in
   --ethereum)
+    echo "Cleaning up"
+    rm -rf ./output-logs/
     echo "Starting Geth Ethereum Node"
     ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json && \
       ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
@@ -353,6 +355,8 @@ case "$chain" in
     ;;
 
   --acala)
+    echo "Cleaning up"
+    rm -rf ./output-logs/*
     echo "Starting Chopsticks instance"
     yarn add @acala-network/chopsticks@latest &&
       npx @acala-network/chopsticks@latest --endpoint=wss://acala-rpc-2.aca-api.network/ws > ./output-logs/chopsticks-output.log 2>&1 &
@@ -377,6 +381,8 @@ case "$chain" in
     ;;
 
   --astar)
+    echo "Cleaning up"
+    rm -rf ./output-logs/*
     echo "Starting Chopsticks instance"
     yarn add @acala-network/chopsticks@latest &&
       npx @acala-network/chopsticks@latest --endpoint=wss://rpc.astar.network > ./output-logs/chopsticks-output.log 2>&1 &
@@ -390,6 +396,8 @@ case "$chain" in
     ;;
 
   --kitchensink)
+    echo "Cleaning up"
+    rm -rf ./output-logs/*
     echo "Starting Kitchensink Node"
     RUST_LOG="error,evm=debug,sc_rpc_server=info,runtime::revive=debug" ./networks/westend/${NETWORK_DIR}/substrate-node --dev > ./output-logs/node-output.log 2>&1 &
 
@@ -410,6 +418,8 @@ case "$chain" in
     ;;
 
   --westend)
+    echo "Cleaning up"
+    rm -rf ./output-logs/*
     echo "Starting Chopsticks instance"
     yarn add @acala-network/chopsticks@latest &&
       npx @acala-network/chopsticks@latest --endpoint=wss://asset-hub-westend-rpc.dwellir.com > ./output-logs/chopsticks-output.log 2>&1 &
@@ -426,6 +436,8 @@ case "$chain" in
     ;;
 
   *)
+    echo "Cleaning up"
+    rm -rf ./output-logs/*
     echo "Unknown chain: $chain"
     ;;
 esac
@@ -473,6 +485,7 @@ case "$chain" in
         echo "Chopsticks Instance Stopped"
         ;;
       *)
+      echo "RunninT"
         run_matter_labs_and_then_smart_contracts_tests
         sleep 1
         kill -9 $(lsof -t -i:8545)
