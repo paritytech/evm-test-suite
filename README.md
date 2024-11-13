@@ -29,11 +29,14 @@ Currently the available options for `CHAIN` to test against are:
 With `--ethereum` being the default option.
 
 When passing `--endpoint` or `-e`, the second argument must be the `http` endpoint
-of the node you are connecting to. If choosing from a preset chain and specifying
-a test, `--` should be passed for the `<URL>` argument. You must also set the
+of the node you are connecting to. You must also set the
 `USE_REVIVE` env var to either `true` or `false`, in order to enable compilation
 to PolkaVM instead of EVM. If `USE_REVIVE` is set to `false`, it will use the
 configuration inside of the projects' `hardhat.config.ts`.
+
+If choosing from a preset chain and specifying
+a test, `--` should be passed for the `<URL>` argument, and the `USE_REVIVE` env
+var is set automatically depending on the chain.
 
 As for `TEST`, you can specify either `--matter-labs` to run the `matter-labs`
 tests or `--smart-contracts` to run the tests that deploy and check against the
