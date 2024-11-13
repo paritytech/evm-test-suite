@@ -20,12 +20,15 @@ OS_NAME=$(uname)
 case "$OS_NAME" in
   "Darwin")
     export NETWORK_DIR="macOS"
+    chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
     ;;
   "Linux")
     export NETWORK_DIR="linux"
+    chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
     ;;
   *)
     export NETWORK_DIR="linux"
+    chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
     ;;
 esac
 
