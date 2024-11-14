@@ -508,14 +508,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parity/revive@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "@parity/revive@npm:0.0.4"
+"@parity/revive@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@parity/revive@npm:0.0.5"
   dependencies:
     "@types/node": "npm:^22.9.0"
     package-json: "npm:^10.0.1"
     solc: "npm:^0.8.28"
-  checksum: 10/2bfa721ab2d7f728cfcfdc47b7f3d2d2460a5224db64e8ec9c6ed65eb39179b2f3b3dfd64594e31c32f3c32b671de1b063bacb3e5b1e1ffe0da779fb33dea4be
+  checksum: 10/3c32712eb531493266e158cf7ae810cd8e90ddf4d7ba1ea3924ed23f9c67ea6684c9db6ce8fab45b4440fb2b9c82923375064687addbc737359af4556b0a2dbf
   languageName: node
   linkType: hard
 
@@ -1686,7 +1686,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hardhat-revive@workspace:."
   dependencies:
-    "@parity/revive": "npm:^0.0.4"
+    "@parity/revive": "npm:^0.0.5"
     fast-glob: "npm:^3.3.2"
     hardhat: "npm:^2.22.15"
   languageName: unknown

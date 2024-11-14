@@ -1172,6 +1172,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nomiclabs/hardhat-ethers@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@nomiclabs/hardhat-ethers@npm:2.2.3"
+  peerDependencies:
+    ethers: ^5.0.0
+    hardhat: ^2.0.0
+  checksum: 10/bd239a00d3384b6dfefbf2444bacd7fdaccc9df40efac2255b4f8314f0414416e65296945bbe6debec65479a3f8a5f9d1e69aa66a39d1852e5ac1d690c3b458a
+  languageName: node
+  linkType: hard
+
 "@npmcli/agent@npm:^2.0.0":
   version: 2.2.2
   resolution: "@npmcli/agent@npm:2.2.2"
@@ -4844,6 +4854,7 @@ __metadata:
     "@nomicfoundation/hardhat-toolbox": "npm:^5.0.0"
     "@nomicfoundation/hardhat-verify": "npm:^2.0.0"
     "@nomicfoundation/ignition-core": "npm:^0.15.7"
+    "@nomiclabs/hardhat-ethers": "npm:^2.2.3"
     "@openzeppelin/contracts": "npm:3.4.2-solc-0.7"
     "@parity/revive": "npm:^0.0.5"
     "@typechain/ethers-v6": "npm:^0.5.0"
@@ -4860,12 +4871,24 @@ __metadata:
     ethers: "npm:^6.4.0"
     hardhat: "npm:^2.22.15"
     hardhat-gas-reporter: "npm:^1.0.8"
+    hardhat-typechain: "npm:^0.3.5"
     solidity-coverage: "npm:^0.8.1"
     ts-node: "npm:^10.9.2"
     typechain: "npm:^8.3.0"
     typescript: "npm:^5.6.3"
   languageName: unknown
   linkType: soft
+
+"hardhat-typechain@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "hardhat-typechain@npm:0.3.5"
+  peerDependencies:
+    hardhat: ^2.0.10
+    ts-generator: ^0.1.1
+    typechain: ^4.0.1
+  checksum: 10/236ada437afad7ffb0f8c3bd009e47b8400ec774deafe21ce35f3aca3a8fc687ff996d98afd5d07bdcd30b5003ef79a552be5a539c762ffda986b14def8acb9e
+  languageName: node
+  linkType: hard
 
 "hardhat@npm:^2.22.15":
   version: 2.22.15
