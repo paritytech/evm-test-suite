@@ -38,12 +38,17 @@ run_matter_labs_tests() {
     yarn install &&
     git submodule update --init --recursive &&
     TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
-    if [ "$USE_REVIVE" = "true" ]; then
-      npx hardhat compile --config ../../config/matter-labs/revive.config.ts
-    else
-      npx hardhat compile --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME}
-    fi
-  npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
+    case "$USE_REVIVE" in
+      true)
+        npx hardhat compile --config ../../config/matter-labs/revive.config.ts &&
+        npx hardhat test ../test/MatterLabsTests.ts --config ../../config/matter-labs/revive.config.ts | tee "$TEST_LOG"
+        ;;
+      *)
+        npx hardhat compile --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME} &&
+        npx hardhat test ../test/MatterLabsTests.ts --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME} | tee "$TEST_LOG"
+        ;;
+    esac
+    
   parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
 }
 
@@ -73,28 +78,30 @@ run_smart_contracts_tests() {
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ./config/general/revive.config.ts
+      npx hardhat compile --config ./config/general/revive.config.ts &&
+      npx hardhat test  --config ./config/general/revive.config.ts | tee "$LOG_DIR/smart-contract-v3-tests.log"
       ;;
     *)
-      npx hardhat compile --config ./config/general/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ./config/general/${HARDHAT_CONFIG_NAME} &&
+      npx hardhat test  --config ./config/general/${HARDHAT_CONFIG_NAME} | tee "$LOG_DIR/smart-contract-v3-tests.log"
       ;;
   esac
 
-  npx hardhat test | tee "$LOG_DIR/smart-contract-v3-tests.log"
   parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
 
   cd ./v3-core/ && yarn install
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ../config/v3-core/revive.config.ts
+      npx hardhat compile --config ../config/v3-core/revive.config.ts &&
+      yarn test --config ../config/v3-core/revive.config.ts | tee "../$LOG_DIR/v3-core-tests.log"
       ;;
     *)
-      npx hardhat compile --config ../config/v3-core/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-core/${HARDHAT_CONFIG_NAME} &&
+      yarn test --config ../config/v3-core/${HARDHAT_CONFIG_NAME} | tee "../$LOG_DIR/v3-core-tests.log"
       ;;
   esac
 
-  yarn test | tee "../$LOG_DIR/v3-core-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
 
   echo "Running Smart Contract Periphery Tests"
@@ -102,10 +109,12 @@ run_smart_contracts_tests() {
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ../config/v3-periphery/revive.config.ts
+      npx hardhat compile --config ../config/v3-periphery/revive.config.ts &&
+      yarn test --config ../config/v3-periphery/revive.config.ts | tee "../$LOG_DIR/v3-periphery-tests.log"
       ;;
     *)
-      npx hardhat compile --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME} &&
+      yarn test --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME} | tee "../$LOG_DIR/v3-periphery-tests.log"
       ;;
   esac
 
@@ -138,13 +147,14 @@ run_matter_labs_and_then_smart_contracts_tests() {
   case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ../../config/matter-labs/revive.config.ts
+      npx hardhat test ../test/MatterLabsTests.ts --config ../../config/matter-labs/revive.config.ts | tee "../../$LOG_DIR/matter-labs-tests.log"
       ;;
     *)
       npx hardhat compile --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME}
+      npx hardhat test ../test/MatterLabsTests.ts --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME} | tee "../../$LOG_DIR/matter-labs-tests.log"
       ;;
   esac
 
-  npx hardhat test ../test/MatterLabsTests.ts | tee "../../$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
 
   cd ../..
@@ -174,14 +184,15 @@ run_matter_labs_and_then_smart_contracts_tests() {
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ./config/general/revive.config.ts
+      npx hardhat compile --config ./config/general/revive.config.ts &&
+      npx hardhat test  --config ./config/general/revive.config.ts | tee "$LOG_DIR/smart-contract-v3-tests.log"
       ;;
     *)
-      npx hardhat compile --config ./config/general/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ./config/general/${HARDHAT_CONFIG_NAME} &&
+      npx hardhat test  --config ./config/general/${HARDHAT_CONFIG_NAME} | tee "$LOG_DIR/smart-contract-v3-tests.log"
       ;;
   esac
 
-  npx hardhat test | tee "$LOG_DIR/smart-contract-v3-tests.log"
   parse_hardhat_test_results "$LOG_DIR/smart-contract-v3-tests.log"
 
   cd ./v3-core/ &&
@@ -189,14 +200,15 @@ run_matter_labs_and_then_smart_contracts_tests() {
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ../config/v3-core/revive.config.ts
+      npx hardhat compile --config ../config/v3-core/revive.config.ts &&
+      yarn test --config ../config/v3-core/revive.config.ts | tee "../$LOG_DIR/v3-core-tests.log"
       ;;
     *)
-      npx hardhat compile --config ../config/v3-core/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-core/${HARDHAT_CONFIG_NAME} &&
+      yarn test --config ../config/v3-core/${HARDHAT_CONFIG_NAME} | tee "../$LOG_DIR/v3-core-tests.log"
       ;;
   esac
 
-  yarn test | tee "../$LOG_DIR/v3-core-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-core-tests.log"
 
   echo "Running Smart Contract Periphery Tests"
@@ -206,14 +218,15 @@ run_matter_labs_and_then_smart_contracts_tests() {
 
   case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config ../config/v3-periphery/revive.config.ts
+      npx hardhat compile --config ../config/v3-periphery/revive.config.ts &&
+      yarn test --config ../config/v3-periphery/revive.config.ts | tee "../$LOG_DIR/v3-periphery-tests.log"
       ;;
     *)
-      npx hardhat compile --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME}
+      npx hardhat compile --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME} &&
+      yarn test --config ../config/v3-periphery/${HARDHAT_CONFIG_NAME} | tee "../$LOG_DIR/v3-periphery-tests.log"
       ;;
   esac
 
-  yarn test | tee "../$LOG_DIR/v3-periphery-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/v3-periphery-tests.log"
 
   case "$USE_REVIVE" in
