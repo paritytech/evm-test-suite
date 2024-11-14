@@ -48,9 +48,15 @@ This script will install the necessary packages and run the tests in order.
 The test logs will be saved to `/test-logs/`, in order to allow the user to review
 them after they are completed, since terminals may have a limited historical display.
 
-### Run the tests
+**Example**
 
-Open a new terminal and run the script, setting `--kitchensink` as the chain.
+For example,
+
+```sh
+~ ./init.sh --ethereum -- --matter-labs
+```
+
+will run the Matter Labs test suite for a Geth Ethereum node with the default URL and store the output in the "output-logs" folder. 
 
 **NOTE**
 
