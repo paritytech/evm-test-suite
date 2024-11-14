@@ -340,7 +340,7 @@ echo $chain
 case "$chain" in
   --ethereum)
     echo "Cleaning up"
-    rm -rf ./output-logs/
+    rm -rf ./output-logs/*
     echo "Starting Geth Ethereum Node"
     ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json && \
       ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
