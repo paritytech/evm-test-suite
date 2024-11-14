@@ -1,4 +1,7 @@
-import "@nomicfoundation/hardhat-toolbox";
+import 'hardhat-typechain'
+import '@nomiclabs/hardhat-ethers'
+import '@nomiclabs/hardhat-waffle'
+import '@nomiclabs/hardhat-etherscan'
 
 import { HardhatUserConfig } from "hardhat/config";
 
@@ -17,6 +20,11 @@ const config: HardhatUserConfig = {
       chainId: 420420421,
       url: `${rpcUrl}`
     },
+  },
+  paths: {
+    sources: "../../contracts",
+    tests: ".",
+    artifacts: "../../artifacts",
   },
 };
 

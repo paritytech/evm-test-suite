@@ -7,7 +7,7 @@ import '../../hardhat-revive/compile'
 const rpcUrl = process.env.NETWORK_URL;
 
 const config: HardhatUserConfig = {
-  solidity: undefined,
+  solidity: "0.8.4",
   networks: {
     revive: {
       accounts: {
@@ -17,6 +17,11 @@ const config: HardhatUserConfig = {
       chainId: 420420421,
       url: `${rpcUrl}`
     },
+  },
+  paths: {
+    sources: "../../contracts",
+    tests: ".",
+    artifacts: "../../artifacts",
   },
 };
 
