@@ -49,10 +49,13 @@ The test logs will be saved to `/test-logs/`, in order to allow the user to revi
 them after they are completed, since terminals may have a limited historical display.
 
 **Example**
+
 For example,
+
 ```sh
 ~ ./init.sh --ethereum -- --matter-labs
 ```
+
 will run the Matter Labs test suite for a Geth Ethereum node with the default URL and store the output in the "output-logs" folder. 
 
 **NOTE**
