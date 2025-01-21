@@ -4,33 +4,56 @@ import { setTimeout } from 'timers/promises';
 import '@nomiclabs/hardhat-ethers'
 import { ethers } from "hardhat";
 
+export const MATTER_LABS_COMPLEX_TESTS_PATH = `contracts/era-compiler-tests/solidity/complex`;
+import { Libraries, FactoryOptions } from "hardhat/types";
+import { Contract, Result } from "ethers";
+import chalk from 'chalk';
 import { expect } from "chai";
 import chaiSubset from "chai-subset";
-import readline from 'readline';
 const chai = require('chai');
 chai.use(chaiSubset);
 
-import chalk from 'chalk';
-
-import { Contract, Result } from "ethers";
-
-import { Input, Metadata, ExtendedVariant, SingleVariant } from '../types';
+import { CalldataList, CalldataValue, Case, Contracts, ExtendedVariant, SingleVariant } from '../types';
 import { getContract } from '../util/getContract';
 import { logTestResult, logEventTestResult } from '../util/logTestResult';
 import { parseCallData } from '../util/parseCalldata'
-import { parseIntArray } from '../util/parseIntArray';
+import { parseIntArray } from '../util/parseIntArray'
 
-const SIMPLE_TESTS_INSTANCE = "Test";
-export const MATTER_LABS_SIMPLE_TESTS_PATH = `contracts/era-compiler-tests/solidity/simple`;
+// { "cases": [ {
+//     "name": "first",
+//     "inputs": [
+//         {
+//             "instance": "Main",
+//             "method": "main",
+//             "calldata": [
+//                 "1",
+//                 "Callable.address"
+//             ]
+//         }
+//     ],
+//     "expected": [
+//         "1"
+//     ]
+// } ],
+//     "contracts": {
+//         "Main": "main.sol:Main",
+//         "Callable": "callable.sol:Callable"
+//     }
+// }
 
+type ComplexMetadata = {
+    cases: Case[],
+    contracts: Contracts,
+    libraries?: Libraries
+}
 
-const runMatterLabsTests = async (filePath: string, filePathsNames: string[]) => {
+const runMatterLabsTestsComplex = async (filePath: string, filePathsNames: string[]) => {
     if (fs.lstatSync(filePath).isDirectory()) {
         const filePaths = await fs.promises.readdir(filePath);
 
       for (const file of filePaths) {
           const fileName = `${filePath}/${file}`;
-          await runMatterLabsTests(fileName, filePathsNames);
+          await runMatterLabsTestsComplex(fileName, filePathsNames);
       }
   } else {
           if(filePath.includes(".sol")) {
@@ -42,97 +65,137 @@ const runMatterLabsTests = async (filePath: string, filePathsNames: string[]) =>
     }
 }
 
-async function metadataFromStr(filePath: string): Promise<Metadata> {
-    const fileStream = fs.createReadStream(filePath);
-  
-    const rl = readline.createInterface({
-      input: fileStream,
-      crlfDelay: Infinity
-    });
-    const lines: string[] = [];
 
-    for await (const line of rl) {
-        let newLine: string = '';
-
-        if(line.startsWith("//!")) {
-            newLine = line.replace("//!", "")
-        } else if (line.startsWith(";!")) {
-            newLine = line.replace(";!", "")
-        } else if (line.startsWith("#!")) {
-            newLine = line.replace("#!", "");
-        }
-
-        lines.push(newLine);
-    }
-
-    const json = lines.join("");
-
-    const metadata: Metadata = JSON.parse(json);
-    for (const metaDataCase of metadata.cases) {
-        for (const input of metaDataCase.inputs) {
-            input.instance = SIMPLE_TESTS_INSTANCE;
-        }
-    }
-
-    return metadata;
-  }
-
-describe('Matter Labs', async () => {
-    const filePaths: string[] = [];
-    const contractData: { metadata:  Metadata, contractPath: string, filePath: string }[] = [];
-    const contracts: Contract[] = [];
-    const startTime = performance.now();
+describe('Complex', async () => {
+    const complexFilePathNames: string[] = [];
+    const contractData: { metadata:  ComplexMetadata, mainContractPath: string, filePath: string, secondaryContractPath?: string, tertiaryContractPath?: string,}[] = [];
 
     before(async () => {
-        await runMatterLabsTests(MATTER_LABS_SIMPLE_TESTS_PATH, filePaths);
+        await runMatterLabsTestsComplex(MATTER_LABS_COMPLEX_TESTS_PATH, complexFilePathNames);
 
-        for (const filePath of filePaths) {
-            if (filePath.startsWith(".")) {
+        for (const filePath of complexFilePathNames) {
+            console.log("FILE PATH IS---",  !'contracts/era-compiler-tests/solidity/complex/call_chain/first.sol'.includes("first.sol"));
+            if (
+                (filePath.startsWith(".") &&
+                !filePath.includes("main.sol") &&
+                !filePath.includes("/first.sol")
+                )
+            ) {
                 continue;
             }
+            
+            console.log("IM REACHED")
+
+            const path = filePath.split("/")
+            const dirPathLen = path.length-1;
+            const contractBasePath = path.slice(0, dirPathLen).join('/');
+            const contractTestMetadataPath = `${contractBasePath}/test.json`
+            console.log("path is---", contractTestMetadataPath)
+
+            const json = fs.readFileSync(contractTestMetadataPath, 'utf8');
     
-            const metadata = await metadataFromStr(filePath);
-            const contractPath = `${filePath}:Test`;
-            contractData.push({ metadata, contractPath, filePath });
+            const metadata = JSON.parse(json) as ComplexMetadata;
+            console.log("metadata---",metadata);
+            console.log("FILE PATH", filePath)
+            const mainContractPath = metadata.contracts.Main ? 
+            `${contractBasePath}/${metadata.contracts.Main}`
+            : metadata.contracts.First ?
+            `${contractBasePath}/${metadata.contracts.First}`
+            : undefined;
+            if (!mainContractPath) {
+                throw new Error('Unable to determine main contract path');
+            }
+
+            const secondaryContractPath = metadata.contracts.Callable ? 
+            `${contractBasePath}/${metadata.contracts.Callable}` 
+            : metadata.contracts.Storage ? `${contractBasePath}/${metadata.contracts.Storage}` 
+            : metadata.contracts.Second ? `${contractBasePath}/${metadata.contracts.Second}`
+            : metadata.contracts.Library ? `${contractBasePath}/${metadata.contracts.Library}` 
+            : undefined;
+            if (!secondaryContractPath && Object.keys(metadata.contracts).length > 1) {
+                throw new Error('Unable to determine secondary contract path');
+            }
+            
+            const tertiaryContractPath = metadata.contracts.Third ? `${contractBasePath}/${metadata.contracts.Third}` : undefined;
+
+            contractData.push({ metadata, mainContractPath, secondaryContractPath, tertiaryContractPath, filePath });
         }
     });
-    
-    it('Simple Tests', () => {
-        describe('Contracts', () => {
+
+    it('Test Complex', () => {
+        describe('Tests', () => {
+            console.log("COMPLEX FILEPATHS---", complexFilePathNames)
+            console.log("COMPLEX METADATA---", JSON.stringify(contractData))
+
             contractData.forEach((data) => {
-                const { metadata, contractPath, filePath } = data;
-                let contract: Contract | undefined = undefined;
+                const { metadata, mainContractPath, secondaryContractPath, filePath, tertiaryContractPath } = data;
+                let mainContract: Contract | undefined = undefined;
+                let secondaryContract: Contract | undefined = undefined;
+                let tertiaryContract: Contract | undefined = undefined;
+                let libraryContract: Contract | undefined = undefined;
+                let libraryContractAddress: string | undefined = undefined;
+                let libraries: Libraries | undefined = undefined;
 
                 metadata.cases.forEach(async (testCase) => {
-                    if (
-                        filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/many_arguments.sol`
-                        || skipTestFile(filePath)
-                    ) {
-                        return
-                        }
                     const firstInput = testCase.inputs[0];
                     const { name: testCaseName } = testCase;
 
                     it(`Tests for method ${testCaseName}`, async () => {
-                        if (!contract) {
-                            contract = await getContract(testCaseName, filePath, contractPath, firstInput);
-                            console.log(chalk.green(`Deployed ${contractPath}`));
+                        if (!mainContract) {
+                            type Libs = {
+                                [x: string]: {
+                                    [x: string]: {
+                                        [x:string]: string
+                                    }
+                                }
+                            }
+                            if (secondaryContractPath && metadata.libraries) {
+                                console.log("Starting to deploy library")
+                                console.log("SECONDARY LIBRARY---", secondaryContractPath)
+                                libraryContract = await getContract(testCaseName, filePath, secondaryContractPath);
+                                libraryContractAddress = await libraryContract?.getAddress();
+                                console.log(chalk.green(`Deployed Library Contract ${libraryContract}`));
+                            }
+                            console.log("MAIN CONTRACT PATH---", mainContractPath)
+                            if (libraryContractAddress && metadata.libraries) {
+                                const libs: Libs = metadata.libraries as unknown as Libs;
+                                const outerKey = Object.keys(libs)[0]
+                                const innerKey = Object.keys(libs[outerKey])[0]
+                                (metadata.libraries[outerKey])[innerKey] = libraryContractAddress;
+                                let signerOptions: FactoryOptions = {libraries: metadata.libraries}
+                            }
+   
+                            mainContract = await getContract(testCaseName, filePath, mainContractPath, firstInput, libraries);
+                            console.log(chalk.green(`Deployed Linked Main Contract ${mainContractPath}`));
+                        }
+                        if (secondaryContractPath && !secondaryContract) {
+                            console.log("FILE PATH---", filePath)
+                            console.log("MAIN CONTRACT PATH---", mainContractPath)
+                            secondaryContract = await getContract(testCaseName, filePath, secondaryContractPath);
+                            console.log(chalk.green(`Deployed Secondary Contract ${secondaryContract}`));
+                        }
+                        if (tertiaryContractPath && !tertiaryContract) {
+                            console.log("FILE PATH---", filePath)
+                            console.log("TERTIARY CONTRACT PATH---", mainContractPath)
+                            tertiaryContract = await getContract(testCaseName, filePath, tertiaryContractPath);
+                            console.log(chalk.green(`Deployed Tertiary Contract ${tertiaryContract}`));
                         }
 
-                        console.log("Contract---", JSON.stringify(contract));
-            
                         for (const input of testCase.inputs) {
-                            if (skipTestCase(input, testCaseName, filePath)) {
-                                continue;
-                            }
-                            if (contract) {
+                            // if (skipTestCase(input, testCaseName, filePath)) {
+                            //     continue;
+                            // }
+                            if (mainContract) {
                                 const expectedData = input.expected ? input.expected : testCase.expected;
                                 let method = input.method;
+                                console.log("METHOD IS---", method)
+                                console.log("FRAGMENT---", mainContract[method]?.fragment)
+
             
                                 // catch deployer cases with no args
                                 if (method === "#deployer") {
-                                    expect(contract.getAddress()).not.eq(undefined);
-                                    logTestResult(method, input.expected, contract.getAddress())
+                                    expect(mainContract.getAddress()).not.eq(undefined);
+                                    logTestResult(method, input.expected, mainContract.getAddress())
             
                                     continue;
                                 }
@@ -143,8 +206,8 @@ describe('Matter Labs', async () => {
                                 }
             
                                 let numberOfExpectedArgs = 0;
-                                if (contract[method]?.fragment) {
-                                    numberOfExpectedArgs = contract[method].fragment.inputs.length;
+                                if (mainContract[method]?.fragment) {
+                                    numberOfExpectedArgs = mainContract[method].fragment.inputs.length;
                                 };
             
                                 type TransactionOptions = {
@@ -158,14 +221,35 @@ describe('Matter Labs', async () => {
                                 
                                 const caller = input.caller;
                                 if (caller) {
-                                    console.log("CALLER---", caller)
                                     const signer = await ethers.provider.getSigner(caller)
-                                    contract = await contract.connect(signer) as Contract;
+                                    mainContract = await mainContract.connect(signer) as Contract;
                                 }
                                 
                                     let rawCallData = input.calldata;
-                                
+
+                                    // handle setting input params as arrays 
+                                    for (const {index, value} of (rawCallData as any[]).map((value: any, index: number) => ({index, value}))) {
+                                        if (mainContract[method]?.fragment.inputs[index].baseType === 'array') {
+                                            (rawCallData[index] as unknown as CalldataList) = [value]
+                                        }
+                                        if (mainContract[method]?.fragment.inputs[index].baseType === 'bytes32') {
+                                            (rawCallData[index] as unknown as CalldataValue) = ethers.encodeBytes32String(value) 
+                                        }
+                                    }
                                     const calldata = parseCallData(rawCallData, numberOfExpectedArgs, filePath, method, testCaseName);
+                                    let secondaryContractSet = false;
+                                    for (let { index, value } of calldata.map((value, index) => ({ index, value}))) {
+                                        if ((value as string).includes('.address')) {
+                                            if (!secondaryContractSet && secondaryContract) {
+                                                calldata[index] = await secondaryContract.getAddress();
+                                                console.log("SETTING SECONDARY", await secondaryContract.getAddress())
+                                                secondaryContractSet = true;
+                                            } else if (tertiaryContract) {
+                                                calldata[index] = await tertiaryContract.getAddress();
+
+                                            }
+                                        }
+                                    }
             
                                     let containsMultiExceptions: boolean = false;
                                     if (Array.isArray(expectedData)) {
@@ -181,13 +265,13 @@ describe('Matter Labs', async () => {
                                         let res: any;
                                         if (calldata.length > 0) {
                                         if (containsMultiExceptions) {
-                                                await expect(contract[method].staticCall(...calldata)).to.be.reverted;
+                                                await expect(mainContract[method].staticCall(...calldata)).to.be.reverted;
                                             } else if (!Array.isArray((expectedData))) {
                                                 if (expectedData.exception || containsMultiExceptions) {
                                                     
                                                     let err;
                                                     try {
-                                                        await contract[method].staticCall(...calldata)
+                                                        await mainContract[method].staticCall(...calldata)
                                                     } catch (error) {
                                                         err = error;
                                                     }
@@ -199,7 +283,7 @@ describe('Matter Labs', async () => {
             
                                                 if (expectedData.return_data.length > 0) {
                                                     let decoder = new ethers.AbiCoder()
-                                                    let res = await contract[method].staticCall(...calldata);
+                                                    let res = await mainContract[method].staticCall(...calldata);
             
                                                     expect(decoder.encode(['uint256'], expectedData.return_data)).to.eq(decoder.encode(['uint256'], [res]))
                                                     logTestResult(method, expectedData, res.toString())
@@ -208,7 +292,7 @@ describe('Matter Labs', async () => {
             
                                                 // expectedData events
                                                 if (expectedData.events && expectedData.events.length > 0) {
-                                                    let res = await contract[method](...calldata);
+                                                    let res = await mainContract[method](...calldata);
                                                     
                                                     await setTimeout(1000);
                                                     
@@ -260,17 +344,22 @@ describe('Matter Labs', async () => {
                                             } 
                                             else {
                                                 if (numberOfExpectedArgs >= 2) {
-                                                    res = await contract[method].staticCall(...calldata);
+                                                    console.log("CALLDATA---", calldata)
+                                                    console.log("METHOD---", method)
+                                                    // calldata[0] = [1]
+                                                    res = await mainContract[method].staticCall(...calldata);
                                                 } else {
                                                     if (numberOfExpectedArgs === 1) {
-                                                        const methodInputIsArray = contract[method].fragment.inputs[0].baseType === 'array';
+                                                        const methodInputIsArray = mainContract[method].fragment.inputs[0].baseType === 'array';
                                                         if (
                                                             (Array.isArray(calldata[0]) && methodInputIsArray)
                                                             || (!Array.isArray(calldata[0]) && !methodInputIsArray)
                                                         ) {
-                                                            res = await contract[method].staticCall(calldata[0]);
+                                                            console.log("IS IT THIS")
+                                                            console.log("CALLDATA---", calldata[0])
+                                                            res = await mainContract[method].staticCall(calldata[0], {gasLimit: 10000000000000});
                                                         } else if (methodInputIsArray) {
-                                                            res = await contract[method].staticCall(calldata);
+                                                            res = await mainContract[method].staticCall(calldata);
                                                         }
                                                     }
                                                 }
@@ -281,7 +370,7 @@ describe('Matter Labs', async () => {
                                             if (containsMultiExceptions) {
                                                 let err;
                                                 try {
-                                                    await contract[method].staticCall();
+                                                    await mainContract[method].staticCall();
                                                 } catch (error) {
                                                     err = error;
                                                     expect(err).to.be.an('Error')
@@ -292,7 +381,7 @@ describe('Matter Labs', async () => {
                                                 if (expectedData.exception) {
                                                     let err;
                                                     try {
-                                                        await contract[method]()
+                                                        await mainContract[method]()
                                                     } catch (error) {
                                                         err = error;
                                                     }
@@ -303,14 +392,14 @@ describe('Matter Labs', async () => {
                                                 } else {       
                                                     // non exception method with return_data  
                                                     if (method === "set") {
-                                                        await contract[method](); // call set contract data
+                                                        await mainContract[method](); // call set contract data
                                                     } 
-                                                    res = await contract[method].staticCall(); // get set return result  
+                                                    res = await mainContract[method].staticCall(); // get set return result  
                                                 }
             
                                                 // events
                                                 if (expectedData.events && expectedData.events.length > 0) {
-                                                let res = await contract[method]();
+                                                let res = await mainContract[method]();
                                                 
                                                 await setTimeout(1000);
                                                 
@@ -344,7 +433,7 @@ describe('Matter Labs', async () => {
                                                 } 
                                             } else {
                                                 if (method === 'fallback') {
-                                                    res = await contract[method]?.staticCall({})                                        
+                                                    res = await mainContract[method]?.staticCall({})                                        
                                                     let decoder = new ethers.AbiCoder()
                                     
                                                     expect(decoder.decode(['uint256'], res).toString()).to.eq(expectedData.toString())
@@ -359,12 +448,12 @@ describe('Matter Labs', async () => {
                                                             hardHatTestAccountAddress,
                                                             "0x340282366920938463463374607431768211455",
                                                         ]);
-                                                        res = await contract[method].staticCall(txOptions);
+                                                        res = await mainContract[method].staticCall(txOptions);
                                                     } else {
                                                         if (method === "set") {
-                                                            await contract[method]();
+                                                            await mainContract[method]();
                                                         } 
-                                                        res = await contract[method].staticCall();
+                                                        res = await mainContract[method].staticCall();
                                                     }
                                                 }
                                             }
@@ -438,90 +527,15 @@ describe('Matter Labs', async () => {
                                         ) {
                                             console.log(`Skipped Test Case ${testCaseName} from ${filePath}`);
                                         } else {
+                                            console.log("ERR---", err);
                                             console.log(`Failed Test Case ${testCaseName} from ${filePath} with inputs ${calldata}`);
                                         }
                                     }
                                 }
                             }
-                    }).timeout(1000000);
-                    })
+                    });
                 });
             });
-        })
-        const endTime = performance.now();
-        let timeDiff = endTime - startTime; //in ms
-        // strip the ms 
-        timeDiff /= 1000; 
-    
-        // get seconds 
-        const seconds = Math.round(timeDiff);
-        console.log(`Test execution time: ${seconds} seconds`);     
+        });
     });
-
-const FILES_TO_SKIP = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic"];
-const skipTestFile = (filePath: string): boolean => {
-    for (const filter of FILES_TO_SKIP) {
-        if (filePath.includes(filter)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string): boolean => {
-    if (
-        filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/basefee.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/blockhash.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/chainid.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/codecopy.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/codesize.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/coinbase.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/difficulty.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/gaslimit.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/gasprice.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/keccak256.sol`
-       || (filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/msize.sol` && testCaseName === "ordinar")
-       || (filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/number.sol` && testCaseName === "default")
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/origin.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/prevrandao.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/return.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/returndatacopy.sol`
-       || (filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/returndatasize.sol` && testCaseName === "initial" && testCaseInput.method === "initial")
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/revert.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/pop.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/sar.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/sdiv.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/selfbalance.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/smod.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/stop.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/timestamp.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/immutable/inheritance/immutables6_yul.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/call_to_zero_initialized_function_type_legacy_evm.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/call_to_zero_initialized_function_type_legacy.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/legacy/invalidInConstructor.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/legacy/invalidStoredInConstructor.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/legacy/store2.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/legacy/storeInConstructor.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/data_structures.sol`
-       || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/mixed_features_3.sol`
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/constructor`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/context`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/events`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/fat_ptr`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/function`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/loop`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/operator`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/return`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/solidity_by_example`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/storage`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/structure`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/try_catch`)
-       || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_semantic`)
-   ) {
-       console.log(`Skipped ${testCaseName} from ${filePath}`);
-       return true;
-   }
-
-   return false;
-}
+});
