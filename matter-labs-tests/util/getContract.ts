@@ -82,13 +82,13 @@ export const getContract = async (testCaseName: string, filePath: string, contra
       
                 const [signer] = await ethers.getSigners();
                 console.log("Signer---", signer)
-                await ethers.deployContract(
-                    contractPath,
-                    signer
-                )
-                // contractFactory = await ethers.getContractFactory(contractPath);
+     
+                contractFactory = await ethers.getContractFactory(contractPath);
                 console.log("Contract Factory---", contractFactory);
-
+                deployedContract = await ethers.deployContract(
+                    contractPath,
+                    signer,
+                )
                 // await contractFactory.deploy()
                 // deployedContract = await contractFactory?.connect(signer).deploy()
                 // deployedContract = await ethers.deployContract(contractPath);
