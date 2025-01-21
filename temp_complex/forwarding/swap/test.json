@@ -1,0 +1,20 @@
+{ "enable_eravm_extensions": true, "modes": [ "Y" ], "targets": [ "eravm" ], "cases": [ {
+    "name": "short",
+    "inputs": [
+        {
+            "instance": "Main",
+            "method": "main",
+            "calldata": [
+                "Callable.address"
+            ]
+        }
+    ],
+    "expected": [
+        "1"
+    ]
+} ],
+    "contracts": {
+        "Main": "main.sol:Main",
+        "Callable": "callable.sol:Callable"
+    }
+}

@@ -34,17 +34,12 @@ chmod +x ./networks/westend/${NETWORK_DIR}/substrate-node
 
 run_matter_labs_tests() {
   echo "Running Matter Labs EVM Tests" &&
-    cd ./matter-labs-tests/contracts &&
+    cd ./matter-labs-tests &&
     yarn install &&
     git submodule update --init --recursive &&
-    TEST_LOG="../../$LOG_DIR/matter-labs-tests.log" &&
-    if [ "$USE_REVIVE" = "true" ]; then
-      npx hardhat compile --config ../../config/matter-labs/revive.config.ts
-    else
-      npx hardhat compile --config ../../config/matter-labs/${HARDHAT_CONFIG_NAME}
-    fi
-  npx hardhat test ../test/MatterLabsTests.ts | tee "$TEST_LOG"
-  parse_hardhat_test_results "../../$LOG_DIR/matter-labs-tests.log"
+    TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
+  npx hardhat test ./test/MatterLabsComplexTests.ts  --config ./${HARDHAT_CONFIG_NAME} | tee "$TEST_LOG"
+  parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
 }
 
 run_smart_contracts_tests() {
@@ -282,42 +277,49 @@ parse_forge_test_results() {
 
 case "$chain" in
 --acala)
-  export HARDHAT_CONFIG_NAME="acala.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config.ts"
   export USE_REVIVE="false"
   export NETWORK_URL="http://localhost:8545"
+  export CHAIN_ID=787
+  export NETWORK_NAME="acala"
   ;;
 --ethereum)
-  export HARDHAT_CONFIG_NAME="ethereum.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config.ts"
   export USE_REVIVE="false"
   export NETWORK_URL="http://localhost:8545"
+  export CHAIN_ID=1
   ;;
 --moonbeam)
-  export HARDHAT_CONFIG_NAME="moonbeam.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config.ts"
   export USE_REVIVE="false"
   export NETWORK_URL="https://moonbeam.public.blastapi.io"
+  export CHAIN_ID=1284
   ;;
 --astar)
-  export HARDHAT_CONFIG_NAME="astar.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config.ts"
   export USE_REVIVE="false"
   export NETWORK_URL="http://localhost:8000"
+  export CHAIN_ID=592
   ;;
 --polygon)
-  export HARDHAT_CONFIG_NAME="polygon.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config.ts"
   export USE_REVIVE="false"
   export NETWORK_URL="https://polygon-mainnet.infura.io/v3/${PRIVATE_KEY}"
+  export CHAIN_ID=157
   ;;
 --arbitrum)
-  export HARDHAT_CONFIG_NAME="arbitrum.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config.ts"
   export USE_REVIVE="false"
   export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/${PRIVATE_KEY}"
+  export CHAIN_ID=42161
   ;;
 --kitchensink)
-  export HARDHAT_CONFIG_NAME="revive.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.config.ts"
   export USE_REVIVE="true"
   export NETWORK_URL="http://localhost:8545"
   ;;
 --westend)
-  export HARDHAT_CONFIG_NAME="revive.config.ts"
+  export HARDHAT_CONFIG_NAME="hardhat.config.ts"
   export USE_REVIVE="true"
   export NETWORK_URL="http://localhost:8545"
   ;;

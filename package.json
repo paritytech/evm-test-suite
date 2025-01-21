@@ -33,7 +33,8 @@
   "dependencies": {
     "@acala-network/api": "^6.2.0",
     "@acala-network/chopsticks": "^1.0.1",
-    "@acala-network/eth-rpc-adapter": "^2.9.2",
-    "@acala-network/types": "^6.2.0"
+    "@acala-network/eth-rpc-adapter": "^2.9.5",
+    "@acala-network/types": "^6.2.0",
+    "hardhat-resolc": "^0.0.1"
   }
 }
