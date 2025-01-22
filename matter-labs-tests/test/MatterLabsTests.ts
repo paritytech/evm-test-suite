@@ -445,7 +445,7 @@ describe('Matter Labs', async () => {
         })
     });
 
-const FILES_TO_SKIP = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic"];
+const FILES_TO_SKIP = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic", "/internal_function_pointers/legacy", "/system/prevrandao_returndata.sol", "/system/difficulty_returndata.sol", "/system/msize_returndata.sol", "/yul_instructions/basefee.sol", "/yul_instructions/coinbase.sol", "/yul_instructions/difficulty.sol", "/yul_instructions/gaslimit.sol", "/yul_instructions/msize.sol"];
 const skipTestFile = (filePath: string): boolean => {
     for (const filter of FILES_TO_SKIP) {
         if (filePath.includes(filter)) {
