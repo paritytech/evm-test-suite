@@ -13,14 +13,14 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 const DEFAULT_COMPILER_SETTINGS = {
   version: '0.8.23',
 }
-const rpcUrl = process.env.NETWORK_URL;
+const {NETWORK_URL: rpcUrl, NETWORK_NAME: networkName, CHAIN_ID: chainId} = process.env;
 
 const config: HardhatUserConfig = {
  paths: {
     sources: "./contracts/era-compiler-tests/solidity/simple",
     tests: "./test",
-    cache: "./cache",
-    artifacts: "./artifacts"
+    cache: "./cache-evm",
+    artifacts: "./artifacts-evm"
   },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],
@@ -52,9 +52,9 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    astar: {
-      chainId: 592,
-      url: `${rpcUrl}`
+    [networkName as string]: {
+      chainId: parseInt(`${chainId}`),
+      url: `${rpcUrl}`,
     },
   },
 };

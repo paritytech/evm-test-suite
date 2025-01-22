@@ -15,6 +15,7 @@ const config: HardhatUserConfig = {
           },
         }
       },
+      chainId: 1,
       forking: {
         url: `${rpcUrl}`
       }
