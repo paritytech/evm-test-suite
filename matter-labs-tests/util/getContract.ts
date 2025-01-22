@@ -78,7 +78,7 @@ export const getContract = async (testCaseName: string, filePath: string, contra
                 deployedContract = await ethers.deployContract(contractPath);
             }
         } catch(e) {
-            throw new Error(`Failed to Deploy Contract ${contractPath}`);
+            throw new Error(`Failed to Deploy Contract ${contractPath}: \n${e}`);
         }
         const contractAddress = await deployedContract.getAddress();
         contract = await ethers.getContractAt(contractPath, contractAddress);
