@@ -2,8 +2,6 @@ import { HardhatUserConfig, subtask } from "hardhat/config";
 import { execSync } from "child_process";
 import "@nomicfoundation/hardhat-toolbox";
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/task-names";
-// import "hardhat-resolc"
-// import "hardhat-revive-node";
 import '../../../hardhat-revive/packages/hardhat-resolc/src/index';
 import '../../../hardhat-revive/packages/hardhat-revive-node/src/index';
 

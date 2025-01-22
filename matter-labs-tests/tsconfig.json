@@ -10,5 +10,5 @@
     "types": ["@nomiclabs/hardhat-ethers"]
   },
   "include": ["./test"],
-  "files": ["hardhat.config.ts"]
+  "files": ["./hardhat.config.ts"]
 }

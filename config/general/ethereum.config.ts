@@ -7,7 +7,6 @@ const config: HardhatUserConfig = {
   solidity: { version: '0.8.27' },
   networks: {
     hardhat: {
-      allowUnlimitedContractSize: true,
       chains: {
         1: {
           hardforkHistory: {
