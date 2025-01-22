@@ -10,13 +10,11 @@ import { FactoryOptions } from 'hardhat/types';
 export const getContract = async (testCaseName: string, filePath: string, contractPath: string, input?: Input, libraries?: Libraries): Promise<Contract | undefined> => {
     let contract: Contract | undefined = undefined;
     let contractFactory: ContractFactory<any[], BaseContract> | undefined = undefined;
-    console.log("LIBRARIES ADDRESS---", libraries?.libraries)
 
     // default #deployer cases
     if ((input && input.calldata.length > 0 && input.method === "#deployer")) {
         try {
             if (libraries != undefined) {
-                console.log("LIBRARIES ADDRESS---", libraries.libraries)
                 contractFactory = await ethers.getContractFactory(contractPath, {
                     libraries,
                 });
@@ -24,10 +22,8 @@ export const getContract = async (testCaseName: string, filePath: string, contra
                 contractFactory = await ethers.getContractFactory(contractPath);
             }
         }catch(e) {
-            console.log("ERRORING HERE---", e)
+            console.log(`Failed to get contract factory: ${e}`);
         }
-
-        console.log("CONTRACT FACTORY---", contractFactory)
 
         // get correct inputs
         let inputs: any[] = [];
@@ -35,7 +31,7 @@ export const getContract = async (testCaseName: string, filePath: string, contra
         if (filePath.includes("zero_value")) {
             inputs =  [input.calldata[0]];
         } else {
-            inputs = [...input.calldata]
+            inputs = [...input.calldata];
         }
 
         if (testCaseName != "failure") {
@@ -47,8 +43,8 @@ export const getContract = async (testCaseName: string, filePath: string, contra
                     input.caller,
                     "0x340282366920938463463374607431768211455",
                 ]);
-                const signer = await ethers.provider.getSigner(input.caller)
-                deployedContract = await contractFactory?.connect(signer).deploy(...inputs)
+                const signer = await ethers.provider.getSigner(input.caller);
+                deployedContract = await contractFactory?.connect(signer).deploy(...inputs);
             } else {
                 try {
                     deployedContract = await contractFactory?.deploy({overrides: inputs});
@@ -79,23 +75,10 @@ export const getContract = async (testCaseName: string, filePath: string, contra
                     libraries,
                 });
             } else {
-      
-                const [signer] = await ethers.getSigners();
-                console.log("Signer---", signer)
-     
-                contractFactory = await ethers.getContractFactory(contractPath);
-                console.log("Contract Factory---", contractFactory);
-                deployedContract = await ethers.deployContract(
-                    contractPath,
-                    signer,
-                )
-                // await contractFactory.deploy()
-                // deployedContract = await contractFactory?.connect(signer).deploy()
-                // deployedContract = await ethers.deployContract(contractPath);
+                deployedContract = await ethers.deployContract(contractPath);
             }
         } catch(e) {
-            console.log("ERROR---", e)
-            throw new Error(`Failed to Deploy Contract ${contractPath}`)
+            throw new Error(`Failed to Deploy Contract ${contractPath}`);
         }
         const contractAddress = await deployedContract.getAddress();
         contract = await ethers.getContractAt(contractPath, contractAddress);

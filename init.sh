@@ -38,7 +38,7 @@ run_matter_labs_tests() {
     yarn install &&
     git submodule update --init --recursive &&
     TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
-  npx hardhat test ./test/MatterLabsComplexTests.ts  --config ./${HARDHAT_CONFIG_NAME} | tee "$TEST_LOG"
+  npx hardhat test --config ./${HARDHAT_CONFIG_NAME} | tee "$TEST_LOG"
   parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
 }
 

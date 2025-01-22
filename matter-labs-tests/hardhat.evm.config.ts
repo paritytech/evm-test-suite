@@ -17,8 +17,7 @@ const {NETWORK_URL: rpcUrl, NETWORK_NAME: networkName, CHAIN_ID: chainId} = proc
 
 const config: HardhatUserConfig = {
  paths: {
-    // sources: "./contracts/era-compiler-tests/solidity/simple",
-    sources: "./contracts/era-compiler-tests/solidity/complex",
+    sources: "./contracts/era-compiler-tests/solidity/simple",
     tests: "./test",
     cache: "./cache-evm",
     artifacts: "./artifacts-evm"
@@ -56,7 +55,6 @@ const config: HardhatUserConfig = {
     [networkName as string]: {
       chainId: parseInt(`${chainId}`),
       url: `${rpcUrl}`,
-      blockGasLimit: 10000000000000 // Network block gasLimit
     },
   },
 };

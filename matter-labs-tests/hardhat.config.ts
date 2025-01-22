@@ -12,7 +12,6 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 
   return paths.filter((p: any) => {
     return (
-      // !p.includes("/many_arguments") // ignore becuase TypeError: (fileReexports[path] || []).sort is not a function
       !p.includes("/constructor") // ignore because hardhat typechain TypeError: (fileReexports[path] || []).sort is not a function - 9 solidity files
       && !p.includes("/function") // ignore because CompilerError: Stack too deep. Try compiling with `--via-ir` (cli) -  32 solidity files
       && !p.includes("/loop") // ignore because SyntaxError: Identifier expected. 'for' is a reserved word that cannot be used here - 38 solidity files
@@ -72,7 +71,6 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        // runs: 1000000,
       },
       viaIR: true,
       metadata: {
@@ -118,7 +116,7 @@ const config: HardhatUserConfig = {
         enabled: true,
       },
       evmVersion: "istanbul",
-      compilerPath: "../../../binaries/resolc",
+      compilerPath: "../../../revive/target/release/resolc",
       standardJson: true,
     },
   },

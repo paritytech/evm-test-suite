@@ -80,8 +80,6 @@ async function metadataFromStr(filePath: string): Promise<Metadata> {
 describe('Matter Labs', async () => {
     const filePaths: string[] = [];
     const contractData: { metadata:  Metadata, contractPath: string, filePath: string }[] = [];
-    const contracts: Contract[] = [];
-    const startTime = performance.now();
 
     before(async () => {
         await runMatterLabsTests(MATTER_LABS_SIMPLE_TESTS_PATH, filePaths);
@@ -118,8 +116,6 @@ describe('Matter Labs', async () => {
                             contract = await getContract(testCaseName, filePath, contractPath, firstInput);
                             console.log(chalk.green(`Deployed ${contractPath}`));
                         }
-
-                        console.log("Contract---", JSON.stringify(contract));
             
                         for (const input of testCase.inputs) {
                             if (skipTestCase(input, testCaseName, filePath)) {
@@ -158,7 +154,6 @@ describe('Matter Labs', async () => {
                                 
                                 const caller = input.caller;
                                 if (caller) {
-                                    console.log("CALLER---", caller)
                                     const signer = await ethers.provider.getSigner(caller)
                                     contract = await contract.connect(signer) as Contract;
                                 }
@@ -448,14 +443,6 @@ describe('Matter Labs', async () => {
                 });
             });
         })
-        const endTime = performance.now();
-        let timeDiff = endTime - startTime; //in ms
-        // strip the ms 
-        timeDiff /= 1000; 
-    
-        // get seconds 
-        const seconds = Math.round(timeDiff);
-        console.log(`Test execution time: ${seconds} seconds`);     
     });
 
 const FILES_TO_SKIP = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic"];
