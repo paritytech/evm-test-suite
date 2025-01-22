@@ -1,7 +1,7 @@
 ### EVM Tests [WIP]
 
 Set of generic tests to check for chain compatibility. It covers higher level 
-tests derived from well-knownw smart contracts (WIP uniswap v4), standard testing (such as [Open Zeppelin tests](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/test) and lower level testing inspired by [`Matter Labs`]
+tests derived from well-known smart contracts (such as uniswap v4, WIP), standard testing (such as [Open Zeppelin tests](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/test)) and lower level testing inspired by [`Matter Labs`]
 (https://github.com/matter-labs).
 
 ## Execution
