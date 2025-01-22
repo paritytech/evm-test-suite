@@ -1,13 +1,12 @@
 ### EVM Tests [WIP]
 
 Set of generic tests to check for chain compatibility. It covers higher level 
-tests derived from Smart Contracts (such as Uniswap V3) and lower level testing inspired by [`Matter Labs`]
-(https://github.com/matter-labs).
+tests derived from well-known smart contracts (such as uniswap v4, WIP), standard testing (such as [Open Zeppelin tests](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/test)) and lower level testing inspired by [Matter Labs](https://github.com/matter-labs).
 
 ## Execution
 
-This is a hybrid test suite that uses both [Hardhat](https://hardhat.org/) and
-[Foundry](https://book.getfoundry.sh/).
+This is a hybrid test suite that uses both [Hardhat](https://hardhat.org/) (and in the future
+[Foundry](https://book.getfoundry.sh/)).
 
 To run the tests, simply run the script `init.sh`:
 
