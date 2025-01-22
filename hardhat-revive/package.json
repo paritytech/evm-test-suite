@@ -1,9 +1,0 @@
-{
-  "name": "hardhat-revive",
-  "packageManager": "yarn@4.4.1",
-  "dependencies": {
-    "@parity/revive": "^0.0.5",
-    "fast-glob": "^3.3.2",
-    "hardhat": "^2.22.15"
-  }
-}
