@@ -2,8 +2,9 @@ import { HardhatUserConfig, subtask } from "hardhat/config";
 import { execSync } from "child_process";
 import "@nomicfoundation/hardhat-toolbox";
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/task-names";
-import '../../../hardhat-revive/packages/hardhat-resolc/src/index';
-import '../../../hardhat-revive/packages/hardhat-revive-node/src/index';
+
+import "hardhat-resolc";
+import "hardhat-revive-node";
 
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
   const paths = await runSuper();
@@ -97,12 +98,12 @@ const config: HardhatUserConfig = {
     hardhat: {
       polkavm: true,
       nodeConfig: {
-      nodeBinaryPath: '../../../polkadot-sdk/target/release/substrate-node',
+      nodeBinaryPath: 'path/to/substrate-node/binary',
         rpcPort: 8000,
         dev: true,
       },
       adapterConfig: {
-        adapterBinaryPath: '../../../polkadot-sdk/target/release/eth-rpc',
+        adapterBinaryPath: 'path/to/eth-rpc/binary',
         dev: true,
       }
     },
@@ -112,9 +113,10 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
+        runs: 400
       },
       evmVersion: "istanbul",
-      compilerPath: "../../../revive/target/release/resolc",
+      compilerPath: "path/to/resolc",
       standardJson: true,
     },
   },
