@@ -5,7 +5,6 @@ import { BaseContract, Contract, ContractFactory } from "ethers";
 import { expect } from "chai";
 
 import { Input } from '../types';
-import { FactoryOptions } from 'hardhat/types';
 
 export const getContract = async (testCaseName: string, filePath: string, contractPath: string, input?: Input, libraries?: Libraries): Promise<Contract | undefined> => {
     let contract: Contract | undefined = undefined;
