@@ -42,36 +42,53 @@ run_matter_labs_tests() {
     yarn install &&
     git submodule update --init --recursive &&
     TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
-    npx hardhat test --no-compile --config ./${HARDHAT_CONFIG_NAME}.ts | tee "$TEST_LOG" &&
+    case "$USE_REVIVE" in
+    true)
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      ;;
+    *)
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      ;;
+    esac
   parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
 }
 
 run_open_zeppelin_tests() {
   echo "Running Open Zeppelin EVM Tests" &&
     cd ./openzeppelin-contracts &&
-    npm i &&
+    npm i --force &&
     git submodule update --init --recursive &&
     TEST_LOG="../$LOG_DIR/open-zeppelin-tests.log" &&
-    npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee "$TEST_LOG"
+    case "$USE_REVIVE" in
+    true)
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
+      ;;
+    *)
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee ".$LOG_DIR/matter-labs-tests.log"
+      ;;
+    esac
   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
 }
 
 run_matter_labs_and_then_oz_tests() {
   echo "Running Matter Labs EVM Tests" &&
-    cd ./matter-labs-tests/contracts &&
-    npm i &&
-    cd .. &&
+    cd ./matter-labs-tests &&
+    npm i --force &&
     git submodule update --init --recursive &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
       ;;
     *)
-      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts --network ${chain}
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee "../$LOG_DIR/matter-labs-tests.log"
       ;;
     esac
-
-  npx hardhat test | tee "../$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/matter-labs-tests.log"
 
   cd ..
@@ -79,10 +96,18 @@ run_matter_labs_and_then_oz_tests() {
   echo "Running Open Zeppelin Tests"
 
   cd ./openzeppelin-contracts &&
-    npx hardhat compile --config ${HARDHAT_CONFIG_NAME}.js
-
-  npx hardhat test | tee "../$LOG_DIR/open-zeppelin-tests.log"
-  parse_hardhat_test_results "../$LOG_DIR/open-zeppelin-tests.log"
+    npm i --force &&
+    case "$USE_REVIVE" in
+    true)
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      ;;
+    *)
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      ;;
+    esac
+  parse_hardhat_test_results ".$LOG_DIR/open-zeppelin-tests.log"
 
   echo "Test Run Complete"
 }
@@ -143,7 +168,7 @@ case "$chain" in
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
   export USE_REVIVE="false"
   export NETWORK_URL="https://polygon-mainnet.infura.io/v3/${PRIVATE_KEY}"
-  export CHAIN_ID=157
+  export CHAIN_ID=137
   export NETWORK_NAME="polygon"
   ;;
 --arbitrum)
@@ -161,6 +186,7 @@ case "$chain" in
   export ADAPTER_PATH=$adapterPath
   export COMPILER_PATH=$compilerPath
   export USE_FORKING="false"
+  export NETWORK_NAME="hardhat"
   ;;
 --westend)
   export HARDHAT_CONFIG_NAME="hardhat.config"
@@ -170,6 +196,7 @@ case "$chain" in
   export NODE_PATH=$nodePath
   export ADAPTER_PATH=$adapterPath
   export COMPILER_PATH=$compilerPath
+  export NETWORK_NAME="localhost"
   ;;
 --endpoint | -e)
   if [ "${USER_REVIVE}" = "true" ]; then

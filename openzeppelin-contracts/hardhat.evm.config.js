@@ -105,10 +105,18 @@ module.exports = {
       // we rely on the `code-size` compiler warning, that will cause a compilation error.
       allowUnlimitedContractSize: true,
       initialBaseFeePerGas: argv.coverage ? 0 : undefined,
-    },
-    [networkName]: {
       chainId: parseInt(`${chainId}`),
-      url: `${rpcUrl}`,
+      forking: {
+        url: `${rpcUrl}`
+      },
+      chains: {
+        1: {
+          hardforkHistory: {
+            berlin: 10000000,
+            london: 20000000,
+          },
+        }
+      },
     },
   },
   exposed: {
