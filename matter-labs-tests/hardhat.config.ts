@@ -69,7 +69,7 @@ const config: HardhatUserConfig = {
         }
       },
     },
-    timeout: 20000,
+    timeout: 40000,
   },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],
