@@ -76,7 +76,7 @@ run_open_zeppelin_tests() {
 
 run_matter_labs_and_then_oz_tests() {
   echo "Running Matter Labs EVM Tests" &&
-    cd ./matter-labs-tests/contracts &&
+    cd ./matter-labs-tests &&
     npm i --force &&
     cd .. &&
     git submodule update --init --recursive &&
