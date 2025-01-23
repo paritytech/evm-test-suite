@@ -3,6 +3,10 @@
 chain=$1
 url=$2
 tests=$3
+nodePath=$4
+adapterPath=$5
+compilerPath=$6
+forking=$7
 
 total_tests=0
 total_passed=0
@@ -15,18 +19,18 @@ mkdir -p "./output-logs"
 OS_NAME=$(uname)
 
 case "$OS_NAME" in
-  "Darwin")
-    export NETWORK_DIR="macOS"
-    chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
-    ;;
-  "Linux")
-    export NETWORK_DIR="linux"
-    chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
-    ;;
-  *)
-    export NETWORK_DIR="linux"
-    chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
-    ;;
+"Darwin")
+  export NETWORK_DIR="macOS"
+  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  ;;
+"Linux")
+  export NETWORK_DIR="linux"
+  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  ;;
+*)
+  export NETWORK_DIR="linux"
+  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  ;;
 esac
 
 chmod +x ./networks/westend/${NETWORK_DIR}/eth-rpc
@@ -38,35 +42,34 @@ run_matter_labs_tests() {
     yarn install &&
     git submodule update --init --recursive &&
     TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
-  npx hardhat test --config ./${HARDHAT_CONFIG_NAME} | tee "$TEST_LOG"
+    npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee "$TEST_LOG" &&
   parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
 }
 
 run_open_zeppelin_tests() {
-    echo "Running Open Zeppelin EVM Tests" &&
+  echo "Running Open Zeppelin EVM Tests" &&
     cd ./openzeppelin-contracts &&
     npm i &&
     git submodule update --init --recursive &&
     TEST_LOG="../$LOG_DIR/open-zeppelin-tests.log" &&
-  npx hardhat test --config ./${HARDHAT_CONFIG_NAME} | tee "$TEST_LOG"
-  parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log" 
+    npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee "$TEST_LOG"
+  parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
 }
 
 run_matter_labs_and_then_oz_tests() {
   echo "Running Matter Labs EVM Tests" &&
-  cd ./matter-labs-tests/contracts &&
-  npm i &&
-  cd .. &&
-  git submodule update --init --recursive &&
-
-  case "$USE_REVIVE" in
+    cd ./matter-labs-tests/contracts &&
+    npm i &&
+    cd .. &&
+    git submodule update --init --recursive &&
+    case "$USE_REVIVE" in
     true)
-      npx hardhat compile --config hardhat.config
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
       ;;
     *)
-      npx hardhat compile --config hardhat.evm.config --network ${chain}
+      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts --network ${chain}
       ;;
-  esac
+    esac
 
   npx hardhat test | tee "../$LOG_DIR/matter-labs-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/matter-labs-tests.log"
@@ -76,8 +79,7 @@ run_matter_labs_and_then_oz_tests() {
   echo "Running Open Zeppelin Tests"
 
   cd ./openzeppelin-contracts &&
-
-  npx hardhat compile --config ${HARDHAT_CONFIG_NAME}.js
+    npx hardhat compile --config ${HARDHAT_CONFIG_NAME}.js
 
   npx hardhat test | tee "../$LOG_DIR/open-zeppelin-tests.log"
   parse_hardhat_test_results "../$LOG_DIR/open-zeppelin-tests.log"
@@ -155,22 +157,30 @@ case "$chain" in
   export HARDHAT_CONFIG_NAME="hardhat.config"
   export USE_REVIVE="true"
   export NETWORK_URL="http://localhost:8545"
+  export NODE_PATH=$nodePath
+  export ADAPTER_PATH=$adapterPath
+  export COMPILER_PATH=$compilerPath
+  export USE_FORKING=$forking
+
   ;;
 --westend)
   export HARDHAT_CONFIG_NAME="hardhat.config"
   export USE_REVIVE="true"
   export NETWORK_URL="http://localhost:8545"
   export USE_FORKING="true"
+  export NODE_PATH=$nodePath
+  export ADAPTER_PATH=$adapterPath
+  export COMPILER_PATH=$compilerPath
   ;;
 --endpoint | -e)
   if [ "${USER_REVIVE}" = "true" ]; then
-    export HARDHAT_CONFIG_NAME="revive.config"
-  else
     export HARDHAT_CONFIG_NAME="hardhat.config"
+  else
+    export HARDHAT_CONFIG_NAME="hardhat.evm.config"
   fi
   ;;
 *)
-  export HARDHAT_CONFIG_NAME="ethereum.config"
+  export HARDHAT_CONFIG_NAME="hardhat.evm.config"
   export USE_REVIVE="false"
   export NETWORK_URL="https://ethereum-rpc.publicnode.com"
   export CHAIN_ID=1
@@ -180,195 +190,194 @@ esac
 echo $chain
 
 case "$chain" in
-  --ethereum)
-    echo "Cleaning up"
-    rm -rf ./output-logs/geth-output.log
-    echo "Starting Geth Ethereum Node"
-    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json && \
-      ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
+--ethereum)
+  echo "Cleaning up"
+  rm -rf ./output-logs/geth-output.log
+  echo "Starting Geth Ethereum Node"
+  ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json &&
+    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
       --port 30304 --http --http.addr "localhost" --http.port 8545 --http.corsdomain="*" \
-      --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 > ./output-logs/geth-output.log 2>&1 &
-    
-    echo "Waiting for the Geth to start..."
+      --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 >./output-logs/geth-output.log 2>&1 &
 
-    while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
-      sleep 1
-    done
-    ;;
+  echo "Waiting for the Geth to start..."
 
-  --acala)
-    echo "Cleaning up"
-    rm -rf ./output-logs/acala-chopsticks-output.log
-    echo "Starting Chopsticks instance"
-    yarn add @acala-network/chopsticks@latest &&
-      npx @acala-network/chopsticks@latest --endpoint=wss://acala-rpc-2.aca-api.network/ws > ./output-logs/acala-chopsticks-output.log 2>&1 &
-    echo "Waiting for the Chopsticks to start on ws://[::]:8000..."
+  while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
+    sleep 1
+  done
+  ;;
 
-    while ! grep -q "app: " ./output-logs/acala-chopsticks-output.log; do
-      sleep 1
-    done
+--acala)
+  echo "Cleaning up"
+  rm -rf ./output-logs/acala-chopsticks-output.log
+  echo "Starting Chopsticks instance"
+  yarn add @acala-network/chopsticks@latest &&
+    npx @acala-network/chopsticks@latest --endpoint=wss://acala-rpc-2.aca-api.network/ws >./output-logs/acala-chopsticks-output.log 2>&1 &
+  echo "Waiting for the Chopsticks to start on ws://[::]:8000..."
 
-    echo "Chopsticks instance now running on ws://[::]:8000."
+  while ! grep -q "app: " ./output-logs/acala-chopsticks-output.log; do
+    sleep 1
+  done
 
-    echo "Starting Eth RPC Adapter instance"
-    yarn add @acala-network/eth-rpc-adapter@latest &&
-      npx @acala-network/eth-rpc-adapter --endpoint ws://localhost:8000 > ./output-logs/acala-eth-adapter-output.log 2>&1 &
-    echo "Waiting for the eth-rpc-adapter to start on port 8545..."
+  echo "Chopsticks instance now running on ws://[::]:8000."
 
-    while ! grep -q "🚀 SERVER STARTED 🚀" ./output-logs/acala-eth-adapter-output.log; do
-      sleep 1
-    done
+  echo "Starting Eth RPC Adapter instance"
+  yarn add @acala-network/eth-rpc-adapter@latest &&
+    npx @acala-network/eth-rpc-adapter --endpoint ws://localhost:8000 >./output-logs/acala-eth-adapter-output.log 2>&1 &
+  echo "Waiting for the eth-rpc-adapter to start on port 8545..."
 
-    echo "The eth-rpc-adapter is now running on ws://[::]:8545."
-    ;;
+  while ! grep -q "🚀 SERVER STARTED 🚀" ./output-logs/acala-eth-adapter-output.log; do
+    sleep 1
+  done
 
-  --astar)
-    echo "Cleaning up"
-    rm -rf ./output-logs/astar-chopsticks-output.log
-    echo "Starting Chopsticks instance"
-    yarn add @acala-network/chopsticks@latest &&
-      npx @acala-network/chopsticks@latest --endpoint=wss://rpc.astar.network > ./output-logs/astar-chopsticks-output.log 2>&1 &
-    echo "Waiting for the Chopsticks to start on ws://[::]:8000..."
+  echo "The eth-rpc-adapter is now running on ws://[::]:8545."
+  ;;
 
-    while ! grep -q "app: " ./output-logs/astar-chopsticks-output.log; do
-      sleep 1
-    done
+--astar)
+  echo "Cleaning up"
+  rm -rf ./output-logs/astar-chopsticks-output.log
+  echo "Starting Chopsticks instance"
+  yarn add @acala-network/chopsticks@latest &&
+    npx @acala-network/chopsticks@latest --endpoint=wss://rpc.astar.network >./output-logs/astar-chopsticks-output.log 2>&1 &
+  echo "Waiting for the Chopsticks to start on ws://[::]:8000..."
 
-    echo "Chopsticks instance now running on ws://[::]:8000."
-    ;;
+  while ! grep -q "app: " ./output-logs/astar-chopsticks-output.log; do
+    sleep 1
+  done
 
-  --kitchensink)
-    echo "Runninc Kitchensink"
-    ;;
+  echo "Chopsticks instance now running on ws://[::]:8000."
+  ;;
 
-  --westend)
-    echo "Forking Asset Hub Westend"
-    ;;
+--kitchensink)
+  echo "Runninc Kitchensink"
+  ;;
 
-  *)
-    echo "Unknown chain: $chain"
-    ;;
+--westend)
+  echo "Forking Asset Hub Westend"
+  ;;
+
+*)
+  echo "Unknown chain: $chain"
+  ;;
 esac
 
 case "$chain" in
-  --ethereum)
-    case "$tests" in
-      --matter-labs)
-        run_matter_labs_tests
-        sleep 1
-        kill -9 $(lsof -t -i:30304)
-        echo "Geth Ethereum Node Stopped"
-        ;;
-      --open-zeppelin)
-        run_open_zeppelin_tests
-        sleep 1
-        kill -9 $(lsof -t -i:30304)
-        echo "Geth Ethereum Node Stopped"
-        ;;
-      *)
-        run_matter_labs_and_then_oz_tests
-        sleep 1
-        kill -9 $(lsof -t -i:30304)
-        echo "Geth Ethereum Node Stopped"
-        ;;
-    esac
+--ethereum)
+  case "$tests" in
+  --matter-labs)
+    run_matter_labs_tests
+    sleep 1
+    kill -9 $(lsof -t -i:30304)
+    echo "Geth Ethereum Node Stopped"
     ;;
-    
-  --acala)
-    case "$tests" in
-      --matter-labs)
-        run_matter_labs_tests
-        sleep 1
-        kill -9 $(lsof -t -i:8545)
-        echo "Eth RPC Adapter Instance Stopped"
-        kill -9 $(lsof -t -i:8000)
-        echo "Chopsticks Instance Stopped"
-        ;;
-      --open-zeppelin)
-        run_open_zeppelin_tests
-        sleep 1
-        kill -9 $(lsof -t -i:8545)
-        echo "Eth RPC Adapter Instance Stopped"
-        kill -9 $(lsof -t -i:8000)
-        echo "Chopsticks Instance Stopped"
-        ;;
-      *)
-        run_matter_labs_and_then_oz_tests
-        sleep 1
-        kill -9 $(lsof -t -i:8545)
-        echo "Eth RPC Adapter Instance Stopped"
-        kill -9 $(lsof -t -i:8000)
-        echo "Chopsticks Instance Stopped"
-        ;;
-    esac
+  --open-zeppelin)
+    run_open_zeppelin_tests
+    sleep 1
+    kill -9 $(lsof -t -i:30304)
+    echo "Geth Ethereum Node Stopped"
     ;;
-    
-  --astar)
-    case "$tests" in
-      --matter-labs)
-        run_matter_labs_tests
-        sleep 1
-        kill -9 $(lsof -t -i:800)
-        echo "Chopsticks Instance Stopped"
-        ;;
-      --open-zeppelin)
-        run_open_zeppelin_tests
-        sleep 1
-        kill -9 $(lsof -t -i:8000)
-        echo "Chopsticks Instance Stopped"
-        ;;
-      *)
-        run_matter_labs_and_then_oz_tests
-        sleep 1
-        kill -9 $(lsof -t -i:8000)
-        echo "Chopsticks Instance Stopped"
-        ;;
-    esac
-    ;;
-    
-  --kitchensink)
-    case "$tests" in
-      --matter-labs)
-        run_matter_labs_tests
-        ;;
-      --open-zeppelin)
-        run_open_zeppelin_tests
-        ;;
-      *)
-        run_matter_labs_and_then_oz_tests
-        ;;
-    esac
-    ;;
-    
-  --westend)
-    case "$tests" in
-      --matter-labs)
-        run_matter_labs_tests
-        ;;
-      --open-zeppelin)
-        run_open_zeppelin_tests
-        ;;
-      *)
-        run_matter_labs_and_then_oz_tests
-        ;;
-    esac
-    ;;
-    
   *)
-    case "$tests" in
-      --matter-labs)
-        run_matter_labs_tests
-        ;;
-      --open-zeppelin)
-        run_open_zeppelin_tests
-        ;;
-      *)
-        run_matter_labs_and_then_oz_tests
-        ;;
-    esac
+    run_matter_labs_and_then_oz_tests
+    sleep 1
+    kill -9 $(lsof -t -i:30304)
+    echo "Geth Ethereum Node Stopped"
     ;;
-esac
+  esac
+  ;;
 
+--acala)
+  case "$tests" in
+  --matter-labs)
+    run_matter_labs_tests
+    sleep 1
+    kill -9 $(lsof -t -i:8545)
+    echo "Eth RPC Adapter Instance Stopped"
+    kill -9 $(lsof -t -i:8000)
+    echo "Chopsticks Instance Stopped"
+    ;;
+  --open-zeppelin)
+    run_open_zeppelin_tests
+    sleep 1
+    kill -9 $(lsof -t -i:8545)
+    echo "Eth RPC Adapter Instance Stopped"
+    kill -9 $(lsof -t -i:8000)
+    echo "Chopsticks Instance Stopped"
+    ;;
+  *)
+    run_matter_labs_and_then_oz_tests
+    sleep 1
+    kill -9 $(lsof -t -i:8545)
+    echo "Eth RPC Adapter Instance Stopped"
+    kill -9 $(lsof -t -i:8000)
+    echo "Chopsticks Instance Stopped"
+    ;;
+  esac
+  ;;
+
+--astar)
+  case "$tests" in
+  --matter-labs)
+    run_matter_labs_tests
+    sleep 1
+    kill -9 $(lsof -t -i:800)
+    echo "Chopsticks Instance Stopped"
+    ;;
+  --open-zeppelin)
+    run_open_zeppelin_tests
+    sleep 1
+    kill -9 $(lsof -t -i:8000)
+    echo "Chopsticks Instance Stopped"
+    ;;
+  *)
+    run_matter_labs_and_then_oz_tests
+    sleep 1
+    kill -9 $(lsof -t -i:8000)
+    echo "Chopsticks Instance Stopped"
+    ;;
+  esac
+  ;;
+
+--kitchensink)
+  case "$tests" in
+  --matter-labs)
+    run_matter_labs_tests
+    ;;
+  --open-zeppelin)
+    run_open_zeppelin_tests
+    ;;
+  *)
+    run_matter_labs_and_then_oz_tests
+    ;;
+  esac
+  ;;
+
+--westend)
+  case "$tests" in
+  --matter-labs)
+    run_matter_labs_tests
+    ;;
+  --open-zeppelin)
+    run_open_zeppelin_tests
+    ;;
+  *)
+    run_matter_labs_and_then_oz_tests
+    ;;
+  esac
+  ;;
+
+*)
+  case "$tests" in
+  --matter-labs)
+    run_matter_labs_tests
+    ;;
+  --open-zeppelin)
+    run_open_zeppelin_tests
+    ;;
+  *)
+    run_matter_labs_and_then_oz_tests
+    ;;
+  esac
+  ;;
+esac
 
 echo "Final Test Summary:"
 echo "Total: $total_tests | Passed: $total_passed | Failed: $total_failed"

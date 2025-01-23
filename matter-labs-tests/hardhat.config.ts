@@ -42,6 +42,12 @@ const DEFAULT_COMPILER_SETTINGS = {
   version: '0.8.23',
 }
 
+const nodePath = process.env.NODE_PATH;
+const adapterPath = process.env.ADAPTER_PATH;
+const compilerPath = process.env.COMPILER_PATH;
+const useForking = process.env.USE_FORKING;
+const rpcUrl = process.env.NETWORK_URL;
+
 const config: HardhatUserConfig = {
     paths: {
     sources: "./contracts/era-compiler-tests/solidity/simple",
@@ -54,7 +60,6 @@ const config: HardhatUserConfig = {
       beforeAll: async function () {
         console.log("Running setup script before tests...");
         
-        // Run the setup script
         try {
           // Ensure the script is being executed correctly
           execSync(`npx hardhat run scripts/endowAccounts.ts --network localhost --no-compile`, { stdio: "inherit" });
@@ -97,13 +102,18 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       polkavm: true,
+      forking: `${useForking}` === "true"
+      ? {
+        url: `${rpcUrl}`,
+      }
+      : undefined,
       nodeConfig: {
-      nodeBinaryPath: 'path/to/substrate-node/binary',
+      nodeBinaryPath: `${nodePath}`,
         rpcPort: 8000,
         dev: true,
       },
       adapterConfig: {
-        adapterBinaryPath: 'path/to/eth-rpc/binary',
+        adapterBinaryPath: `${adapterPath}`,
         dev: true,
       }
     },
@@ -116,7 +126,7 @@ const config: HardhatUserConfig = {
         runs: 400
       },
       evmVersion: "istanbul",
-      compilerPath: "path/to/resolc",
+      compilerPath: `${compilerPath}`,
       standardJson: true,
     },
   },
