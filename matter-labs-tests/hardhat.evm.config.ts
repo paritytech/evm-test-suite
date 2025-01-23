@@ -57,6 +57,14 @@ const config: HardhatUserConfig = {
       forking: {
         url: `${rpcUrl}`
       },
+      chains: {
+        1: {
+          hardforkHistory: {
+            berlin: 10000000,
+            london: 20000000,
+          },
+        }
+      },
     }
   },
 };
