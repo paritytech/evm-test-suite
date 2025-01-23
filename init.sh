@@ -93,7 +93,6 @@ run_matter_labs_and_then_oz_tests() {
   cd ..
 
   echo "Running Open Zeppelin Tests"
-  echo "CURRENT DIR--- ${PWD}"
   cd ./openzeppelin-contracts &&
     npm i --force &&
     case "$USE_REVIVE" in
