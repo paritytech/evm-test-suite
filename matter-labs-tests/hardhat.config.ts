@@ -49,7 +49,7 @@ const useForking = process.env.USE_FORKING;
 const rpcUrl = process.env.NETWORK_URL;
 
 const config: HardhatUserConfig = {
-    paths: {
+  paths: {
     sources: "./contracts/era-compiler-tests/solidity/simple",
     tests: "./test",
     cache: "./cache-pvm",
@@ -59,7 +59,7 @@ const config: HardhatUserConfig = {
     rootHooks: {
       beforeAll: async function () {
         console.log("Running setup script before tests...");
-        
+
         try {
           // Ensure the script is being executed correctly
           execSync(`npx hardhat run scripts/endowAccounts.ts --network localhost --no-compile`, { stdio: "inherit" });
@@ -67,10 +67,11 @@ const config: HardhatUserConfig = {
           console.error("Error executing script:", error);
           process.exitCode = 1;
         }
-          },
-    }, 
+      },
+    },
+    timeout: 20000,
   },
-    solidity: {
+  solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],
     settings: {
       optimizer: {
@@ -84,9 +85,9 @@ const config: HardhatUserConfig = {
         bytecodeHash: 'none',
       },
     },
-  },  
+  },
   networks: {
-    localhost : {
+    localhost: {
       accounts: [
         '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133',
         '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5b0000a702133',
@@ -98,17 +99,17 @@ const config: HardhatUserConfig = {
         '0x5fb92d6e9884f768de468fa3f6275af5b0000a7021338f8807c48bebc13595d4',
         '0x5fb92d6de468fa3f6275af5b0000a7021338f8807c48bebc13595d46e98884f7',
         '0x5fb92d6e98884f76de468fa3f6275af5b0000a7021338f8807c48be3595d4bc1',
-    ]
+      ]
     },
     hardhat: {
       polkavm: true,
       forking: `${useForking}` === "true"
-      ? {
-        url: `${rpcUrl}`,
-      }
-      : undefined,
+        ? {
+          url: `${rpcUrl}`,
+        }
+        : undefined,
       nodeConfig: {
-      nodeBinaryPath: `${nodePath}`,
+        nodeBinaryPath: `${nodePath}`,
         rpcPort: 8000,
         dev: true,
       },
@@ -123,7 +124,6 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 400
       },
       evmVersion: "istanbul",
       compilerPath: `${compilerPath}`,

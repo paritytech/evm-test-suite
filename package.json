@@ -28,13 +28,7 @@
     "solidity-coverage": "^0.8.1",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.0",
-    "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "@acala-network/api": "^6.2.0",
-    "@acala-network/chopsticks": "^1.0.1",
-    "@acala-network/eth-rpc-adapter": "^2.9.5",
-    "@acala-network/types": "^6.2.0",
+    "typescript": "^5.6.3",
     "hardhat-resolc": "^0.0.4",
     "hardhat-revive-node": "^0.0.3"
   }

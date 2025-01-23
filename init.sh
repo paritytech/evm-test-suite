@@ -3,10 +3,10 @@
 chain=$1
 url=$2
 tests=$3
-nodePath=$4
-adapterPath=$5
-compilerPath=$6
-forking=$7
+forking=$4
+nodePath=$5
+adapterPath=$6
+compilerPath=$7
 
 total_tests=0
 total_passed=0
@@ -160,8 +160,7 @@ case "$chain" in
   export NODE_PATH=$nodePath
   export ADAPTER_PATH=$adapterPath
   export COMPILER_PATH=$compilerPath
-  export USE_FORKING=$forking
-
+  export USE_FORKING="false"
   ;;
 --westend)
   export HARDHAT_CONFIG_NAME="hardhat.config"
