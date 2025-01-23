@@ -65,6 +65,9 @@ require('solidity-coverage');
 require('solidity-docgen');
 require('hardhat-resolc');
 require('hardhat-revive-node');
+// require('../../hardhat-revive/packages/hardhat-resolc')
+// require('../../hardhat-revive/packages/hardhat-revive-node')
+
 
 const nodePath = process.env.NODE_PATH;
 const adapterPath = process.env.ADAPTER_PATH;
@@ -155,7 +158,10 @@ module.exports = {
       beforeAll: async function () {
         console.log("Running setup script before tests...");
         try {
+          console.log('now', __dirname)
+
           const _ = execSync(`npx hardhat run scripts/endowAccounts.js --network localhost --no-compile`, { stdio: "inherit" });
+          // console.log(execSync('../../../revive/target/release/resolc --version'))
         } catch (error) {
           console.error("Error executing script:", error);
           process.exitCode = 1;
@@ -195,7 +201,7 @@ module.exports = {
 
 /**
  *  **setCode**
- * erc4337-entrypoint.js uses  
+ * erc4337-entrypoint.js uses
  * Packing.test.js uses forceDeployCode but might be changed
  * draft-ERC4337Utils.test.js has some instances of deployEntrypoint(), which uses forceDeployCode(), which uses deployEntrypoint()
  * Packing.test.js could be salvaged

@@ -1306,7 +1306,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^22.10.2":
   version: 22.10.5
   resolution: "@types/node@npm:22.10.5"
   dependencies:
@@ -1328,15 +1328,6 @@ __metadata:
   version: 10.17.60
   resolution: "@types/node@npm:10.17.60"
   checksum: 10c0/0742294912a6e79786cdee9ed77cff6ee8ff007b55d8e21170fc3e5994ad3a8101fea741898091876f8dc32b0a5ae3d64537b7176799e92da56346028d2cbcd2
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^22.10.2":
-  version: 22.10.7
-  resolution: "@types/node@npm:22.10.7"
-  dependencies:
-    undici-types: "npm:~6.20.0"
-  checksum: 10c0/c941b4689dfc4044b64a5f601306cbcb0c7210be853ba378a5dd44137898c45accedd796ee002ad9407024cac7ecaf5049304951cb1d80ce3d7cebbbae56f20e
   languageName: node
   linkType: hard
 
@@ -2738,8 +2729,8 @@ __metadata:
     ethers: "npm:^6.13.5"
     hardhat: "npm:^2.22.17"
     hardhat-gas-reporter: "npm:^1.0.8"
-    hardhat-resolc: "npm:^0.0.3"
-    hardhat-revive-node: "npm:^0.0.2"
+    hardhat-resolc: "npm:^0.0.4"
+    hardhat-revive-node: "npm:^0.0.3"
     solc: "npm:^0.8.28"
     solidity-coverage: "npm:^0.8.1"
     typechain: "npm:8.3.2"
@@ -3228,9 +3219,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hardhat-resolc@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "hardhat-resolc@npm:0.0.3"
+"hardhat-resolc@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "hardhat-resolc@npm:0.0.4"
   dependencies:
     "@types/debug": "npm:^4"
     "@types/node": "npm:^22.10.2"
@@ -3239,13 +3230,13 @@ __metadata:
     solc: "npm:^0.8.28"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
-  checksum: 10c0/a2c5b23ab78a7779602d8379fc560b1ac425b7760da029c9547737e423b87ba5da81b85be095b160c74d6114a155827554a6ec45f3f8e90248ee78f72333550e
+  checksum: 10c0/1a6d7a58c95f7ae9b98b744e3fc07d189b10cb95b7991f423a8de2d009cc1b62c06c3e5fd39590608e10e85569ee4624f3526ef7b850bdfd13a7c21af24c883f
   languageName: node
   linkType: hard
 
-"hardhat-revive-node@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "hardhat-revive-node@npm:0.0.2"
+"hardhat-revive-node@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "hardhat-revive-node@npm:0.0.3"
   dependencies:
     "@types/debug": "npm:^4"
     "@types/fs-extra": "npm:^11.0.4"
@@ -3254,7 +3245,7 @@ __metadata:
     hardhat: "npm:^2.22.17"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
-  checksum: 10c0/84000a9eee154960fa70abada12a483ac92308f6241556a49f31605bffe80cfb6c307cdff4a74dd2067dda8aeb294e52bd60782b28754040b5aef81fb7a189dc
+  checksum: 10c0/b0c931f578c6824659b83efa7f3a24cc53c7ef77a4fc9a82adc4be6fdce6967f668449f4ad4a7002f53356e8dfad2d8a8f3e966c24097803076dc852ce289578
   languageName: node
   linkType: hard
 
