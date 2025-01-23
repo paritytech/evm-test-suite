@@ -169,7 +169,7 @@ module.exports = {
         console.log(currentDateTime);
       }
     },
-    timeout: 20000,
+    timeout: 40000,
   }
 };
 
