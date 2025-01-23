@@ -158,10 +158,7 @@ module.exports = {
       beforeAll: async function () {
         console.log("Running setup script before tests...");
         try {
-          console.log('now', __dirname)
-
           const _ = execSync(`npx hardhat run scripts/endowAccounts.js --network localhost --no-compile`, { stdio: "inherit" });
-          // console.log(execSync('../../../revive/target/release/resolc --version'))
         } catch (error) {
           console.error("Error executing script:", error);
           process.exitCode = 1;
