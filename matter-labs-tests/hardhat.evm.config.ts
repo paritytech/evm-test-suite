@@ -52,10 +52,12 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    [networkName as string]: {
+    hardhat: {
       chainId: parseInt(`${chainId}`),
-      url: `${rpcUrl}`,
-    },
+      forking: {
+        url: `${rpcUrl}`
+      },
+    }
   },
 };
 

@@ -65,9 +65,6 @@ require('solidity-coverage');
 require('solidity-docgen');
 require('hardhat-resolc');
 require('hardhat-revive-node');
-// require('../../hardhat-revive/packages/hardhat-resolc')
-// require('../../hardhat-revive/packages/hardhat-revive-node')
-
 
 const nodePath = process.env.NODE_PATH;
 const adapterPath = process.env.ADAPTER_PATH;
