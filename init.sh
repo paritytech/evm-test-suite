@@ -45,11 +45,11 @@ run_matter_labs_tests() {
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
       ;;
     *)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee ".$LOG_DIR/matter-labs-tests.log"
       ;;
     esac
   parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
@@ -64,11 +64,11 @@ run_open_zeppelin_tests() {
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
       ;;
     *)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee ".$LOG_DIR/matter-labs-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee ".$LOG_DIR/open-zeppelin-tests.log"
       ;;
     esac
   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
@@ -77,8 +77,7 @@ run_open_zeppelin_tests() {
 run_matter_labs_and_then_oz_tests() {
   echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
-    npm i --force &&
-    git submodule update --init --recursive &&
+    yarn install --force &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
@@ -94,7 +93,6 @@ run_matter_labs_and_then_oz_tests() {
   cd ..
 
   echo "Running Open Zeppelin Tests"
-
   cd ./openzeppelin-contracts &&
     npm i --force &&
     case "$USE_REVIVE" in
