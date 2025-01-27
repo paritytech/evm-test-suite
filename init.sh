@@ -74,7 +74,7 @@ run_open_zeppelin_tests() {
   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
 }
 
-run_matter_labs_and_then_oz_tests() {
+run_all_tests() {
   echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
     yarn install --force &&
@@ -300,7 +300,7 @@ case "$chain" in
     echo "Geth Ethereum Node Stopped"
     ;;
   *)
-    run_matter_labs_and_then_oz_tests
+    run_all_tests
     sleep 1
     kill -9 $(lsof -t -i:30304)
     echo "Geth Ethereum Node Stopped"
@@ -327,7 +327,7 @@ case "$chain" in
     echo "Chopsticks Instance Stopped"
     ;;
   *)
-    run_matter_labs_and_then_oz_tests
+    run_all_tests
     sleep 1
     kill -9 $(lsof -t -i:8545)
     echo "Eth RPC Adapter Instance Stopped"
@@ -352,7 +352,7 @@ case "$chain" in
     echo "Chopsticks Instance Stopped"
     ;;
   *)
-    run_matter_labs_and_then_oz_tests
+    run_all_tests
     sleep 1
     kill -9 $(lsof -t -i:8000)
     echo "Chopsticks Instance Stopped"
@@ -369,7 +369,7 @@ case "$chain" in
     run_open_zeppelin_tests
     ;;
   *)
-    run_matter_labs_and_then_oz_tests
+    run_all_tests
     ;;
   esac
   ;;
@@ -383,7 +383,7 @@ case "$chain" in
     run_open_zeppelin_tests
     ;;
   *)
-    run_matter_labs_and_then_oz_tests
+    run_all_tests
     ;;
   esac
   ;;
@@ -397,7 +397,7 @@ case "$chain" in
     run_open_zeppelin_tests
     ;;
   *)
-    run_matter_labs_and_then_oz_tests
+    run_all_tests
     ;;
   esac
   ;;

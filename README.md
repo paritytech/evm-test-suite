@@ -94,6 +94,10 @@ check inside pallet revive's [`Cargo.toml`](https://github.com/paritytech/revive
 in order to see which commit of the polkadot-sdk you should use to build the
 `substrate-node` and `eth-rpc` binaries.
 
+## Contribute
+
+Need help or want to contribute ideas or code? Head over to our [CONTRIBUTING](CONTRIBUTING.md) doc for more information.
+
 **NOTE**
 
 Some tests are expected to fail, and being actively worked on. Specifically, there
