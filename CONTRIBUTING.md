@@ -24,7 +24,7 @@ where reviewers will be able to review your changes made.
     - Update the `$test` cases in the [chain selector](init.sh#L287-L404) to include
     the new test option.
     - Update the references in this file.
--   Run the [`init.sh`](init.sh) script to against ethereum and Westend by running:
+-   Run the [`init.sh`](init.sh) script against Ethereum and Westend by running:
     ```bash
     ./init.sh --ethereum
     ./init.sh --kitchensink -- -- -- <PATH_TO_NODE> <PATH_TO_ADAPTER> <PATH_TO_RESOLC>
