@@ -26,3 +26,6 @@ networks/ethereum/node1/*
 # Tests logs
 test-logs
 output-logs
+
+# DS_Store
+.DS_Store
