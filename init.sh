@@ -37,7 +37,8 @@ chmod +x ./networks/westend/${NETWORK_DIR}/eth-rpc
 chmod +x ./networks/westend/${NETWORK_DIR}/substrate-node
 
 run_matter_labs_tests() {
-  echo "Running Matter Labs EVM Tests" &&
+  npm i &&
+    echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
     yarn install &&
     git submodule update --init --recursive &&
@@ -56,7 +57,8 @@ run_matter_labs_tests() {
 }
 
 run_open_zeppelin_tests() {
-  echo "Running Open Zeppelin EVM Tests" &&
+  npm i &&
+    echo "Running Open Zeppelin EVM Tests" &&
     cd ./openzeppelin-contracts &&
     npm i --force &&
     git submodule update --init --recursive &&
@@ -75,7 +77,8 @@ run_open_zeppelin_tests() {
 }
 
 run_all_tests() {
-  echo "Running Matter Labs EVM Tests" &&
+  npm i &&
+    echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
     yarn install --force &&
     case "$USE_REVIVE" in
