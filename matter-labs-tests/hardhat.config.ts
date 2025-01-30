@@ -13,6 +13,8 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
     return (
       !p.includes("/constructor") // ignore because hardhat typechain TypeError: (fileReexports[path] || []).sort is not a function - 9 solidity files
       && !p.includes("/function") // ignore because CompilerError: Stack too deep. Try compiling with `--via-ir` (cli) -  32 solidity files
+      && !p.includes("/simple/call_chain") // ignore because CodeNotFound
+      && !p.includes("/simple/gas_value") // ignore because CodeNotFound
       && !p.includes("/loop") // ignore because SyntaxError: Identifier expected. 'for' is a reserved word that cannot be used here - 38 solidity files
       && !p.includes("/return") // SyntaxError: Identifier expected. 'return' is a reserved word that cannot be used here - 10 solidity files
       && !p.includes("/simple/yul_instructions/returndatasize.sol") // ignore becuase SyntaxError: Identifier expected. 'return' is a reserved word that cannot be used here
@@ -27,9 +29,14 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
       && !p.includes("/internal_function_pointers/legacy/invalidStoredInConstructor.sol") // ignore because requires 0.4.21
       && !p.includes("/internal_function_pointers/legacy/store2.sol") // ignore because requires 0.4.21
       && !p.includes("/internal_function_pointers/legacy/storeInConstructor.sol") // ignore because requires 0.4.21
+      && !p.includes("/internal_function_pointers/mixed_features_2.sol") // ignore because CodeNotFound
       && !p.includes("/simple/system/difficulty_returndata.sol") // ignore because ParserError: Source file requires different compiler version (current compiler is 0.8.25+commit.b61c2a91.Darwin.appleclang)
       && !p.includes("/simple/system/msize_returndata.sol") // ignore because The msize instruction cannot be used when the Yul optimizer is activated because it can change its semantics. Either disable the Yul optimizer or do not use the instruction.
       && !p.includes("/simple/system/prevrandao_returndata.sol") // ignore because Function "prevrandao" not found.
+      && !p.includes("/simple/algorithm/arrays/standard_functions.sol") // ignore because size limitations.
+      && !p.includes("/simple/algorithm/arrays/standard_functions_high_order.sol") // ignore because size limitations.
+      && !p.includes("/simple/algorithm/long_arithmetic.sol") // ignore because size limitations.
+      && !p.includes("/simple/modular/addmod_complex.sol") // ignore because size limitations.
       && !p.includes('/basefee.sol') // ignore because not implemented in the compiler yet
       && !p.includes('/trycatch.sol') // ignore because ParserError: Source file requires different compiler version (current compiler is 0.8.25+commit.b61c2a91.Darwin.appleclang) - note that nightly builds are considered to be strictly less than the released version
       && !p.includes('/coinbase.sol') // ignore because not implemented in the compiler yet
