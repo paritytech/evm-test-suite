@@ -58,9 +58,9 @@ const rpcUrl = process.env.NETWORK_URL;
 const config: HardhatUserConfig = {
   paths: {
     sources: "./contracts/era-compiler-tests/solidity/simple",
-    tests: "./test",
-    cache: "./cache-pvm",
-    artifacts: "./artifacts-pvm"
+    // tests: "./test",
+    // cache: "./cache-pvm",
+    // artifacts: "./artifacts-pvm"
   },
   mocha: {
     rootHooks: {
