@@ -132,7 +132,7 @@ const config: HardhatUserConfig = {
       optimizer: {
         enabled: true,
       },
-      evmVersion: "istanbul",
+      // evmVersion: "istanbul",
       compilerPath: `${compilerPath}`,
       standardJson: true,
     },
