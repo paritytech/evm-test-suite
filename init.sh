@@ -33,9 +33,6 @@ case "$OS_NAME" in
   ;;
 esac
 
-chmod +x ./networks/westend/${NETWORK_DIR}/eth-rpc
-chmod +x ./networks/westend/${NETWORK_DIR}/substrate-node
-
 run_matter_labs_tests() {
   npm i &&
     echo "Running Matter Labs EVM Tests" &&
