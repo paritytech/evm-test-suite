@@ -46,11 +46,11 @@ run_matter_labs_tests() {
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
       ;;
     *)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee ".$LOG_DIR/matter-labs-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --no-compile | tee ".$LOG_DIR/matter-labs-tests.log"
       ;;
     esac
   parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
@@ -66,11 +66,11 @@ run_open_zeppelin_tests() {
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
       ;;
     *)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile | tee ".$LOG_DIR/open-zeppelin-tests.log"
       ;;
     esac
   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
@@ -84,11 +84,11 @@ run_all_tests() {
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/matter-labs-tests.log"
       ;;
     *)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts | tee "../$LOG_DIR/matter-labs-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.ts --no-compile | tee "../$LOG_DIR/matter-labs-tests.log"
       ;;
     esac
   parse_hardhat_test_results "../$LOG_DIR/matter-labs-tests.log"
@@ -101,11 +101,11 @@ run_all_tests() {
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
       ;;
     *)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js | tee ".$LOG_DIR/open-zeppelin-tests.log"
+      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile | tee ".$LOG_DIR/open-zeppelin-tests.log"
       ;;
     esac
   parse_hardhat_test_results ".$LOG_DIR/open-zeppelin-tests.log"
