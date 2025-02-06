@@ -33,14 +33,11 @@ case "$OS_NAME" in
   ;;
 esac
 
-chmod +x ./networks/westend/${NETWORK_DIR}/eth-rpc
-chmod +x ./networks/westend/${NETWORK_DIR}/substrate-node
-
 run_matter_labs_tests() {
   npm i &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
-    yarn install &&
+    npm i --force &&
     git submodule update --init --recursive &&
     TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
     case "$USE_REVIVE" in
@@ -80,7 +77,7 @@ run_all_tests() {
   npm i &&
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
-    yarn install --force &&
+    npm i --force &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
@@ -237,8 +234,7 @@ case "$chain" in
   echo "Cleaning up"
   rm -rf ./output-logs/acala-chopsticks-output.log
   echo "Starting Chopsticks instance"
-  yarn add @acala-network/chopsticks@latest &&
-    npx @acala-network/chopsticks@latest --endpoint=wss://acala-rpc-2.aca-api.network/ws >./output-logs/acala-chopsticks-output.log 2>&1 &
+  npx @acala-network/chopsticks@latest --endpoint=wss://acala-rpc-2.aca-api.network/ws >./output-logs/acala-chopsticks-output.log 2>&1 &
   echo "Waiting for the Chopsticks to start on ws://[::]:8000..."
 
   while ! grep -q "app: " ./output-logs/acala-chopsticks-output.log; do
@@ -248,8 +244,7 @@ case "$chain" in
   echo "Chopsticks instance now running on ws://[::]:8000."
 
   echo "Starting Eth RPC Adapter instance"
-  yarn add @acala-network/eth-rpc-adapter@latest &&
-    npx @acala-network/eth-rpc-adapter --endpoint ws://localhost:8000 >./output-logs/acala-eth-adapter-output.log 2>&1 &
+  npx @acala-network/eth-rpc-adapter --endpoint ws://localhost:8000 >./output-logs/acala-eth-adapter-output.log 2>&1 &
   echo "Waiting for the eth-rpc-adapter to start on port 8545..."
 
   while ! grep -q "🚀 SERVER STARTED 🚀" ./output-logs/acala-eth-adapter-output.log; do
@@ -263,8 +258,7 @@ case "$chain" in
   echo "Cleaning up"
   rm -rf ./output-logs/astar-chopsticks-output.log
   echo "Starting Chopsticks instance"
-  yarn add @acala-network/chopsticks@latest &&
-    npx @acala-network/chopsticks@latest --endpoint=wss://rpc.astar.network >./output-logs/astar-chopsticks-output.log 2>&1 &
+  npx @acala-network/chopsticks@latest --endpoint=wss://rpc.astar.network >./output-logs/astar-chopsticks-output.log 2>&1 &
   echo "Waiting for the Chopsticks to start on ws://[::]:8000..."
 
   while ! grep -q "app: " ./output-logs/astar-chopsticks-output.log; do
@@ -275,7 +269,7 @@ case "$chain" in
   ;;
 
 --kitchensink)
-  echo "Runninc Kitchensink"
+  echo "Running Kitchensink"
   ;;
 
 --westend)
