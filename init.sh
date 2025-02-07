@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euxo pipefail
+set -eux
 
 chain=$1
 url=$2
