@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -eux
+
 chain=$1
 url=$2
 tests=$3
