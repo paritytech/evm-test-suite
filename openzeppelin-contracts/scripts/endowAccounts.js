@@ -2,9 +2,8 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-  for (signer of signers.slice(1)) {
-    const balance = await ethers.provider.getBalance(signer);
-
+  const signers = await ethers.getSigners();
+  for (const signer of signers.slice(1)) {
     const tx = {
         to: signer,
         value: hre.ethers.parseEther("100.0"),

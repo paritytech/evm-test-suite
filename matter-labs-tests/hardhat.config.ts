@@ -135,6 +135,7 @@ const config: HardhatUserConfig = {
       evmVersion: "istanbul",
       compilerPath: `${compilerPath}`,
       standardJson: true,
+      batchSize: 300,
     },
   },
 };
