@@ -102,7 +102,7 @@
     ]
   },
   "dependencies": {
-    "hardhat-resolc": "^0.0.4",
-    "hardhat-revive-node": "^0.0.3"
+    "hardhat-resolc": "^0.0.5",
+    "hardhat-revive-node": "^0.0.4"
   }
 }
