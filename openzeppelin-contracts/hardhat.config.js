@@ -70,6 +70,7 @@ const nodePath = process.env.NODE_PATH;
 const adapterPath = process.env.ADAPTER_PATH;
 const compilerPath = process.env.COMPILER_PATH;
 const useForking = process.env.USE_FORKING;
+const bSize = process.env.BATCH_SIZE ? Number.parseInt(process.env.BATCH_SIZE) : undefined;
 
 for (const f of fs.readdirSync(path.join(__dirname, 'hardhat'))) {
   require(path.join(__dirname, 'hardhat', f));
@@ -146,6 +147,7 @@ module.exports = {
       evmVersion: "cancun",
       compilerPath: `${compilerPath}`,
       standardJson: true,
+      batchSize: bSize,
     },
   },
   exposed: {
