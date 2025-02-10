@@ -168,3 +168,5 @@ export type Libraries = {
         [x: string]: string
     }
 }
+
+export type ContractData =  { metadata: Metadata, contractPath: string, filePath: string }[];

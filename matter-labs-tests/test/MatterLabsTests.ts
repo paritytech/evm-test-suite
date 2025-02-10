@@ -19,6 +19,7 @@ import { getContract } from '../util/getContract';
 import { logTestResult, logEventTestResult } from '../util/logTestResult';
 import { parseCallData } from '../util/parseCalldata'
 import { parseIntArray } from '../util/parseIntArray';
+import { fail } from "assert";
 
 const SIMPLE_TESTS_INSTANCE = "Test";
 export const MATTER_LABS_SIMPLE_TESTS_PATH = `contracts/era-compiler-tests/solidity/simple`;
@@ -118,9 +119,9 @@ describe('Matter Labs', async () => {
                         }
 
                         for (const input of testCase.inputs) {
-                            if (skipTestCase(input, testCaseName, filePath)) {
-                                continue;
-                            }
+                            // if (skipTestCase(input, testCaseName, filePath)) {
+                            //     continue;
+                            // }
                             if (contract) {
                                 const expectedData = input.expected ? input.expected : testCase.expected;
                                 let method = input.method;
@@ -252,19 +253,23 @@ describe('Matter Labs', async () => {
                                                 }
                                                 continue;
                                             }
-                                        }
-                                        else {
+                                        } else {
+                                            console.log("IM reached---")
                                             if (numberOfExpectedArgs >= 2) {
+                                                console.log("NUMBER OF ARGS GREATER THAN 2")
                                                 res = await contract[method].staticCall(...calldata);
                                             } else {
+                                                console.log("NUMBER OF ARGS NOT GREATER THAN 2", calldata)
                                                 if (numberOfExpectedArgs === 1) {
                                                     const methodInputIsArray = contract[method].fragment.inputs[0].baseType === 'array';
                                                     if (
                                                         (Array.isArray(calldata[0]) && methodInputIsArray)
                                                         || (!Array.isArray(calldata[0]) && !methodInputIsArray)
                                                     ) {
+                                                        console.log("is this reached 1?", calldata)
                                                         res = await contract[method].staticCall(calldata[0]);
                                                     } else if (methodInputIsArray) {
+                                                        console.log("is this reached 2?", calldata)
                                                         res = await contract[method].staticCall(calldata);
                                                     }
                                                 }
@@ -300,6 +305,7 @@ describe('Matter Labs', async () => {
                                                 if (method === "set") {
                                                     await contract[method](); // call set contract data
                                                 }
+                                                console.log("IS IT THIS 1???")
                                                 res = await contract[method].staticCall(); // get set return result  
                                             }
 
@@ -358,6 +364,10 @@ describe('Matter Labs', async () => {
                                                 } else {
                                                     if (method === "set") {
                                                         await contract[method]();
+                                                    }
+
+                                                    if (method === "f" && contract[method] === undefined) {
+                                                        method = "f1"
                                                     }
                                                     res = await contract[method].staticCall();
                                                 }
@@ -426,15 +436,20 @@ describe('Matter Labs', async () => {
                                     continue
                                 }
                                 catch (err) {
-                                    if (
-                                        (err as Error).toString().includes("value out-of-bounds")
-                                        || (err as Error).toString().includes("expected undefined to be an error")
-                                        || (err as Error).toString().includes("invalid length for result data")
-                                    ) {
-                                        console.log(`Skipped Test Case ${testCaseName} from ${filePath}`);
-                                    } else {
-                                        console.log(`Failed Test Case ${testCaseName} from ${filePath} with inputs ${calldata}`);
-                                    }
+                                    // if (
+                                    //     (err as Error).toString().includes("value out-of-bounds")
+                                    //     || (err as Error).toString().includes("expected undefined to be an error")
+                                    //     || (err as Error).toString().includes("invalid length for result data")
+                                    // ) {
+                                    //     console.log(`Skipped Test Case ${testCaseName} from ${filePath} - Err: ${err}`);
+                                    // } else {
+                                        // console.log(`Failed Test Case ${testCaseName} from ${filePath} with inputs ${calldata} - Err: ${err}`);
+                                        if (skipTestCase(input, testCaseName, filePath)) {
+                                            fail(`Whitelisted Test Case ${testCaseName} from ${filePath} with inputs ${calldata} - expected: ${expectedData}, actual: ${err}`)
+                                        } else {
+                                            fail(`Failed Test Case ${testCaseName} from ${filePath} with inputs ${calldata} - expected: ${expectedData}, actual: ${err}`)
+                                        }
+                                    // }
                                 }
                             }
                         }
