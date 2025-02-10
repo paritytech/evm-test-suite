@@ -70,7 +70,7 @@ them after they are completed, since terminals may have a limited historical dis
 In order for the commands to be parsed correctly, if you have parameters you are not using
 before one you are using, you must set them as `--`, in order to keep the spacing correct.
 
-When handling tests sets with a considerable amount of contracts to compile while
+When handling tests with a considerable amount of contracts to compile while
 in resource-restricted environments such as Docker, it is recommended to define
 the environment variable `BATCH_SIZE` in order to define the amount of contracts
 that are compiled at once. This tells the plugin to split the contracts in subsets
