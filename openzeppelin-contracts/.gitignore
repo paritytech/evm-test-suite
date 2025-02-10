@@ -54,6 +54,8 @@ contracts-exposed
 # Hardhat
 /cache
 /artifacts
+/cache-pvm
+/artifacts-pvm
 
 # Foundry
 /out
