@@ -54,6 +54,7 @@ const adapterPath = process.env.ADAPTER_PATH;
 const compilerPath = process.env.COMPILER_PATH;
 const useForking = process.env.USE_FORKING;
 const rpcUrl = process.env.NETWORK_URL;
+const bSize = process.env.BATCH_SIZE ? Number.parseInt(process.env.BATCH_SIZE) : undefined;
 
 const config: HardhatUserConfig = {
   paths: {
@@ -135,7 +136,7 @@ const config: HardhatUserConfig = {
       evmVersion: "istanbul",
       compilerPath: `${compilerPath}`,
       standardJson: true,
-      batchSize: 300,
+      batchSize: bSize,
     },
   },
 };
