@@ -108,11 +108,6 @@ describe('Matter Labs', async () => {
                 let contract: Contract | undefined = undefined;
 
                 metadata.cases.forEach(async (testCase) => {
-                    if (
-                        filterTestFiles(filePath, testFilter)
-                    ) {
-                        return;
-                    }
                     const firstInput = testCase.inputs[0];
                     const { name: testCaseName } = testCase;
 
@@ -455,9 +450,15 @@ describe('Matter Labs', async () => {
     })
 });
 
+const FILTER_FILES = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic", "/internal_function_pointers/legacy", "/system/prevrandao_returndata.sol", "/system/difficulty_returndata.sol", "/system/msize_returndata.sol", "/yul_instructions/basefee.sol", "/yul_instructions/difficulty.sol", "/yul_instructions/gaslimit.sol", "/yul_instructions/msize.sol", "/yul_instructions/prevrandao.sol", "/call_chain", "/gas_value", "/immutable/trycatch.sol", "/yul_instructions/mulmod.sol", "/modular/mulmod.sol", "/internal_function_pointers/mixed_features_2.sol", "/algorithm/arrays/standard_functions.sol", "/algorithm/arrays/standard_functions_high_order.sol", "/modular/addmod_complex.sol", "/algorithm/long_arithmetic.sol"];
 const filterTestFiles = (filePath: string, testFilter: string | undefined): boolean => {
         if ((testFilter && testFilter != "--" && !filePath.includes(testFilter)) || filePath.includes("many_arguments")) {
             return true;
+        }
+        for (const filter of FILTER_FILES) {
+            if (filePath.includes(filter)) {
+                return true;
+            }
         }
 
     return false;

@@ -5,12 +5,12 @@ set -eux
 chain=$1
 url=$2
 tests=$3
-forking=$4
-nodePath=$5
-adapterPath=$6
-compilerPath=$7
-testFilter=$8
-verboseLogging=$9
+forking="${4:-false}"
+nodePath="${5:---}"
+adapterPath="${6:---}"
+compilerPath="${7:---}"
+testFilter="${8:---}"
+verboseLogging="${9:---}"
 
 total_tests=0
 total_passed=0

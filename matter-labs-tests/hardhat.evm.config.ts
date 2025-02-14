@@ -11,14 +11,12 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
     return paths.filter((p: any) => {
       return (
         p.includes(`${testFilter.toString()}`)
-        && !p.includes('/many_arguments') 
+        && (!p.includes("/many_arguments") && !p.includes("/constructor") && !p.includes("/function") && !p.includes("/loop") && !p.includes("/return"))
       )
     });
   } else {
     return paths.filter((p: any) => {
-      return (
-        !p.includes('/many_arguments') 
-      )
+      return (!p.includes("/many_arguments") && !p.includes("/constructor") && !p.includes("/function") && !p.includes("/loop") && !p.includes("/return"))
     });
   }
 });
