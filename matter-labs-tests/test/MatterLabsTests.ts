@@ -442,7 +442,7 @@ describe('Matter Labs', async () => {
                                             || (err as Error).toString().includes("invalid length for result data"))
                                             || (whiteListTestCase(input, testCaseName, filePath))
                                         )  {
-                                            console.log(`Whitelisted Test Case ${testCaseName} from ${filePath} calling method ${method} with inputs ${calldata} - expected: ${JSON.stringify(expectedData)}, actual: ${err}`)
+                                            console.log(`whitelisted: Test Case ${testCaseName} from ${filePath} calling method ${method} with inputs ${calldata} - expected: ${JSON.stringify(expectedData)}, actual: ${err}`)
                                         } else {
                                             fail(`Failed Test Case ${testCaseName} from ${filePath} calling method ${method} with inputs ${calldata} - expected: ${JSON.stringify(expectedData)}, actual: ${err}`)
                                         }
