@@ -2,18 +2,30 @@ import { HardhatUserConfig, subtask } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/task-names";
 
+const {NETWORK_URL: rpcUrl, NETWORK_NAME: networkName, CHAIN_ID: chainId, TEST_FILTER: testFilter } = process.env;
+
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
   const paths = await runSuper();
 
-  return paths.filter((p: any) => {
-    return (!p.includes("/many_arguments") && !p.includes("/constructor") && !p.includes("/function") && !p.includes("/loop") && !p.includes("/return"))
-  });
+  if (testFilter && testFilter.length > 0 && testFilter != "--") {
+    return paths.filter((p: any) => {
+      return (
+        p.includes(`${testFilter.toString()}`)
+        && !p.includes('/many_arguments') 
+      )
+    });
+  } else {
+    return paths.filter((p: any) => {
+      return (
+        !p.includes('/many_arguments') 
+      )
+    });
+  }
 });
 
 const DEFAULT_COMPILER_SETTINGS = {
   version: '0.8.23',
 }
-const {NETWORK_URL: rpcUrl, NETWORK_NAME: networkName, CHAIN_ID: chainId} = process.env;
 
 const config: HardhatUserConfig = {
  paths: {

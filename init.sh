@@ -7,6 +7,8 @@ forking=$4
 nodePath=$5
 adapterPath=$6
 compilerPath=$7
+testFilter=$8
+verboseLogging=$9
 
 total_tests=0
 total_passed=0
@@ -143,6 +145,8 @@ case "$chain" in
   export NETWORK_URL="http://localhost:8545"
   export CHAIN_ID=787
   export NETWORK_NAME="acala"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --ethereum)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -150,6 +154,8 @@ case "$chain" in
   export NETWORK_URL="http://localhost:8545"
   export CHAIN_ID=1
   export NETWORK_NAME="ethereum"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --moonbeam)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -157,6 +163,8 @@ case "$chain" in
   export NETWORK_URL="https://moonbeam.public.blastapi.io"
   export CHAIN_ID=1284
   export NETWORK_NAME="moonbeam"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --astar)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -164,6 +172,8 @@ case "$chain" in
   export NETWORK_URL="http://localhost:8000"
   export CHAIN_ID=592
   export NETWORK_NAME="astar"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --polygon)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -171,6 +181,8 @@ case "$chain" in
   export NETWORK_URL="https://polygon-mainnet.infura.io/v3/${PRIVATE_KEY}"
   export CHAIN_ID=137
   export NETWORK_NAME="polygon"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --arbitrum)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -178,6 +190,8 @@ case "$chain" in
   export NETWORK_URL="https://arbitrum-mainnet.infura.io/v3/${PRIVATE_KEY}"
   export CHAIN_ID=42161
   export NETWORK_NAME="arbitrum"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --kitchensink)
   export HARDHAT_CONFIG_NAME="hardhat.config"
@@ -188,6 +202,8 @@ case "$chain" in
   export COMPILER_PATH=$compilerPath
   export USE_FORKING="false"
   export NETWORK_NAME="hardhat"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --westend)
   export HARDHAT_CONFIG_NAME="hardhat.config"
@@ -198,6 +214,8 @@ case "$chain" in
   export ADAPTER_PATH=$adapterPath
   export COMPILER_PATH=$compilerPath
   export NETWORK_NAME="localhost"
+  export TEST_FILTER=$testFilter
+  export VERBOSE_LOGGING=$verboseLogging
   ;;
 --endpoint | -e)
   if [ "${USER_REVIVE}" = "true" ]; then
