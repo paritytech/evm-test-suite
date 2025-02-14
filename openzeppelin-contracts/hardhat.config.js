@@ -70,6 +70,7 @@ const nodePath = process.env.NODE_PATH;
 const adapterPath = process.env.ADAPTER_PATH;
 const compilerPath = process.env.COMPILER_PATH;
 const useForking = process.env.USE_FORKING;
+const bSize = process.env.BATCH_SIZE ? Number.parseInt(process.env.BATCH_SIZE) : undefined;
 
 for (const f of fs.readdirSync(path.join(__dirname, 'hardhat'))) {
   require(path.join(__dirname, 'hardhat', f));
@@ -105,6 +106,20 @@ module.exports = {
     },
   },
   networks: {
+    localhost: {
+      accounts: [
+        '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133',
+        '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5b0000a702133',
+        '0x5fb92c48bebcd6e98884f76de468fa3f6278f880713595d45af5b0000a702133',
+        '0x5fb92d6de468fa3f6278f8807c48bebc13595d45af5b000e98884f760a702133',
+        '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc130a702133595d45af5b000',
+        '0x5fb92d6e98884f76de468fa3f6275af5b0000a7021bc338f8807c48be13595d4',
+        '0x521338f8807c48befb92d6e98884f76de468fa3f6275af5b0000a70bc13595d4',
+        '0x5fb92d6e9884f768de468fa3f6275af5b0000a7021338f8807c48bebc13595d4',
+        '0x5fb92d6de468fa3f6275af5b0000a7021338f8807c48bebc13595d46e98884f7',
+        '0x5fb92d6e98884f76de468fa3f6275af5b0000a7021338f8807c48be3595d4bc1',
+      ]
+    },
     hardhat: {
       polkavm: true,
       forking: `${useForking}` === "true"
@@ -132,6 +147,7 @@ module.exports = {
       evmVersion: "cancun",
       compilerPath: `${compilerPath}`,
       standardJson: true,
+      batchSize: bSize,
     },
   },
   exposed: {

@@ -63,6 +63,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 const DEFAULT_COMPILER_SETTINGS = {
   version: '0.8.23',
 }
+const bSize = process.env.BATCH_SIZE ? Number.parseInt(process.env.BATCH_SIZE) : undefined;
 
 const config: HardhatUserConfig = {
   paths: {
@@ -144,6 +145,7 @@ const config: HardhatUserConfig = {
       evmVersion: "london",
       compilerPath: `${compilerPath}`,
       standardJson: true,
+      batchSize: bSize,
     },
   },
 };
