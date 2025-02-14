@@ -16,7 +16,7 @@ const testFilter = process.env.TEST_FILTER;
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
   const paths = await runSuper();
 
-  if (testFilter && testFilter.length > 0 && testFilter != "--" && testFilter != 'defaultFilter') {
+  if (testFilter && testFilter.length > 0 && testFilter != "--") {
     return paths.filter((p: any) => {
       return (
         (p.includes(`${testFilter.toString()}`))
