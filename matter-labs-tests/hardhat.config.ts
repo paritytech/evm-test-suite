@@ -48,7 +48,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
         && !p.includes("/simple/modular/addmod_complex.sol") // ignore because size limitations.
         && !p.includes('/basefee.sol') // ignore because not implemented in the compiler yet
         && !p.includes('/trycatch.sol') // ignore because ParserError: Source file requires different compiler version (current compiler is 0.8.25+commit.b61c2a91.Darwin.appleclang) - note that nightly builds are considered to be strictly less than the released version
-        // && !p.includes('/coinbase.sol') // ignore because not implemented in the compiler yet
+        && !p.includes('/coinbase.sol') // ignore because not implemented in the compiler yet
         && !p.includes('/gas_limit.sol') // ignore because not implemented in the compiler yet
       )
     });
