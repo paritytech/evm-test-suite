@@ -201,7 +201,7 @@ There are some cases where there are tests which have been whitelisted and are c
 ```bash
 ✔ Tests for test case main (5167ms)
 Deployed contracts/era-compiler-tests/solidity/simple/yul_instructions/basefee.sol:Test
-Whitelisted Test Case default from contracts/era-compiler-tests/solidity/simple/yul_instructions/basefee.sol calling method main with inputs  - expected: ["7"], actual: AssertionError: expected +0 to equal 7
+whitelisted: Test Case default from contracts/era-compiler-tests/solidity/simple/yul_instructions/basefee.sol calling method main with inputs  - expected: ["7"], actual: AssertionError: expected +0 to equal 7
 ```
 Whitelisted test logs are similar to passing/failing outputs except they do not influence the number of failing tests in the test suite.
 

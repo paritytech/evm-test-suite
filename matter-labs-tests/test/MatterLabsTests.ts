@@ -109,7 +109,6 @@ describe('Matter Labs', async () => {
 
                 metadata.cases.forEach(async (testCase) => {
                     if (
-                        // filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/many_arguments.sol`
                         filterTestFiles(filePath, testFilter)
                     ) {
                         return;
