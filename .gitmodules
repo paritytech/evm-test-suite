@@ -2,3 +2,6 @@
 	path = matter-labs-tests/contracts/era-compiler-tests
 	url = https://github.com/matter-labs/era-compiler-tests
 
+[submodule "openzeppelin-contracts"]
+	path = openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
