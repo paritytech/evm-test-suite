@@ -9,7 +9,7 @@ export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: numbe
     }
 
     if (callDataLength === 21) {
-        if (numberOfExpectedArgs === 1 && method === 'polygon') {
+        if (numberOfExpectedArgs === 1 && method === "polygon") {
             const n = rawCallData[0];
             const x = rawCallData.slice(1,11);
             const y = rawCallData.slice(11);
@@ -87,11 +87,14 @@ export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: numbe
         }
     }
 
-    // length 2 or 7 calldata
     if (callDataLength === 2 || callDataLength === 7) {
-       for (let i = 0; i < callDataLength; i++) {
-            calldata.push(rawCallData[i]);
-       }
+        if (method === "recursiveAction") {
+            calldata.push([rawCallData[0]], rawCallData[1]);
+        } else {
+            for (let i = 0; i < callDataLength; i++) {
+                calldata.push(rawCallData[i]);
+            }
+        }
     }
 
     // length 6 calldata
@@ -135,7 +138,14 @@ export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: numbe
 
     // length 4 calldata
     if (callDataLength === 4) {
-       if (numberOfExpectedArgs === 2 && method === "main") {
+        if (method === "calculate") {
+            // double/triple functionName, second arg in calldata list e.g.
+            // "0x0000000000000000000000000000000000000000000000000000000000000040",
+            // "0x0000000000000000000000000000000000000000000000000000000000000005", // idx 1
+            // "0x0000000000000000000000000000000000000000000000000000000000000006",
+            // "0x646F75626C650000000000000000000000000000000000000000000000000000"
+            calldata.push(testCaseName, rawCallData[1])
+        } else if (numberOfExpectedArgs === 2 && method === "main") {
             if (filePath.includes("nested_gates_mutating")) {
                 const bool1 = rawCallData[0] === '0' ? false : true;
                 const bool2 = rawCallData[1] === '0' ? false : true;
@@ -191,12 +201,12 @@ export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: numbe
         if (method === "main" && testCaseName.includes("condition")) {
             const arg = rawCallData[0] === '0' ? false : true;
             calldata.push(arg);
-        } else if (method === 'sphere') {
+        } else if (method === "sphere") {
            calldata.push({ r: rawCallData[0] });
     } else if (method === "cube") {
         calldata.push({ a: rawCallData[0] });
     } else if (filePath.includes("require.sol")) {
-        const arg = rawCallData[0] === '0' ? false : true;
+        const arg = rawCallData[0] === "0" ? false : true;
         calldata.push(arg);
     } else {
             calldata.push(rawCallData[0]);
