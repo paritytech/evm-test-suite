@@ -85,8 +85,8 @@ run_geth_diff_tests() {
     cd ./geth-diff &&
     bun install &&
     bun run src/build-contracts.ts &&
-    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 > ".$LOG_DIR/geth-diff-tests.log" 2>&1
-    parse_bun_test_results "../test-logs/geth-diff-tests.log"
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 >".$LOG_DIR/geth-diff-tests.log" 2>&1
+  parse_bun_test_results "../test-logs/geth-diff-tests.log"
 }
 
 run_all_tests() {
@@ -198,6 +198,9 @@ case "$chain" in
   export NETWORK_NAME="ethereum"
   export TEST_FILTER=$testFilter
   export VERBOSE_LOGGING=$verboseLogging
+  export START_GETH="true"
+  export NODE_PATH=$nodePath
+  export ADAPTER_PATH=$adapterPath
   ;;
 --moonbeam)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -280,17 +283,21 @@ case "$chain" in
 --ethereum)
   echo "Cleaning up"
   rm -rf ./output-logs/geth-output.log
-  echo "Starting Geth Ethereum Node"
-  ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json &&
-    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
-      --port 30304 --http --http.addr "localhost" --http.port 8545 --http.corsdomain="*" \
-      --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 >./output-logs/geth-output.log 2>&1 &
+  if [ "${tests}" = "--geth-diff" ]; then
+    echo "Starting Geth Ethereum Node"
+  else
+    echo "Starting Geth Ethereum Node"
+    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json &&
+      ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
+        --port 30304 --http --http.addr "localhost" --http.port 8545 --http.corsdomain="*" \
+        --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 >./output-logs/geth-output.log 2>&1 &
 
-  echo "Waiting for the Geth to start..."
+    echo "Waiting for the Geth to start..."
 
-  while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
-    sleep 1
-  done
+    while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
+      sleep 1
+    done
+  fi
   ;;
 
 --acala)
