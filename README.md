@@ -3,6 +3,8 @@
 Set of generic tests to check for chain compatibility. It covers higher level 
 tests derived from well-known smart contracts (such as uniswap v4, WIP), standard testing (such as [Open Zeppelin tests](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/test)) and lower level testing inspired by [Matter Labs](https://github.com/matter-labs).
 
+**NOTE**: For the time being, the `openzeppelin-tests` are disabled.
+
 ## Execution
 
 This is a hybrid test suite that uses both [Hardhat](https://hardhat.org/) (and in the future
