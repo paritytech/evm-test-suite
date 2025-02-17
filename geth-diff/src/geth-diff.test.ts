@@ -41,7 +41,6 @@ if (process.env.START_GETH) {
 
 if (process.env.START_SUBSTRATE_NODE) {
 	const nodePath = process.env.NODE_PATH;
-	console.log(nodePath)
 	procs.push(
 		//Run the substate node
 		(() => {
