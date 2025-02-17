@@ -23,15 +23,18 @@ OS_NAME=$(uname)
 case "$OS_NAME" in
 "Darwin")
   export NETWORK_DIR="macOS"
-  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_DIR}
   ;;
 "Linux")
   export NETWORK_DIR="linux"
-  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_DIR}
   ;;
 *)
   export NETWORK_DIR="linux"
-  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_DIR}
   ;;
 esac
 
@@ -75,6 +78,15 @@ run_open_zeppelin_tests() {
   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
 }
 
+run_geth_diff_tests() {
+  echo "Running Geth Differential Tests" &&
+    cd ./geth-diff &&
+    bun install &&
+    bun run src/build-contracts.ts &&
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 > ".$LOG_DIR/geth-diff-tests.log" 2>&1
+    parse_bun_test_results "../test-logs/geth-diff-tests.log"
+}
+
 run_all_tests() {
   npm i &&
     echo "Running Matter Labs EVM Tests" &&
@@ -109,6 +121,14 @@ run_all_tests() {
     esac
   parse_hardhat_test_results ".$LOG_DIR/open-zeppelin-tests.log"
 
+  cd ..
+
+  echo "Running Geth Differential Tests" &&
+    cd ./geth-diff &&
+    bun install &&
+    bun run src/build-contracts.ts &&
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 | tee ".$LOG_DIR/geth-diff-tests.log"
+
   echo "Test Run Complete"
 }
 
@@ -116,6 +136,29 @@ parse_hardhat_test_results() {
   log_file=$1
   passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
   failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
+
+  if [ -z "$passed" ]; then
+    passed=0
+  fi
+
+  if [ -z "$failed" ]; then
+    failed=0
+  fi
+
+  total=$((passed + failed))
+
+  total_passed=$((total_passed + passed))
+  total_failed=$((total_failed + failed))
+  total_tests=$((total_tests + total))
+
+  echo "Hardhat Test Summary from $log_file:"
+  echo "Total: $total | Passed: $passed | Failed: $failed"
+}
+
+parse_bun_test_results() {
+  log_file=$1
+  passed=$(grep -o '[0-9]\+ pass' "$log_file" | awk '{print $1}')
+  failed=$(grep -o '[0-9]\+ fail' "$log_file" | awk '{print $1}')
 
   if [ -z "$passed" ]; then
     passed=0
@@ -298,6 +341,10 @@ case "$chain" in
     kill -9 $(lsof -t -i:30304)
     echo "Geth Ethereum Node Stopped"
     ;;
+  --geth-diff)
+    run_geth_diff_tests
+    sleep 1
+    ;;
   *)
     run_all_tests
     sleep 1
@@ -366,6 +413,10 @@ case "$chain" in
     ;;
   --open-zeppelin)
     run_open_zeppelin_tests
+    ;;
+  --geth-diff)
+    run_geth_diff_tests
+    sleep 1
     ;;
   *)
     run_all_tests
