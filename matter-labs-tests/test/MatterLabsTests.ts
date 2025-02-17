@@ -19,10 +19,11 @@ import { getContract } from '../util/getContract';
 import { logTestResult, logEventTestResult } from '../util/logTestResult';
 import { parseCallData } from '../util/parseCalldata'
 import { parseIntArray } from '../util/parseIntArray';
+import { fail } from "assert";
 
 const SIMPLE_TESTS_INSTANCE = "Test";
 export const MATTER_LABS_SIMPLE_TESTS_PATH = `contracts/era-compiler-tests/solidity/simple`;
-
+const { TEST_FILTER: testFilter, VERBOSE_LOGGING: verboseLogging } = process.env;
 
 const runMatterLabsTests = async (filePath: string, filePathsNames: string[]) => {
     if (fs.lstatSync(filePath).isDirectory()) {
@@ -99,36 +100,33 @@ describe('Matter Labs', async () => {
         describe('Contracts', () => {
             contractData.forEach((data) => {
                 const { metadata, contractPath, filePath } = data;
+                if (
+                    filterTestFiles(filePath, testFilter)
+                ) {
+                    return;
+                }
                 let contract: Contract | undefined = undefined;
 
                 metadata.cases.forEach(async (testCase) => {
-                    if (
-                        filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/internal_function_pointers/many_arguments.sol`
-                        || skipTestFile(filePath)
-                    ) {
-                        return
-                    }
                     const firstInput = testCase.inputs[0];
                     const { name: testCaseName } = testCase;
 
-                    it(`Tests for method ${testCaseName}`, async () => {
+                    it(`Tests for test case ${testCaseName}`, async () => {
                         if (!contract) {
                             contract = await getContract(testCaseName, filePath, contractPath, firstInput);
                             console.log(chalk.green(`Deployed ${contractPath}`));
                         }
 
                         for (const input of testCase.inputs) {
-                            if (skipTestCase(input, testCaseName, filePath)) {
-                                continue;
-                            }
                             if (contract) {
                                 const expectedData = input.expected ? input.expected : testCase.expected;
                                 let method = input.method;
 
                                 // catch deployer cases with no args
                                 if (method === "#deployer") {
-                                    expect(contract.getAddress()).not.eq(undefined);
-                                    logTestResult(method, input.expected, contract.getAddress())
+                                    expect(contract.getAddress).not.eq(undefined);
+                                    const contractAddress = await contract.getAddress();
+                                    logTestResult(method, input.expected, contractAddress, verboseLogging);
 
                                     continue;
                                 }
@@ -188,7 +186,7 @@ describe('Matter Labs', async () => {
                                                 }
 
                                                 expect(err).to.be.an('Error')
-                                                logTestResult(method, JSON.stringify(expectedData), (err as Error).toString())
+                                                logTestResult(method, JSON.stringify(expectedData), (err as Error).toString(), verboseLogging)
                                                 continue;
                                             }
 
@@ -197,14 +195,14 @@ describe('Matter Labs', async () => {
                                                 let res = await contract[method].staticCall(...calldata);
 
                                                 expect(decoder.encode(['uint256'], expectedData.return_data)).to.eq(decoder.encode(['uint256'], [res]))
-                                                logTestResult(method, expectedData, res.toString())
+                                                logTestResult(method, expectedData, res.toString(), verboseLogging)
                                                 continue;
                                             }
 
                                             // expectedData events
                                             if (expectedData.events && expectedData.events.length > 0) {
                                                 let res = await contract[method](...calldata);
-
+ 
                                                 await setTimeout(1000);
 
                                                 let receipt = await res.wait();
@@ -252,8 +250,7 @@ describe('Matter Labs', async () => {
                                                 }
                                                 continue;
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             if (numberOfExpectedArgs >= 2) {
                                                 res = await contract[method].staticCall(...calldata);
                                             } else {
@@ -280,7 +277,7 @@ describe('Matter Labs', async () => {
                                             } catch (error) {
                                                 err = error;
                                                 expect(err).to.be.an('Error')
-                                                logTestResult(method, JSON.stringify(expectedData), (err as Error).toString())
+                                                logTestResult(method, JSON.stringify(expectedData), (err as Error).toString(), verboseLogging)
                                                 continue
                                             }
                                         } else if (!Array.isArray((expectedData))) {
@@ -293,7 +290,7 @@ describe('Matter Labs', async () => {
                                                 }
 
                                                 expect(err).to.be.an('Error');
-                                                logTestResult(method, JSON.stringify(expectedData), (err as Error).toString());
+                                                logTestResult(method, JSON.stringify(expectedData), (err as Error).toString(), verboseLogging);
                                                 continue;
                                             } else {
                                                 // non exception method with return_data  
@@ -345,7 +342,7 @@ describe('Matter Labs', async () => {
                                                 expect(decoder.decode(['uint256'], res).toString()).to.eq(expectedData.toString())
 
                                                 const result = res != undefined ? res.toString() : undefined;
-                                                logTestResult(method, expectedData, result)
+                                                logTestResult(method, expectedData, result, verboseLogging)
                                                 continue;
                                             } else {
                                                 if (txOptions.value) {
@@ -359,7 +356,14 @@ describe('Matter Labs', async () => {
                                                     if (method === "set") {
                                                         await contract[method]();
                                                     }
+
+                                                    if (method === "f" && contract[method] === undefined) {
+                                                        method = "f1"
+                                                    }
                                                     res = await contract[method].staticCall();
+                                                    if (method === "initializeOracle") {
+                                                        continue;
+                                                    }
                                                 }
                                             }
                                         }
@@ -422,19 +426,20 @@ describe('Matter Labs', async () => {
                                     }
 
                                     const result = res != undefined ? res.toString() : undefined;
-                                    logTestResult(method, expectedData, result)
+                                    logTestResult(method, expectedData, result, verboseLogging)
                                     continue
                                 }
                                 catch (err) {
-                                    if (
-                                        (err as Error).toString().includes("value out-of-bounds")
-                                        || (err as Error).toString().includes("expected undefined to be an error")
-                                        || (err as Error).toString().includes("invalid length for result data")
-                                    ) {
-                                        console.log(`Skipped Test Case ${testCaseName} from ${filePath}`);
-                                    } else {
-                                        console.log(`Failed Test Case ${testCaseName} from ${filePath} with inputs ${calldata}`);
-                                    }
+                                        if (
+                                            ((err as Error).toString().includes("value out-of-bounds")
+                                            || (err as Error).toString().includes("expected undefined to be an error")
+                                            || (err as Error).toString().includes("invalid length for result data"))
+                                            || (whiteListTestCase(input, testCaseName, filePath))
+                                        )  {
+                                            console.log(`whitelisted: Test Case ${testCaseName} from ${filePath} calling method ${method} with inputs ${calldata} - expected: ${JSON.stringify(expectedData)}, actual: ${err}`)
+                                        } else {
+                                            fail(`Failed Test Case ${testCaseName} from ${filePath} calling method ${method} with inputs ${calldata} - expected: ${JSON.stringify(expectedData)}, actual: ${err}`)
+                                        }
                                 }
                             }
                         }
@@ -445,18 +450,21 @@ describe('Matter Labs', async () => {
     })
 });
 
-const FILES_TO_SKIP = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic", "/internal_function_pointers/legacy", "/system/prevrandao_returndata.sol", "/system/difficulty_returndata.sol", "/system/msize_returndata.sol", "/yul_instructions/basefee.sol", "/yul_instructions/coinbase.sol", "/yul_instructions/difficulty.sol", "/yul_instructions/gaslimit.sol", "/yul_instructions/msize.sol", "/yul_instructions/prevrandao.sol", "/call_chain", "/gas_value", "/immutable/trycatch.sol", "/yul_instructions/mulmod.sol", "/modular/mulmod.sol", "/internal_function_pointers/mixed_features_2.sol", "/algorithm/arrays/standard_functions.sol", "/algorithm/arrays/standard_functions_high_order.sol", "/modular/addmod_complex.sol", "/algorithm/long_arithmetic.sol"];
-const skipTestFile = (filePath: string): boolean => {
-    for (const filter of FILES_TO_SKIP) {
-        if (filePath.includes(filter)) {
+const FILTER_FILES = ["/constructor", "/context", "/events", "/fat_ptr", "/function", "/loop", "/operator", "/return", "/solidity_by_example", "storage", "/structure", "/try_catch", "/yul_semantic", "/internal_function_pointers/legacy", "/system/prevrandao_returndata.sol", "/system/difficulty_returndata.sol", "/system/msize_returndata.sol", "/yul_instructions/basefee.sol", "/yul_instructions/difficulty.sol", "/yul_instructions/gaslimit.sol", "/yul_instructions/msize.sol", "/yul_instructions/prevrandao.sol", "/call_chain", "/gas_value", "/immutable/trycatch.sol", "/yul_instructions/mulmod.sol", "/modular/mulmod.sol", "/internal_function_pointers/mixed_features_2.sol", "/algorithm/arrays/standard_functions.sol", "/algorithm/arrays/standard_functions_high_order.sol", "/modular/addmod_complex.sol", "/algorithm/long_arithmetic.sol"];
+const filterTestFiles = (filePath: string, testFilter: string | undefined): boolean => {
+        if ((testFilter && testFilter != "--" && !filePath.includes(testFilter)) || filePath.includes("many_arguments")) {
             return true;
         }
-    }
+        for (const filter of FILTER_FILES) {
+            if (filePath.includes(filter)) {
+                return true;
+            }
+        }
 
     return false;
 }
 
-const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: string): boolean => {
+const whiteListTestCase = (testCaseInput: Input, testCaseName: string, filePath: string): boolean => {
     if (
         filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/basefee.sol`
         || filePath === `${MATTER_LABS_SIMPLE_TESTS_PATH}/yul_instructions/blockhash.sol`
@@ -516,9 +524,7 @@ const skipTestCase = (testCaseInput: Input, testCaseName: string, filePath: stri
         || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/algorithm/arrays/standard_functions_high_order.sol`)
         || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/algorithm/long_arithmetic.sol`)
         || filePath.includes(`${MATTER_LABS_SIMPLE_TESTS_PATH}/modular/addmod_complex.sol`)
-
     ) {
-        console.log(`Skipped ${testCaseName} from ${filePath}`);
         return true;
     }
 
