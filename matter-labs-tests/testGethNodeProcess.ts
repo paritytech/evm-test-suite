@@ -30,7 +30,7 @@ ethereumNodeProcess.on('close', (code) => {
 	console.log(`Ethereum node process exited with code ${code}`);
 });
 
-const checkEthereumNodeReady = () => {
+const checkEthereumNodeReady = (retries: number = 5, delay: number = 3000) => {
 	const options = {
 		hostname: '127.0.0.1',
 		port: 8546,
@@ -45,6 +45,12 @@ const checkEthereumNodeReady = () => {
 			console.log("Ethereum node is up and running!")
 		} else {
 			console.log(`Node not ready, status code: ${res.statusCode}`);
+			if (retries > 0) {
+				console.log(`Retrying...(${retries} attempts left)`);
+				setTimeout(() => checkEthereumNodeReady(retries-1, delay), delay);
+			} else {
+				
+			}
 		}
 	});
 
@@ -58,7 +64,9 @@ const checkEthereumNodeReady = () => {
 			method: 'net_version',
 			params: [],
 			id: 1,
-		});
+		})
 	);
+
+	req.end();
 }
 
