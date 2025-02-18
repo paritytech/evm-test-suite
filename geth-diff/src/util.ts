@@ -25,8 +25,7 @@ export type JsonRpcError = {
 	data: Hex
 }
 
-// changed from GETH_DIR! ?
-export const testSuitePath = resolve(process.env.GETH_DIR || '', '../../../../../..')
+export const testSuitePath = resolve(process.env.GETH_DIR!, '../../../../../..')
 
 export function killProcessOnPort(port: number) {
 	// Check which process is using the specified port
