@@ -1,4 +1,4 @@
-import { spawnSync } from 'bun'
+import { spawnSync } from 'child_process'
 import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import {
@@ -29,7 +29,7 @@ export const testSuitePath = resolve(process.env.GETH_DIR!, '../../../../../..')
 
 export function killProcessOnPort(port: number) {
 	// Check which process is using the specified port
-	const result = spawnSync(['lsof', '-ti', `:${port}`])
+	const result = spawnSync('lsof', ['-ti', `:${port}`])
 	const output = result.stdout.toString().trim()
 
 	if (output) {
@@ -38,7 +38,7 @@ export function killProcessOnPort(port: number) {
 
 		// Kill each process using the port
 		for (const pid of pids) {
-			spawnSync(['kill', '-9', pid])
+			spawnSync('kill', ['-9', pid])
 			console.log(`Killed process with PID: ${pid}`)
 		}
 	}

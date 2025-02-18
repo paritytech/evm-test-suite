@@ -83,10 +83,10 @@ run_matter_labs_tests() {
 run_geth_diff_tests() {
   echo "Running Geth Differential Tests" &&
     cd ./geth-diff &&
-    bun install &&
-    bun run src/build-contracts.ts &&
+    npm install &&
+    npm run build &&
     START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 >".$LOG_DIR/geth-diff-tests.log" 2>&1
-  parse_bun_test_results "../test-logs/geth-diff-tests.log"
+  parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
 }
 
 run_all_tests() {
@@ -127,9 +127,10 @@ run_all_tests() {
 
   echo "Running Geth Differential Tests" &&
     cd ./geth-diff &&
-    bun install &&
-    bun run src/build-contracts.ts &&
+    npm install &&
+    npm run build &&
     START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 | tee ".$LOG_DIR/geth-diff-tests.log"
+  parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
 
   echo "Test Run Complete"
 }
@@ -157,7 +158,7 @@ parse_hardhat_test_results() {
   echo "Total: $total | Passed: $passed | Failed: $failed"
 }
 
-parse_bun_test_results() {
+parse_geth_diff_test_results() {
   log_file=$1
   passed=$(grep -o '[0-9]\+ pass' "$log_file" | awk '{print $1}')
   failed=$(grep -o '[0-9]\+ fail' "$log_file" | awk '{print $1}')

@@ -1,9 +1,8 @@
-import { spawn } from 'bun'
+import { spawn } from 'child_process'
 import {
 	createEnv,
 	getByteCode,
 	killProcessOnPort,
-	polkadotSdkPath,
 	wait,
 	waitForHealth,
 } from './util'
@@ -14,16 +13,11 @@ if (process.env.START_SUBSTRATE_NODE) {
 	console.log('🚀 Start substrate-node...')
 	killProcessOnPort(9944)
 	spawn(
+		'./target/debug/substrate-node',
 		[
-			'./target/debug/substrate-node',
 			'--dev',
 			'-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
-		],
-		{
-			stdout: Bun.file('/tmp/substrate-node.out.log'),
-			stderr: Bun.file('/tmp/substrate-node.err.log'),
-			cwd: polkadotSdkPath,
-		}
+		]
 	)
 }
 
@@ -32,17 +26,12 @@ if (process.env.START_ETH_RPC) {
 	console.log('🚀 Start eth-rpc...')
 	killProcessOnPort(8545)
 	spawn(
+		'./target/debug/eth-rpc',
 		[
-			'./target/debug/eth-rpc',
 			'--dev',
 			'--node-rpc-url=ws://localhost:9944',
 			'-l=rpc-metrics=debug,eth-rpc=debug',
-		],
-		{
-			stdout: Bun.file('/tmp/eth-rpc.out.log'),
-			stderr: Bun.file('/tmp/eth-rpc.err.log'),
-			cwd: polkadotSdkPath,
-		}
+		]
 	)
 }
 
