@@ -129,7 +129,7 @@ run_all_tests() {
     cd ./geth-diff &&
     npm install &&
     npm run build &&
-    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 | tee ".$LOG_DIR/geth-diff-tests.log"
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/geth-diff-tests.log" 2>&1
   parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
 
   echo "Test Run Complete"
