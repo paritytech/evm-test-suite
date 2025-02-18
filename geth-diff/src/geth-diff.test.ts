@@ -504,7 +504,7 @@ for (const env of envs) {
 
 			// test debug_traceTransaction
 			{
-				const fixture = JSON.stringify(await fs.readFileSync('./src/fixtures/trace_transaction.json'))
+				const fixture = JSON.stringify(fs.readFileSync('./src/fixtures/trace_transaction.json'))
 
 				const res = await env.debugClient.traceTransaction(receipt.transactionHash, {
 					withLog: true,
@@ -515,14 +515,14 @@ for (const env of envs) {
 			// test debug_traceBlock
 			{
 				const res = await env.debugClient.traceBlock(receipt.blockNumber, { withLog: true })
-				const fixture = JSON.stringify(await fs.readFileSync('./src/fixtures/trace_block.json'))
+				const fixture = JSON.stringify(fs.readFileSync('./src/fixtures/trace_block.json'))
 
 				expect(visit(res, visitor)).toEqual(fixture)
 			}
 
 			// test debug_traceCall
 			{
-				const fixture = JSON.stringify(await fs.readFileSync('./src/fixtures/debug_traceCall.json'))
+				const fixture = JSON.stringify(fs.readFileSync('./src/fixtures/debug_traceCall.json'))
 				const res = await env.debugClient.traceCall(
 					{
 						to: callerAddr,
