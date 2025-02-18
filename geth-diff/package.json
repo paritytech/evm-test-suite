@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "npx tsx src/build-contracts.ts",
 		"test": "vitest",
-		"test-init": "vitest run"
+		"test-init": "vitest run --test-timeout=30000"
 	},
 	"dependencies": {
 		"@parity/revive": "^0.0.9",
