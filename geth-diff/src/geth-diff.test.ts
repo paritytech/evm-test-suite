@@ -107,7 +107,7 @@ const envs = await Promise.all([
 ])
 
 for (const env of envs) {
-	describe(`testing ${env.serverWallet.chain.name}`, () => {
+	describe(`${env.serverWallet.chain.name}`, () => {
 		const getErrorTesterAddr = (() => {
 			let contractAddress: Hex = '0x'
 			return async () => {
