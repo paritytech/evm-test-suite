@@ -7,6 +7,7 @@ import { basename, join } from 'path'
 
 type CompileInput = Parameters<typeof compile>[0]
 
+const compilerPath = process.env.COMPILER_PATH;
 const {
 	values: { filter, solcOnly },
 } = parseArgs({
@@ -60,7 +61,7 @@ for (const file of input) {
 
 	if (!solcOnly) {
 		console.log('Compiling with revive...')
-		const reviveOut = await compile(input, { bin: 'resolc' })
+		const reviveOut = await compile(input, { bin: `${compilerPath}` })
 
 		for (const contracts of Object.values(reviveOut.contracts)) {
 			for (const [name, contract] of Object.entries(contracts)) {
