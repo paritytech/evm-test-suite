@@ -4,7 +4,9 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"build": "npx tsx src/build-contracts.ts"
+		"build": "npx tsx src/build-contracts.ts",
+		"test": "vitest",
+		"test-init": "vitest run"
 	},
 	"dependencies": {
 		"@parity/revive": "^0.0.9",
@@ -12,7 +14,8 @@
 		"prettier": "^3.5.1",
 		"solc": "^0.8.28",
 		"solhint": "^5.0.5",
-		"viem": "^2.22.4"
+		"viem": "^2.22.4",
+		"vitest": "^3.0.6"
 	},
 	"devDependencies": {
 		"typescript": "^5.7.2"

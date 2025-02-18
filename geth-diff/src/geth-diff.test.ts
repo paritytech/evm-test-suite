@@ -4,33 +4,41 @@ import {
 	getByteCode,
 	killProcessOnPort,
 	waitForHealth,
-	testSuitePath,
 	visit,
-} from './util.ts'
-import { afterAll, afterEach, describe, expect, test } from 'bun:test'
+} from './util.js'
+import { afterAll, afterEach, describe, expect, test } from 'vitest';
+import fs from 'fs';
+
 import { encodeFunctionData, Hex, parseEther, decodeEventLog } from 'viem'
-import { ErrorsAbi } from '../abi/Errors'
-import { EventExampleAbi } from '../abi/EventExample'
-import { TracingCallerAbi } from '../abi/TracingCaller'
-import { TracingCalleeAbi } from '../abi/TracingCallee'
-import { Subprocess, spawn } from 'bun'
+import { ErrorsAbi } from '../abi/Errors.js'
+import { EventExampleAbi } from '../abi/EventExample.js'
+import { TracingCallerAbi } from '../abi/TracingCaller.js'
+import { TracingCalleeAbi } from '../abi/TracingCallee.js'
+import { ChildProcess, spawn } from 'node:child_process';
+
 import { fail } from 'node:assert'
 
-const procs: Subprocess[] = []
+const procs: ChildProcess[] = [];
 if (process.env.START_GETH) {
 	process.env.USE_GETH = 'true'
-	const gethDir = process.env.GETH_DIR
+	const gethDir = process.env.GETH_DIR;
+	const gethArgs = [
+		'--http',
+		'--http.api', 'web3,eth,debug,personal,net',
+		'--http.port', '8546',
+		'--dev',
+		'--verbosity', '0',
+	]
+
 	procs.push(
-		
 		// Run geth on port 8546
 		await (async () => {
 			killProcessOnPort(8546)
 			console.log('Starting geth')
+
 			const proc = spawn(
-				`${gethDir} --http --http.api web3,eth,debug,personal,net --http.port 8546 --dev --verbosity 0`.split(
-					' '
-				),
-				{ stdout: Bun.file(`/tmp/geth.out.log`), stderr: Bun.file(`/tmp/geth.err.log`) }
+			   `${gethDir}`,
+				gethArgs,
 			)
 
 			await waitForHealth('http://localhost:8546').catch()
@@ -41,22 +49,19 @@ if (process.env.START_GETH) {
 
 if (process.env.START_SUBSTRATE_NODE) {
 	const nodePath = process.env.NODE_PATH;
+	const substrateNodeArgs = [
+		'--dev',
+		'-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug'
+	]
+
 	procs.push(
 		//Run the substate node
 		(() => {
 			killProcessOnPort(9944)
 			console.log('Starting substrate node')
 			return spawn(
-				[
-					`${nodePath}`,
-					'--dev',
-					'-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
-				],
-				{
-					stdout: Bun.file('/tmp/substrate-node.out.log'),
-					stderr: Bun.file('/tmp/substrate-node.err.log'),
-					cwd: testSuitePath,
-				}
+				`${nodePath}`,
+				substrateNodeArgs,
 			)
 		})()
 	)
@@ -65,23 +70,22 @@ if (process.env.START_SUBSTRATE_NODE) {
 if (process.env.START_ETH_RPC) {
 	process.env.USE_ETH_RPC = 'true'
 	const adapterPath = process.env.ADAPTER_PATH;
+
 	// Run eth-rpc on 8545
+	const ethRpcArgs = [
+		'--dev',
+		'--node-rpc-url=ws://localhost:9944',
+		'-l=rpc-metrics=debug,eth-rpc=debug',
+	]
+
 	procs.push(
 		await (async () => {
 			killProcessOnPort(8545)
 			console.log('Starting eth-rpc')
+
 			const proc = spawn(
-				[
-					`${adapterPath}`,
-					'--dev',
-					'--node-rpc-url=ws://localhost:9944',
-					'-l=rpc-metrics=debug,eth-rpc=debug',
-				],
-				{
-					stdout: Bun.file('/tmp/eth-rpc.out.log'),
-					stderr: Bun.file('/tmp/eth-rpc.err.log'),
-					cwd: testSuitePath,
-				}
+				`${adapterPath}`,
+				ethRpcArgs,
 			)
 			await waitForHealth('http://localhost:8545').catch()
 			return proc
@@ -103,7 +107,7 @@ const envs = await Promise.all([
 ])
 
 for (const env of envs) {
-	describe(env.serverWallet.chain.name, () => {
+	describe(`testing ${env.serverWallet.chain.name}`, () => {
 		const getErrorTesterAddr = (() => {
 			let contractAddress: Hex = '0x'
 			return async () => {
@@ -286,7 +290,7 @@ for (const env of envs) {
 			} catch (err) {
 				const lastJsonRpcError = jsonRpcErrors.pop()
 				expect(lastJsonRpcError?.code).toBe(-32000)
-				expect(lastJsonRpcError?.message).toInclude('insufficient funds')
+				expect(lastJsonRpcError?.message).to.include('insufficient funds')
 				expect(lastJsonRpcError?.data).toBeUndefined()
 			}
 		})
@@ -304,7 +308,7 @@ for (const env of envs) {
 			} catch (err) {
 				const lastJsonRpcError = jsonRpcErrors.pop()
 				expect(lastJsonRpcError?.code).toBe(-32000)
-				expect(lastJsonRpcError?.message).toInclude('insufficient funds')
+				expect(lastJsonRpcError?.message).to.include('insufficient funds')
 				expect(lastJsonRpcError?.data).toBeUndefined()
 			}
 		})
@@ -322,7 +326,7 @@ for (const env of envs) {
 			} catch (err) {
 				const lastJsonRpcError = jsonRpcErrors.pop()
 				expect(lastJsonRpcError?.code).toBe(-32000)
-				expect(lastJsonRpcError?.message).toInclude('insufficient funds')
+				expect(lastJsonRpcError?.message).to.include('insufficient funds')
 				expect(lastJsonRpcError?.data).toBeUndefined()
 			}
 		})
@@ -340,7 +344,7 @@ for (const env of envs) {
 			} catch (err) {
 				const lastJsonRpcError = jsonRpcErrors.pop()
 				expect(lastJsonRpcError?.code).toBe(-32000)
-				expect(lastJsonRpcError?.message).toInclude('insufficient funds')
+				expect(lastJsonRpcError?.message).to.include('insufficient funds')
 				expect(lastJsonRpcError?.data).toBeUndefined()
 			}
 		})
@@ -389,7 +393,7 @@ for (const env of envs) {
 			} catch (err) {
 				const lastJsonRpcError = jsonRpcErrors.pop()
 				expect(lastJsonRpcError?.code).toBe(-32000)
-				expect(lastJsonRpcError?.message).toInclude('insufficient funds')
+				expect(lastJsonRpcError?.message).to.include('insufficient funds')
 				expect(lastJsonRpcError?.data).toBeUndefined()
 			}
 		})
@@ -500,7 +504,8 @@ for (const env of envs) {
 
 			// test debug_traceTransaction
 			{
-				const fixture = await Bun.file('./src/fixtures/trace_transaction.json').json()
+				const fixture = JSON.stringify(await fs.readFileSync('./src/fixtures/trace_transaction.json'))
+
 				const res = await env.debugClient.traceTransaction(receipt.transactionHash, {
 					withLog: true,
 				})
@@ -510,13 +515,14 @@ for (const env of envs) {
 			// test debug_traceBlock
 			{
 				const res = await env.debugClient.traceBlock(receipt.blockNumber, { withLog: true })
-				const fixture = await Bun.file('./src/fixtures/trace_block.json').json()
+				const fixture = JSON.stringify(await fs.readFileSync('./src/fixtures/trace_block.json'))
+
 				expect(visit(res, visitor)).toEqual(fixture)
 			}
 
 			// test debug_traceCall
 			{
-				const fixture = await Bun.file('./src/fixtures/debug_traceCall.json').json()
+				const fixture = JSON.stringify(await fs.readFileSync('./src/fixtures/debug_traceCall.json'))
 				const res = await env.debugClient.traceCall(
 					{
 						to: callerAddr,
