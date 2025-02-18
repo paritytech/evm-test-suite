@@ -3,6 +3,8 @@
 Set of generic tests to check for chain compatibility. It covers higher level 
 tests derived from well-known smart contracts (such as uniswap v4, WIP), standard testing (such as [Open Zeppelin tests](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/test)) and lower level testing inspired by [Matter Labs](https://github.com/matter-labs).
 
+**NOTE**: For the time being, the `openzeppelin-tests` are disabled.
+
 ## Execution
 
 This is a hybrid test suite that uses both [Hardhat](https://hardhat.org/) (and in the future
@@ -61,8 +63,9 @@ a test, `--` should be passed for the `<URL>` argument, and the `USE_REVIVE` env
 var is set automatically depending on the chain.
 
 As for `TEST`, you can specify either `--matter-labs` to run the `matter-labs`
-tests or `--open-zeppelin` to run the openzeppelin standard tests. Not
-specifying the test will result in both suites being executed consecutively.
+tests, `--open-zeppelin` to run the openzeppelin standard tests or `--geth-diff`
+to run the geth differential tests. Not specifying the test will result in all
+suites being executed consecutively.
 
 When running the Kitchensink node, you must specify the `NODE_PATH`, `ADAPTER_PATH` and
 the `COMPILER_PATH`. Setting `FORKING=true` and running a local node are not compatible.

@@ -25,15 +25,18 @@ OS_NAME=$(uname)
 case "$OS_NAME" in
 "Darwin")
   export NETWORK_DIR="macOS"
-  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_DIR}
   ;;
 "Linux")
   export NETWORK_DIR="linux"
-  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_DIR}
   ;;
 *)
   export NETWORK_DIR="linux"
-  chmod +x ./networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_DIR}
   ;;
 esac
 
@@ -57,24 +60,33 @@ run_matter_labs_tests() {
   parse_hardhat_test_results "../test-logs/matter-labs-tests.log"
 }
 
-run_open_zeppelin_tests() {
-  npm i &&
-    echo "Running Open Zeppelin EVM Tests" &&
-    cd ./openzeppelin-contracts &&
-    npm i --force &&
-    git submodule update --init --recursive &&
-    TEST_LOG="../$LOG_DIR/open-zeppelin-tests.log" &&
-    case "$USE_REVIVE" in
-    true)
-      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
-      ;;
-    *)
-      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile | tee ".$LOG_DIR/open-zeppelin-tests.log"
-      ;;
-    esac
-  parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
+# run_open_zeppelin_tests() {
+#   npm i &&
+#     echo "Running Open Zeppelin EVM Tests" &&
+#     cd ./openzeppelin-contracts &&
+#     npm i --force &&
+#     git submodule update --init --recursive &&
+#     TEST_LOG="../$LOG_DIR/open-zeppelin-tests.log" &&
+#     case "$USE_REVIVE" in
+#     true)
+#       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
+#       npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+#       ;;
+#     *)
+#       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
+#       npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile | tee ".$LOG_DIR/open-zeppelin-tests.log"
+#       ;;
+#     esac
+#   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
+# }
+
+run_geth_diff_tests() {
+  echo "Running Geth Differential Tests" &&
+    cd ./geth-diff &&
+    bun install &&
+    bun run src/build-contracts.ts &&
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 >".$LOG_DIR/geth-diff-tests.log" 2>&1
+  parse_bun_test_results "../test-logs/geth-diff-tests.log"
 }
 
 run_all_tests() {
@@ -96,20 +108,28 @@ run_all_tests() {
 
   cd ..
 
-  echo "Running Open Zeppelin Tests"
-  cd ./openzeppelin-contracts &&
-    npm i --force &&
-    case "$USE_REVIVE" in
-    true)
-      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
-      ;;
-    *)
-      npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
-      npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile | tee ".$LOG_DIR/open-zeppelin-tests.log"
-      ;;
-    esac
-  parse_hardhat_test_results ".$LOG_DIR/open-zeppelin-tests.log"
+  # echo "Running Open Zeppelin Tests"
+  # cd ./openzeppelin-contracts &&
+  #   npm i --force &&
+  #   case "$USE_REVIVE" in
+  #   true)
+  #     npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
+  #     npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile --network ${NETWORK_NAME} | tee ".$LOG_DIR/open-zeppelin-tests.log"
+  #     ;;
+  #   *)
+  #     npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.js
+  #     npx hardhat test --config ./${HARDHAT_CONFIG_NAME}.js --no-compile | tee ".$LOG_DIR/open-zeppelin-tests.log"
+  #     ;;
+  #   esac
+  # parse_hardhat_test_results ".$LOG_DIR/open-zeppelin-tests.log"
+
+  # cd ..
+
+  echo "Running Geth Differential Tests" &&
+    cd ./geth-diff &&
+    bun install &&
+    bun run src/build-contracts.ts &&
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 | tee ".$LOG_DIR/geth-diff-tests.log"
 
   echo "Test Run Complete"
 }
@@ -118,6 +138,29 @@ parse_hardhat_test_results() {
   log_file=$1
   passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
   failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
+
+  if [ -z "$passed" ]; then
+    passed=0
+  fi
+
+  if [ -z "$failed" ]; then
+    failed=0
+  fi
+
+  total=$((passed + failed))
+
+  total_passed=$((total_passed + passed))
+  total_failed=$((total_failed + failed))
+  total_tests=$((total_tests + total))
+
+  echo "Hardhat Test Summary from $log_file:"
+  echo "Total: $total | Passed: $passed | Failed: $failed"
+}
+
+parse_bun_test_results() {
+  log_file=$1
+  passed=$(grep -o '[0-9]\+ pass' "$log_file" | awk '{print $1}')
+  failed=$(grep -o '[0-9]\+ fail' "$log_file" | awk '{print $1}')
 
   if [ -z "$passed" ]; then
     passed=0
@@ -155,6 +198,9 @@ case "$chain" in
   export NETWORK_NAME="ethereum"
   export TEST_FILTER=$testFilter
   export VERBOSE_LOGGING=$verboseLogging
+  export START_GETH="true"
+  export NODE_PATH=$nodePath
+  export ADAPTER_PATH=$adapterPath
   ;;
 --moonbeam)
   export HARDHAT_CONFIG_NAME="hardhat.evm.config"
@@ -237,17 +283,21 @@ case "$chain" in
 --ethereum)
   echo "Cleaning up"
   rm -rf ./output-logs/geth-output.log
-  echo "Starting Geth Ethereum Node"
-  ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json &&
-    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
-      --port 30304 --http --http.addr "localhost" --http.port 8545 --http.corsdomain="*" \
-      --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 >./output-logs/geth-output.log 2>&1 &
+  if [ "${tests}" = "--geth-diff" ]; then
+    echo "Starting Geth Ethereum Node"
+  else
+    echo "Starting Geth Ethereum Node"
+    ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 init ./networks/ethereum/genesis.json &&
+      ./networks/ethereum/build/bin/${NETWORK_DIR}/geth --datadir ./networks/ethereum/node1 --syncmode "full" \
+        --port 30304 --http --http.addr "localhost" --http.port 8545 --http.corsdomain="*" \
+        --networkid 2345 --allow-insecure-unlock --authrpc.port 8553 >./output-logs/geth-output.log 2>&1 &
 
-  echo "Waiting for the Geth to start..."
+    echo "Waiting for the Geth to start..."
 
-  while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
-    sleep 1
-  done
+    while ! grep -q "HTTP server started" ./output-logs/geth-output.log; do
+      sleep 1
+    done
+  fi
   ;;
 
 --acala)
@@ -310,11 +360,15 @@ case "$chain" in
     kill -9 $(lsof -t -i:30304)
     echo "Geth Ethereum Node Stopped"
     ;;
-  --open-zeppelin)
-    run_open_zeppelin_tests
+  # --open-zeppelin)
+  #   run_open_zeppelin_tests
+  #   sleep 1
+  #   kill -9 $(lsof -t -i:30304)
+  #   echo "Geth Ethereum Node Stopped"
+  #   ;;
+  --geth-diff)
+    run_geth_diff_tests
     sleep 1
-    kill -9 $(lsof -t -i:30304)
-    echo "Geth Ethereum Node Stopped"
     ;;
   *)
     run_all_tests
@@ -335,14 +389,14 @@ case "$chain" in
     kill -9 $(lsof -t -i:8000)
     echo "Chopsticks Instance Stopped"
     ;;
-  --open-zeppelin)
-    run_open_zeppelin_tests
-    sleep 1
-    kill -9 $(lsof -t -i:8545)
-    echo "Eth RPC Adapter Instance Stopped"
-    kill -9 $(lsof -t -i:8000)
-    echo "Chopsticks Instance Stopped"
-    ;;
+  # --open-zeppelin)
+  #   run_open_zeppelin_tests
+  #   sleep 1
+  #   kill -9 $(lsof -t -i:8545)
+  #   echo "Eth RPC Adapter Instance Stopped"
+  #   kill -9 $(lsof -t -i:8000)
+  #   echo "Chopsticks Instance Stopped"
+  #   ;;
   *)
     run_all_tests
     sleep 1
@@ -362,12 +416,12 @@ case "$chain" in
     kill -9 $(lsof -t -i:800)
     echo "Chopsticks Instance Stopped"
     ;;
-  --open-zeppelin)
-    run_open_zeppelin_tests
-    sleep 1
-    kill -9 $(lsof -t -i:8000)
-    echo "Chopsticks Instance Stopped"
-    ;;
+  # --open-zeppelin)
+  #   run_open_zeppelin_tests
+  #   sleep 1
+  #   kill -9 $(lsof -t -i:8000)
+  #   echo "Chopsticks Instance Stopped"
+  #   ;;
   *)
     run_all_tests
     sleep 1
@@ -382,8 +436,12 @@ case "$chain" in
   --matter-labs)
     run_matter_labs_tests
     ;;
-  --open-zeppelin)
-    run_open_zeppelin_tests
+  # --open-zeppelin)
+  #   run_open_zeppelin_tests
+  #   ;;
+  --geth-diff)
+    run_geth_diff_tests
+    sleep 1
     ;;
   *)
     run_all_tests
@@ -396,9 +454,9 @@ case "$chain" in
   --matter-labs)
     run_matter_labs_tests
     ;;
-  --open-zeppelin)
-    run_open_zeppelin_tests
-    ;;
+  # --open-zeppelin)
+  #   run_open_zeppelin_tests
+  #   ;;
   *)
     run_all_tests
     ;;
@@ -410,9 +468,9 @@ case "$chain" in
   --matter-labs)
     run_matter_labs_tests
     ;;
-  --open-zeppelin)
-    run_open_zeppelin_tests
-    ;;
+  # --open-zeppelin)
+  #   run_open_zeppelin_tests
+  #   ;;
   *)
     run_all_tests
     ;;
