@@ -9,7 +9,7 @@
 		"test-init": "vitest run --test-timeout=30000"
 	},
 	"dependencies": {
-		"@parity/revive": "^0.0.9",
+		"@parity/revive": "^0.0.12",
 		"ethers": "^6.13.5",
 		"prettier": "^3.5.1",
 		"solc": "^0.8.28",
