@@ -140,13 +140,8 @@ parse_hardhat_test_results() {
   passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
   failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
 
-  if [ -z "$passed" ]; then
-    passed=0
-  fi
-
-  if [ -z "$failed" ]; then
-    failed=0
-  fi
+  passed=${passed:-0}
+  failed=${failed:-0}
 
   total=$((passed + failed))
 
@@ -160,16 +155,11 @@ parse_hardhat_test_results() {
 
 parse_geth_diff_test_results() {
   log_file=$1
-  passed=$(grep -o '[0-9]\+ pass' "$log_file" | awk '{print $1}')
-  failed=$(grep -o '[0-9]\+ fail' "$log_file" | awk '{print $1}')
+  passed=$(grep -o 'Tests  [0-9]\+ passed' "$log_file" | awk '{print $2}')
+  failed=$(grep -o 'Tests  [0-9]\+ failed' "$log_file" | awk '{print $2}')
 
-  if [ -z "$passed" ]; then
-    passed=0
-  fi
-
-  if [ -z "$failed" ]; then
-    failed=0
-  fi
+  passed=${passed:-0}
+  failed=${failed:-0}
 
   total=$((passed + failed))
 
