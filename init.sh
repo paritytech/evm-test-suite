@@ -46,7 +46,6 @@ run_matter_labs_tests() {
     cd ./matter-labs-tests &&
     npm i --force &&
     git submodule update --init --recursive &&
-    TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
@@ -94,6 +93,7 @@ run_all_tests() {
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
     npm i --force &&
+    git submodule update --init --recursive &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
