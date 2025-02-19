@@ -3,8 +3,9 @@ import { execSync } from "child_process";
 import "@nomicfoundation/hardhat-toolbox";
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from "hardhat/builtin-tasks/task-names";
 
-import "hardhat-resolc";
+// import "hardhat-resolc";
 import "hardhat-revive-node";
+import "../hardhat-resolc/src/index"
 
 const nodePath = process.env.NODE_PATH;
 const adapterPath = process.env.ADAPTER_PATH;
@@ -167,11 +168,11 @@ const config: HardhatUserConfig = {
     },
   },
   resolc: {
-    compilerSource: 'binary',
+    compilerSource: 'wasm',
     settings: {
-      optimizer: {
-        enabled: true,
-      },
+      // optimizer: {
+      //   enabled: true,
+      // },
       evmVersion: "london",
       compilerPath: `${compilerPath}`,
       standardJson: true,
