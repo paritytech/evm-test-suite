@@ -84,7 +84,7 @@ run_geth_diff_tests() {
   echo "Running Geth Differential Tests" &&
     cd ./geth-diff &&
     npm install &&
-    npm run build &&
+    echo "y" | npm run build &&
     START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/geth-diff-tests.log" 2>&1
   parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
 }
@@ -128,7 +128,7 @@ run_all_tests() {
   echo "Running Geth Differential Tests" &&
     cd ./geth-diff &&
     npm install &&
-    npm run build &&
+    echo "y" | npm run build &&
     START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/geth-diff-tests.log" 2>&1
   parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
 
