@@ -1,0 +1,98 @@
++ cd ..
++ npm i
+
+up to date, audited 591 packages in 2s
+
+99 packages are looking for funding
+  run `npm fund` for details
+
+33 vulnerabilities (15 low, 2 high, 16 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
++ cd ./hardhat-resolc
++ npm i
+
+up to date, audited 289 packages in 874ms
+
+59 packages are looking for funding
+  run `npm fund` for details
+
+10 vulnerabilities (2 low, 8 critical)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
++ cd ../matter-labs-tests
++ npm i --force
+npm warn using --force Recommended protections disabled.
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @nomiclabs/hardhat-ethers@2.2.3
+npm warn Found: ethers@6.13.5
+npm warn node_modules/ethers
+npm warn   dev ethers@"^6.13.5" from the root project
+npm warn   7 more (@nomicfoundation/hardhat-chai-matchers, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer ethers@"^5.0.0" from @nomiclabs/hardhat-ethers@2.2.3
+npm warn node_modules/@nomiclabs/hardhat-ethers
+npm warn   @nomiclabs/hardhat-ethers@"^2.2.3" from the root project
+npm warn
+npm warn Conflicting peer dependency: ethers@5.7.2
+npm warn node_modules/ethers
+npm warn   peer ethers@"^5.0.0" from @nomiclabs/hardhat-ethers@2.2.3
+npm warn   node_modules/@nomiclabs/hardhat-ethers
+npm warn     @nomiclabs/hardhat-ethers@"^2.2.3" from the root project
+
+up to date, audited 575 packages in 1s
+
+101 packages are looking for funding
+  run `npm fund` for details
+
+32 vulnerabilities (14 low, 2 high, 16 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
++ echo Start
+Start
+++ date
++ echo mié 19 feb 2025 12:33:09 -03
+mié 19 feb 2025 12:33:09 -03
++ npx hardhat compile
+Compiling 514 Solidity files
+CHECKING
+An unexpected error occurred:
+
+Error: ENOENT: no such file or directory, open '/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.wasm'
+    at Object.openSync (node:fs:603:3)
+    at Object.readFileSync (node:fs:471:35)
+    at readBinary (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.js:9:1971)
+    at getBinarySync (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.js:9:6834)
+    at instantiateSync (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.js:9:7069)
+    at createWasm (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.js:9:7817)
+    at /home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.js:9:76235
+    at resolc (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/src/resolc.ts:6:21)
+    at compile (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/index.js:66:32)
+    at compileWithWasm (/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/src/compile/wasm.ts:15:30) {
+  errno: -2,
+  syscall: 'open',
+  code: 'ENOENT',
+  path: '/home/bee344/Documentos/parity/evm-test-suite/hardhat-resolc/node_modules/@parity/revive/dist/resolc/resolc.wasm'
+}
+++ date
++ echo mié 19 feb 2025 12:33:14 -03
+mié 19 feb 2025 12:33:14 -03
