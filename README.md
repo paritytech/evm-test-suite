@@ -63,9 +63,9 @@ a test, `--` should be passed for the `<URL>` argument, and the `USE_REVIVE` env
 var is set automatically depending on the chain.
 
 As for `TEST`, you can specify either `--matter-labs` to run the `matter-labs`
-tests, `--open-zeppelin` to run the openzeppelin standard tests or `--geth-diff`
-to run the geth differential tests. Not specifying the test will result in all
-suites being executed consecutively.
+tests, `--open-zeppelin` to run the openzeppelin standard tests (currently disabled) 
+or `--geth-diff` to run the geth differential tests. Not specifying the test will
+result in all suites being executed consecutively.
 
 When running the Kitchensink node, you must specify the `NODE_PATH`, `ADAPTER_PATH` and
 the `COMPILER_PATH`. Setting `FORKING=true` and running a local node are not compatible.

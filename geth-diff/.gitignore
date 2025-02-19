@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+abi/*
+evm/*
+pvm/*
+!.gitkeep
 
 # Editor directories and files
 .vscode/*
