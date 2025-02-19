@@ -1,0 +1,1860 @@
++ cd ..
++ npm i
+
+up to date, audited 591 packages in 11s
+
+99 packages are looking for funding
+  run `npm fund` for details
+
+33 vulnerabilities (15 low, 2 high, 16 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
++ cd ./hardhat-resolc
++ npm i
+
+up to date, audited 289 packages in 1s
+
+59 packages are looking for funding
+  run `npm fund` for details
+
+10 vulnerabilities (2 low, 8 critical)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
++ cd ../matter-labs-tests
++ npm i --force
+npm warn using --force Recommended protections disabled.
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: @nomiclabs/hardhat-ethers@2.2.3
+npm warn Found: ethers@6.13.5
+npm warn node_modules/ethers
+npm warn   dev ethers@"^6.13.5" from the root project
+npm warn   7 more (@nomicfoundation/hardhat-chai-matchers, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer ethers@"^5.0.0" from @nomiclabs/hardhat-ethers@2.2.3
+npm warn node_modules/@nomiclabs/hardhat-ethers
+npm warn   @nomiclabs/hardhat-ethers@"^2.2.3" from the root project
+npm warn
+npm warn Conflicting peer dependency: ethers@5.7.2
+npm warn node_modules/ethers
+npm warn   peer ethers@"^5.0.0" from @nomiclabs/hardhat-ethers@2.2.3
+npm warn   node_modules/@nomiclabs/hardhat-ethers
+npm warn     @nomiclabs/hardhat-ethers@"^2.2.3" from the root project
+
+up to date, audited 575 packages in 3s
+
+101 packages are looking for funding
+  run `npm fund` for details
+
+32 vulnerabilities (14 low, 2 high, 16 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
++ echo Start
+Start
+++ date
++ echo mié 19 feb 2025 12:09:19 -03
+mié 19 feb 2025 12:09:19 -03
++ npx hardhat compile
+Compiling 514 Solidity files
+CHECKING
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/events/evaluation_order.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/assign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/assign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/product.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/reassign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/reassign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/sum.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/assign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/assign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/product.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/reassign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/reassign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/sum.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/assign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/assign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/product.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/reassign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/reassign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/sum.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/assign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/assign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/product.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/reassign.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/reassign_nested.sol
+
+
+Warning: SPDX license identifier not provided in source file. Before publishing, consider adding a comment containing "SPDX-License-Identifier: <SPDX-License>" to each source file. Use "SPDX-License-Identifier: UNLICENSED" for non-open-source code. Please see https://spdx.org for more information.
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/sum.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/events/evaluation_order.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/assign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/assign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/product.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/reassign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/reassign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/sum.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/assign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/assign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/product.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/reassign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/reassign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/sum.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/mapping/call_getter.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/mapping/call_getter_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/assign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/assign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/product.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/reassign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/reassign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/sum.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/assign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/assign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/product.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/reassign.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/reassign_nested.sol
+
+
+Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.8.28;"
+--> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/sum.sol
+
+
+Warning: This declaration shadows an existing declaration.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:114:23:
+    |
+114 |     function triangle(Triangle memory triangle) public pure returns(uint64) {
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:114:5:
+    |
+114 |     function triangle(Triangle memory triangle) public pure returns(uint64) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:122:22:
+    |
+122 |     function polygon(Polygon memory polygon) public pure returns(uint64) {
+    |                      ^^^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:122:5:
+    |
+122 |     function polygon(Polygon memory polygon) public pure returns(uint64) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:131:21:
+    |
+131 |     function sphere(Sphere memory sphere) public pure returns(uint64) {
+    |                     ^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:131:5:
+    |
+131 |     function sphere(Sphere memory sphere) public pure returns(uint64) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:155:27:
+    |
+155 |     function triangleArea(Triangle memory triangle) private pure returns(uint128) {
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:114:5:
+    |
+114 |     function triangle(Triangle memory triangle) public pure returns(uint64) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:160:26:
+    |
+160 |     function polygonArea(Polygon memory polygon) private pure returns(uint128) {
+    |                          ^^^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:122:5:
+    |
+122 |     function polygon(Polygon memory polygon) public pure returns(uint64) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:178:28:
+    |
+178 |     function sphereSurface(Sphere memory sphere, uint128 pi) private pure returns(uint128) {
+    |                            ^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/area.sol:131:5:
+    |
+131 |     function sphere(Sphere memory sphere) public pure returns(uint64) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:74:19:
+   |
+74 |     function cube(Cube memory cube) public pure returns(uint64) {
+   |                   ^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:74:5:
+   |
+74 |     function cube(Cube memory cube) public pure returns(uint64) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:78:21:
+   |
+78 |     function sphere(Sphere memory sphere) public pure returns(uint64) {
+   |                     ^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:78:5:
+   |
+78 |     function sphere(Sphere memory sphere) public pure returns(uint64) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:83:25:
+   |
+83 |     function cubeVolume(Cube memory cube) private pure returns(uint128) {
+   |                         ^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:74:5:
+   |
+74 |     function cube(Cube memory cube) public pure returns(uint64) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:87:27:
+   |
+87 |     function sphereVolume(Sphere memory sphere, uint128 pi) private pure returns(uint128) {
+   |                           ^^^^^^^^^^^^^^^^^^^^
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/floating_point_simulation/geometry/volume.sol:78:5:
+   |
+78 |     function sphere(Sphere memory sphere) public pure returns(uint64) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/structure/mutating.sol:21:5:
+   |
+21 |     struct Test {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/structure/mutating.sol:20:1:
+   |
+20 | contract Test {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/structure/nested_evaluation_stack.sol:25:5:
+   |
+25 |     struct Test {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/structure/nested_evaluation_stack.sol:20:1:
+   |
+20 | contract Test {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: This declaration shadows an existing declaration.
+  --> contracts/era-compiler-tests/solidity/simple/structure/nested_storage.sol:25:5:
+   |
+25 |     struct Test {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+Note: The shadowed declaration is here:
+  --> contracts/era-compiler-tests/solidity/simple/structure/nested_storage.sol:20:1:
+   |
+20 | contract Test {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Since the VM version paris, "difficulty" was replaced by "prevrandao", which now returns a random number based on the beacon chain.
+  --> contracts/era-compiler-tests/solidity/simple/context/difficulty.sol:21:28:
+   |
+21 |         uint _difficulty = block.difficulty;
+   |                            ^^^^^^^^^^^^^^^^
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/destructuring/tuple_priority1.sol:24:5:
+   |
+24 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/destructuring/tuple_priority2.sol:26:5:
+   |
+26 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/complex_operator.sol:36:5:
+   |
+36 |     constructor(uint256 a, uint256 b, uint256 c) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/method_chain.sol:34:5:
+   |
+34 |     constructor(uint256 x, uint256 y) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/mixed_data_origin.sol:42:5:
+   |
+42 |     constructor(uint256 x, uint256 y) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/simple_operator.sol:36:5:
+   |
+36 |     constructor(uint256 a, uint256 b, uint256 c) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/memory_manipulation.sol:26:5:
+   |
+26 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/complex_operator.sol:36:5:
+   |
+36 |     constructor(uint8 a, uint8 b, uint8 c) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/method_chain.sol:34:5:
+   |
+34 |     constructor(uint8 x, uint8 y) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/mixed_data_origin.sol:42:5:
+   |
+42 |     constructor(uint8 x, uint8 y) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/simple_operator.sol:36:5:
+   |
+36 |     constructor(uint8 a, uint8 b, uint8 c) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/basic.sol:35:5:
+   |
+35 |     constructor(int i) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/data_structures.sol:42:5:
+   |
+42 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/indirect.sol:24:5:
+   |
+24 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/inherited_1.sol:38:5:
+   |
+38 |     constructor(int i) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/inherited_2.sol:43:5:
+   |
+43 |     constructor(int i) public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/invalidInConstructor.sol:38:3:
+   |
+38 |   constructor() public {
+   |   ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/invalidStoredInConstructor.sol:36:3:
+   |
+36 |   constructor() public {
+   |   ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:35:3:
+   |
+35 |   constructor() public {
+   |   ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/storeInConstructor.sol:36:3:
+   |
+36 |   constructor() public {
+   |   ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/linearity/linearity2.sol:23:5:
+   |
+23 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/event_instead_function.sol:26:5:
+   |
+26 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/invalid_return.sol:30:5:
+   |
+30 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/not_enough_balance.sol:31:5:
+   |
+31 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/not_matching_interface.sol:30:5:
+   |
+30 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/not_payable.sol:31:5:
+   |
+31 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/signature_collision1.sol:26:5:
+   |
+26 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/signature_collision2.sol:26:5:
+   |
+26 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/this_in_constructor.sol:24:5:
+   |
+24 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+  --> contracts/era-compiler-tests/solidity/simple/yul_instructions/codecopy.sol:30:5:
+   |
+30 |     constructor() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Visibility for constructor is ignored. If you want the contract to be non-deployable, making it "abstract" is sufficient.
+   --> contracts/era-compiler-tests/solidity/simple/yul_instructions/codesize.sol:143:5:
+    |
+143 |     constructor() public {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: "switch" statement with only a default case.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/switch.sol:444:13:
+    |
+444 |             switch f()
+    |             ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: "switch" statement with only a default case.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/switch.sol:530:13:
+    |
+530 |             switch "a"
+    |             ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: "switch" statement with only a default case.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/switch.sol:583:13:
+    |
+583 |             switch f()
+    |             ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/tree/treap_reduced.sol:69:9:
+   |
+69 |         (uint8 p1, uint8 p2) = split(p, val, x);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/tree/treap_reduced.sol:70:9:
+   |
+70 |         return (p1, p2);
+   |         ^^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/error/revert1.sol:28:25:
+   |
+28 |         require(f1() && f2(), "main revert");
+   |                         ^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/error/revert1.sol:28:31:
+   |
+28 |         require(f1() && f2(), "main revert");
+   |                               ^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/error/revert1.sol:33:9:
+   |
+33 |         return true;
+   |         ^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/error/revert1.sol:38:9:
+   |
+38 |         return true;
+   |         ^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/error/revert3.sol:34:9:
+   |
+34 |         return "main revert";
+   |         ^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/storeInConstructor.sol:40:32:
+   |
+40 |   function f() public returns (uint) {
+   |                                ^^^^
+
+
+Warning: Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+  --> contracts/era-compiler-tests/solidity/simple/operator/arithmetic/unchecked/unchecked_try_catch1.sol:20:35:
+   |
+20 |     function f1() public returns (uint256) {
+   |                                   ^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/yul_instructions/invalid.sol:25:9:
+   |
+25 |         return 5;
+   |         ^^^^^^^^
+
+
+Warning: Unreachable code.
+  --> contracts/era-compiler-tests/solidity/simple/yul_instructions/stop.sol:23:9:
+   |
+23 |         return 5;
+   |         ^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:596:46:
+    |
+596 |             for { return(0, 32) } lt(i, 1) { i := add(i, 1) } {
+    |                                              ^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:597:17:
+    |
+597 |                 mstore(0, 0xe2202)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:600:13:
+    |
+600 |             revert(0, 32)
+    |             ^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:608:46:
+    |
+608 |             for { revert(0, 32) } lt(i, 1) { i := add(i, 1) } {
+    |                                              ^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:609:17:
+    |
+609 |                 mstore(0, 0xe2202)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:612:13:
+    |
+612 |             return(0, 32)
+    |             ^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:773:47:
+    |
+773 |             for { let i := 0 } lt(i, 23232) { revert(0, 32) } {
+    |                                               ^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:791:51:
+    |
+791 |             for { let i := 0 } iszero(eq(i, 5)) { i := add(i, 1) } {
+    |                                                   ^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:795:17:
+    |
+795 |                 mstore(0, 0xe2202)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:804:51:
+    |
+804 |             for { let i := 0 } iszero(eq(i, 5)) { i := add(i, 1) } {
+    |                                                   ^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:807:17:
+    |
+807 |                 mstore(0, 0xe2202)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:820:17:
+    |
+820 |                 revert(0, 32)
+    |                 ^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:828:43:
+    |
+828 |             for { let i := 5 } gt(i, 3) { i := sub(i, 1) } {
+    |                                           ^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:832:17:
+    |
+832 |                 mstore(0, 0xe2202)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:858:21:
+    |
+858 |                     mstore(0, 0xe2202)
+    |                     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:871:47:
+    |
+871 |                 for { let j := 0 } lt(j, 2) { j := add(j, 1) } {
+    |                                               ^^^^^^^^^^^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:875:21:
+    |
+875 |                     mstore(0, 0xe2202)
+    |                     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/for.sol:944:29:
+    |
+944 |                             revert(0, 32)
+    |                             ^^^^^^^^^^^^^
+
+
+Warning: Unnamed return variable can remain unassigned. Add an explicit return with value to all non-reverting code paths or name the variable.
+  --> contracts/era-compiler-tests/solidity/simple/yul_semantic/free_memory_pointer.sol:26:39:
+   |
+26 |     function test() external returns (uint) {
+   |                                       ^^^^
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/statements.sol:170:17:
+    |
+170 |                 mstore(0, 0xdeadbeef02)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unreachable code.
+   --> contracts/era-compiler-tests/solidity/simple/yul_semantic/statements.sol:182:17:
+    |
+182 |                 mstore(0, 0xdeadbeef02)
+    |                 ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/split.sol:52:26:
+   |
+52 |             (uint256 p1, uint256 p2) = split(nodes[p].r, nodes);
+   |                          ^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/split.sol:56:14:
+   |
+56 |             (uint256 p1, uint256 p2) = split(nodes[p].l, nodes);
+   |              ^^^^^^^^^^
+
+
+Warning: Unused local variable.
+   --> contracts/era-compiler-tests/solidity/simple/algorithm/tree/treap.sol:204:10:
+    |
+204 |         (uint8 p21, uint8 p22) = split(p2, key + 1, _memory);
+    |          ^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/algorithm/tree/treap_reduced.sol:75:20:
+   |
+75 |         (uint8 p1, uint8 p2) = split(root, key, root);
+   |                    ^^^^^^^^
+
+
+Warning: This assignment performs two copies to storage. Since storage copies do not first copy to a temporary location, one of them might be overwritten before the second is executed and thus may have unexpected effects. It is safer to perform the copies separately or assign to storage pointers first.
+  --> contracts/era-compiler-tests/solidity/simple/destructuring/array_tupple.sol:72:9:
+   |
+72 |         (a, b) = (b, a);
+   |         ^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/events/anonymous.sol:32:19:
+   |
+32 |     function test(uint256 number) public {
+   |                   ^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/expression/complex_access.sol:27:10:
+   |
+27 |         (uint8 a, uint8 b, uint8 c, uint8 d) = (1, 2, 3, 4);
+   |          ^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/expression/complex_access.sol:27:19:
+   |
+27 |         (uint8 a, uint8 b, uint8 c, uint8 d) = (1, 2, 3, 4);
+   |                   ^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/expression/complex_access.sol:27:28:
+   |
+27 |         (uint8 a, uint8 b, uint8 c, uint8 d) = (1, 2, 3, 4);
+   |                            ^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/fat_ptr/ptr_load_overwrite.sol:31:9:
+   |
+31 |         bytes32 _bytecodeHash,
+   |         ^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/fat_ptr/ptr_load_overwrite.sol:32:9:
+   |
+32 |         bytes calldata _input
+   |         ^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/fat_ptr/ptr_pack_overwrite.sol:31:9:
+   |
+31 |         bytes32 _bytecodeHash,
+   |         ^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/fat_ptr/ptr_pack_overwrite.sol:32:9:
+   |
+32 |         bytes calldata _input
+   |         ^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/interface/enumeration_method_chain.sol:32:24:
+   |
+32 |     function intoFirst(List list) private pure returns(List) {
+   |                        ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/interface/enumeration_method_chain.sol:36:25:
+   |
+36 |     function intoSecond(List list) private pure returns(List) {
+   |                         ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/interface/enumeration_method_chain.sol:40:24:
+   |
+40 |     function intoThird(List list) private pure returns(List) {
+   |                        ^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:36:5:
+   |
+36 |     uint _y1;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:37:5:
+   |
+37 |     uint _y2;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:38:5:
+   |
+38 |     uint _y3;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:39:5:
+   |
+39 |     uint _y4;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:40:5:
+   |
+40 |     uint _y5;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:41:5:
+   |
+41 |     uint _y6;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:42:5:
+   |
+42 |     uint _y7;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:43:5:
+   |
+43 |     uint _y8;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:44:5:
+   |
+44 |     uint _y9;
+   |     ^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:45:5:
+   |
+45 |     uint _y10;
+   |     ^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:46:5:
+   |
+46 |     uint _y11;
+   |     ^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:47:5:
+   |
+47 |     uint _y12;
+   |     ^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:48:5:
+   |
+48 |     uint _y13;
+   |     ^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/store2.sol:49:5:
+   |
+49 |     uint _y14;
+   |     ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/pointer/vector_minimal.sol:40:30:
+   |
+40 |     function get(uint24 ptr, uint16 len, uint16 index) private pure returns(uint64 result) {
+   |                              ^^^^^^^^^^
+
+
+Warning: Unused local variable.
+   --> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/array.sol:207:9:
+    |
+207 |         uint[] memory a = new uint[](5);
+    |         ^^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/data_locations.sol:59:9:
+   |
+59 |         MyStruct storage myStruct = myStructs[1];
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/data_locations.sol:61:9:
+   |
+61 |         MyStruct memory myMemStruct = MyStruct(0);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/variables.sol:50:9:
+   |
+50 |         uint i = 456;
+   |         ^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/variables.sol:53:9:
+   |
+53 |         uint timestamp = block.timestamp; // Current block timestamp
+   |         ^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/variables.sol:54:9:
+   |
+54 |         address sender = msg.sender; // address of the caller
+   |         ^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/product.sol:22:19:
+   |
+22 |     function main(uint16 argument) public returns(uint16) {
+   |                   ^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/aligned/array/sum.sol:22:19:
+   |
+22 |     function main(uint8 argument) public returns(uint8) {
+   |                   ^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/product.sol:29:19:
+   |
+29 |     function main(uint16 argument) public returns(uint16) {
+   |                   ^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/aligned/structure/sum.sol:31:19:
+   |
+31 |     function main(uint8 argument) public returns(uint8) {
+   |                   ^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/product.sol:22:19:
+   |
+22 |     function main(uint16 argument) public returns(uint16) {
+   |                   ^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/unaligned/array/sum.sol:22:19:
+   |
+22 |     function main(uint8 argument) public returns(uint8) {
+   |                   ^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/product.sol:29:19:
+   |
+29 |     function main(uint16 argument) public returns(uint16) {
+   |                   ^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/storage/unaligned/structure/sum.sol:31:19:
+   |
+31 |     function main(uint8 argument) public returns(uint8) {
+   |                   ^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/system/balance.sol:21:9:
+   |
+21 |         uint256 result = address(this).balance;
+   |         ^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/system/keccak256_returndata.sol:21:9:
+   |
+21 |         bytes32 result = keccak256("abc");
+   |         ^^^^^^^^^^^^^^
+
+
+Warning: Unused local variable.
+  --> contracts/era-compiler-tests/solidity/simple/system/long_returndata_keccak256.sol:21:9:
+   |
+21 |         bytes32 result = keccak256(hex"121341253621738129 ...
+   |         ^^^^^^^^^^^^^^
+
+
+Warning: Unused try/catch parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/invalid_return.sol:35:48:
+   |
+35 |         try ITest2(address(ins)).f1() returns (bool a) {
+   |                                                ^^^^^^
+
+
+Warning: "this" used in constructor. Note that external functions of a contract cannot be called while it is being constructed.
+  --> contracts/era-compiler-tests/solidity/simple/try_catch/this_in_constructor.sol:25:13:
+   |
+25 |         try this.f1() {} catch {}
+   |             ^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/unused/argument.sol:23:19:
+   |
+23 |     function main(bool[1] memory a) public pure returns(uint8) {
+   |                   ^^^^^^^^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/unused/arguments_many.sol:21:19:
+   |
+21 |     function main(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e, uint256 f) public pure returns(uint256) {
+   |                   ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/unused/arguments_many.sol:21:30:
+   |
+21 |     function main(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e, uint256 f) public pure returns(uint256) {
+   |                              ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/unused/arguments_many.sol:21:41:
+   |
+21 |     function main(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e, uint256 f) public pure returns(uint256) {
+   |                                         ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/unused/arguments_many.sol:21:63:
+   |
+21 |     function main(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e, uint256 f) public pure returns(uint256) {
+   |                                                               ^^^^^^^^^
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/era-compiler-tests/solidity/simple/unused/arguments_many.sol:21:74:
+   |
+21 |     function main(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e, uint256 f) public pure returns(uint256) {
+   |                                                                          ^^^^^^^^^
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:159:5:
+    |
+159 |     function first() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:166:5:
+    |
+166 |     function second() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:173:5:
+    |
+173 |     function third() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:181:5:
+    |
+181 |     function four() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:189:5:
+    |
+189 |     function five() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:196:5:
+    |
+196 |     function six() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:211:5:
+    |
+211 |     function eight() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:219:5:
+    |
+219 |     function nine() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:227:5:
+    |
+227 |     function ten() public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:234:5:
+    |
+234 |     function eleven(uint256[] memory array) public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+   --> contracts/era-compiler-tests/solidity/simple/array/delete_element.sol:240:5:
+    |
+240 |     function twelve(uint256[3] memory array) public returns (uint256) {
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/array/double_dynamic.sol:22:5:
+   |
+22 |     function f() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/constant_expressions/lulz.sol:23:5:
+   |
+23 |     function testCompileVsRuntime (uint a, uint b) public view returns (uint, uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/block_hash.sol:20:5:
+   |
+20 |     function main() public returns(bytes32) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/block_number.sol:20:5:
+   |
+20 |     function main() public returns(uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/block_timestamp.sol:20:5:
+   |
+20 |     function main() public returns(uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/chain_id.sol:20:5:
+   |
+20 |     function main() public returns(uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/chain_id_assembly.sol:20:5:
+   |
+20 |     function main() public returns(uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/difficulty.sol:20:5:
+   |
+20 |     function main() public returns(uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/gas_price.sol:20:5:
+   |
+20 |     function main() public returns(uint) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/context/origin.sol:20:5:
+   |
+20 |     function main() public returns(address) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/destructuring/array_tupple.sol:77:5:
+   |
+77 |     function f3() public returns (uint256[2] memory, uint256[2] memory) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/destructuring/tuple_priority1.sol:28:5:
+   |
+28 |     function f1() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/destructuring/tuple_priority2.sol:30:5:
+   |
+30 |     function f1() public returns (uint256,uint256,uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/error/revert1.sol:31:5:
+   |
+31 |     function f1() public returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/error/revert1.sol:36:5:
+   |
+36 |     function f2() public returns (bool) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/error/revert2.sol:29:5:
+   |
+29 |     function f() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/error/revert3.sol:32:5:
+   |
+32 |     function f1() public returns (string memory) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/error/revert4.sol:41:5:
+   |
+41 |     function f2() public {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/complex_operator.sol:42:5:
+   |
+42 |     function main(uint8 witness) external returns(uint8) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/method_chain.sol:39:5:
+   |
+39 |     function double(uint256 _value) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/method_chain.sol:43:5:
+   |
+43 |     function triple(uint256 _value) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/method_chain.sol:47:5:
+   |
+47 |     function quadruple(uint256 _value) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/mixed_data_origin.sol:47:5:
+   |
+47 |     function inner(Data memory data, uint256 _value, uint8 literal) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/aligned/simple_operator.sol:42:5:
+   |
+42 |     function main(uint8 witness) external returns(uint8) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables1.sol:26:5:
+   |
+26 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables1.sol:38:5:
+   |
+38 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables1.sol:50:5:
+   |
+50 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables2.sol:26:5:
+   |
+26 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables2.sol:38:5:
+   |
+38 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables2.sol:50:5:
+   |
+50 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables3.sol:26:5:
+   |
+26 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables3.sol:38:5:
+   |
+38 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables3.sol:50:5:
+   |
+50 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables4.sol:26:5:
+   |
+26 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables4.sol:38:5:
+   |
+38 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables4.sol:50:5:
+   |
+50 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables5.sol:26:5:
+   |
+26 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables5.sol:38:5:
+   |
+38 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables5.sol:50:5:
+   |
+50 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables6_legacy.sol:29:5:
+   |
+29 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables6_legacy.sol:41:5:
+   |
+41 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables6_legacy.sol:53:5:
+   |
+53 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables6_yul.sol:29:5:
+   |
+29 |     function fC() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables6_yul.sol:41:5:
+   |
+41 |     function fB() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/inheritance/immutables6_yul.sol:53:5:
+   |
+53 |     function f() public returns (uint256, uint256, uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/complex_operator.sol:42:5:
+   |
+42 |     function main(uint8 witness) external returns(uint8) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/method_chain.sol:39:5:
+   |
+39 |     function double(uint256 _value) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/method_chain.sol:43:5:
+   |
+43 |     function triple(uint256 _value) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/method_chain.sol:47:5:
+   |
+47 |     function quadruple(uint256 _value) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/mixed_data_origin.sol:47:5:
+   |
+47 |     function inner(Data memory data, uint256 _value, uint8 literal) internal returns(uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/immutable/unaligned/simple_operator.sol:42:5:
+   |
+42 |     function main(uint8 witness) external returns(uint8) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/call_to_zero_initialized_function_type_legacy.sol:26:5:
+   |
+26 |     function addTwo(uint256 x) public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to pure
+  --> contracts/era-compiler-tests/solidity/simple/internal_function_pointers/call_to_zero_initialized_function_type_legacy_evm.sol:26:5:
+   |
+26 |     function addTwo(uint256 x) public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/linearity/linearity1.sol:23:5:
+   |
+23 |     function f() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/linearity/linearity2.sol:27:5:
+   |
+27 |     function f1() public returns (uint256) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: Function state mutability can be restricted to view
+  --> contracts/era-compiler-tests/solidity/simple/linearity/linearity3.sol:28:5:
+   |
+28 |     function f() public returns (address) {
+   |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Warning: There are more than 256 warnings. Ignoring the rest.
+
+
+
+Warning: You are checking for 'tx.origin' in your code, which might lead to unexpected behavior.
+Polkadot comes with native account abstraction support, and therefore the initiator of a
+transaction might be different from the contract calling your code. It is highly recommended NOT
+to rely on tx.origin, but use msg.sender instead.
+
+--> contracts/era-compiler-tests/solidity/simple/context/origin.sol
+
+
+Warning: It looks like you are using 'ecrecover' to validate a signature of a user account.
+Polkadot comes with native account abstraction support, therefore it is highly recommended NOT
+to rely on the fact that the account has an ECDSA private key attached to it since accounts might
+implement other signature schemes.
+
+--> contracts/era-compiler-tests/solidity/simple/solidity_by_example/simple/verifying_signature.sol
+
+
+Warning: Your code or one of its dependencies uses the 'extcodesize' instruction, which is
+usually needed in the following cases:
+  1. To detect whether an address belongs to a smart contract.
+  2. To detect whether the deploy code execution has finished.
+Polkadot comes with native account abstraction support (so smart contracts are just accounts
+coverned by code), and you should avoid differentiating between contracts and non-contract
+addresses.
+
+--> contracts/era-compiler-tests/solidity/simple/system/extcodesize_returndata.sol
+
+
+Warning: You are checking for 'tx.origin' in your code, which might lead to unexpected behavior.
+Polkadot comes with native account abstraction support, and therefore the initiator of a
+transaction might be different from the contract calling your code. It is highly recommended NOT
+to rely on tx.origin, but use msg.sender instead.
+
+--> contracts/era-compiler-tests/solidity/simple/system/origin_returndata.sol
+
+
+Warning: It looks like you are using '<address payable>.send/transfer(<X>)'.
+Using '<address payable>.send/transfer(<X>)' is deprecated and strongly discouraged!
+The resolc compiler uses a heuristic to detect '<address payable>.send/transfer(<X>)' calls,
+which disables call re-entrancy and supplies all remaining gas instead of the 2300 gas stipend.
+However, detection is not guaranteed. You are advised to carefully test this, employ
+re-entrancy guards or use the withdrawal pattern instead!
+Learn more on https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
+and https://docs.soliditylang.org/en/latest/common-patterns.html#withdrawal-from-contracts
+
+--> contracts/era-compiler-tests/solidity/simple/try_catch/signature_collision1.sol
+
+
+Warning: It looks like you are using '<address payable>.send/transfer(<X>)'.
+Using '<address payable>.send/transfer(<X>)' is deprecated and strongly discouraged!
+The resolc compiler uses a heuristic to detect '<address payable>.send/transfer(<X>)' calls,
+which disables call re-entrancy and supplies all remaining gas instead of the 2300 gas stipend.
+However, detection is not guaranteed. You are advised to carefully test this, employ
+re-entrancy guards or use the withdrawal pattern instead!
+Learn more on https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
+and https://docs.soliditylang.org/en/latest/common-patterns.html#withdrawal-from-contracts
+
+--> contracts/era-compiler-tests/solidity/simple/try_catch/signature_collision2.sol
+
+
+Warning: Your code or one of its dependencies uses the 'extcodesize' instruction, which is
+usually needed in the following cases:
+  1. To detect whether an address belongs to a smart contract.
+  2. To detect whether the deploy code execution has finished.
+Polkadot comes with native account abstraction support (so smart contracts are just accounts
+coverned by code), and you should avoid differentiating between contracts and non-contract
+addresses.
+
+--> contracts/era-compiler-tests/solidity/simple/yul_instructions/codesize.sol
+
+
+Warning: You are checking for 'tx.origin' in your code, which might lead to unexpected behavior.
+Polkadot comes with native account abstraction support, and therefore the initiator of a
+transaction might be different from the contract calling your code. It is highly recommended NOT
+to rely on tx.origin, but use msg.sender instead.
+
+--> contracts/era-compiler-tests/solidity/simple/yul_instructions/origin.sol
+
+Generating typings for: 557 artifacts in dir: typechain-types for target: ethers-v6
+Successfully generated 2268 typings!
+Successfully compiled 514 Solidity files
++ echo End
+End
+++ date
++ echo mié 19 feb 2025 12:17:49 -03
+mié 19 feb 2025 12:17:49 -03
