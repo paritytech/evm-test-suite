@@ -5,7 +5,7 @@ export default defineWorkspace([
         extends: './vitest.config.ts',
         test: {
             name: 'unit',
-            include: ['./src/geth-diff.test.ts'],
+            include: ['./src/*.test.ts'],
         },
     },
 ])

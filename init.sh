@@ -79,13 +79,13 @@ run_matter_labs_tests() {
 #   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
 # }
 
-run_geth_diff_tests() {
-  echo "Running Geth Differential Tests" &&
-    cd ./geth-diff &&
+run_eth_rpc_tests() {
+  echo "Running eth-rpc tests" &&
+    cd ./eth-rpc &&
     npm install &&
     echo "y" | npm run build &&
-    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/geth-diff-tests.log" 2>&1
-  parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/eth-rpc-tests.log" 2>&1
+  parse_eth_rpc_test_results "../test-logs/eth-rpc-tests.log"
 }
 
 run_all_tests() {
@@ -125,12 +125,12 @@ run_all_tests() {
 
   # cd ..
 
-  echo "Running Geth Differential Tests" &&
-    cd ./geth-diff &&
+  echo "Running eth-rpc tests" &&
+    cd ./eth-rpc &&
     npm install &&
     echo "y" | npm run build &&
-    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/geth-diff-tests.log" 2>&1
-  parse_geth_diff_test_results "../test-logs/geth-diff-tests.log"
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/eth-rpc-tests.log" 2>&1
+  parse_eth_rpc_test_results "../test-logs/eth-rpc-tests.log"
 
   echo "Test Run Complete"
 }
@@ -153,7 +153,7 @@ parse_hardhat_test_results() {
   echo "Total: $total | Passed: $passed | Failed: $failed"
 }
 
-parse_geth_diff_test_results() {
+parse_eth_rpc_test_results() {
   log_file=$1
   passed=$(grep -o 'Tests  [0-9]\+ passed' "$log_file" | awk '{print $2}')
   failed=$(grep -o 'Tests  [0-9]\+ failed' "$log_file" | awk '{print $2}')
@@ -274,7 +274,7 @@ case "$chain" in
 --ethereum)
   echo "Cleaning up"
   rm -rf ./output-logs/geth-output.log
-  if [ "${tests}" = "--geth-diff" ]; then
+  if [ "${tests}" = "--eth-rpc" ]; then
     echo "Starting Geth Ethereum Node"
   else
     echo "Starting Geth Ethereum Node"
@@ -357,8 +357,8 @@ case "$chain" in
   #   kill -9 $(lsof -t -i:30304)
   #   echo "Geth Ethereum Node Stopped"
   #   ;;
-  --geth-diff)
-    run_geth_diff_tests
+  --eth-rpc)
+    run_eth_rpc_tests
     sleep 1
     ;;
   *)
@@ -430,8 +430,8 @@ case "$chain" in
   # --open-zeppelin)
   #   run_open_zeppelin_tests
   #   ;;
-  --geth-diff)
-    run_geth_diff_tests
+  --eth-rpc)
+    run_eth_rpc_tests
     sleep 1
     ;;
   *)
