@@ -6,7 +6,7 @@ contract PiggyBank {
     uint256 private balance;
     address public owner;
 
-    constructor() public {
+    constructor() {
         owner = msg.sender;
         balance = 0;
     }
