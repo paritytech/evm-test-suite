@@ -70,8 +70,14 @@ for (const file of input) {
     }
 
     if (!solcOnly) {
-        console.log('Compiling with revive...')
-        const reviveOut = await compile(input)
+        if (process.env.REVIVE_BIN === undefined) {
+            console.log('Compiling with revive...')
+        } else {
+            console.log(
+                `Compiling with revive (using ${process.env.REVIVE_BIN})...`
+            )
+        }
+        const reviveOut = await compile(input, { bin: process.env.REVIVE_BIN })
 
         for (const contracts of Object.values(reviveOut.contracts)) {
             for (const [name, contract] of Object.entries(contracts)) {
