@@ -29,13 +29,7 @@ export type JsonRpcError = {
 export function killProcessOnPort(port: number) {
     // Check which process is using the specified port
     const result = spawnSync('lsof', ['-ti', `:${port}`])
-    const pids = result.stdout
-        .toString()
-        .trim()
-        .split('\n')
-        .filter(Boolean)
-        .map(Number)
-        .filter((p) => p !== process.ppid && p !== process.pid)
+    const pids = result.stdout.toString().trim().split('\n').filter(Boolean)
 
     if (pids.length) {
         console.log(` Port ${port} is in use. Killing process...`)
