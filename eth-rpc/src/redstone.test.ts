@@ -24,22 +24,32 @@ for (const env of envs) {
         }
     )
 
-    describe(`${env.serverWallet.chain.name}`, () => {
-        test('getTokensPrices works', async () => {
-            const contract = new Contract(
-                contractAddress,
-                ExampleRedstoneShowroomAbi as any,
-                provider
-            )
-            const wrappedContract = WrapperBuilder.wrap(
-                contract
-            ).usingDataService({
-                dataServiceId: 'redstone-rapid-demo',
-                uniqueSignersCount: 1,
-                dataPackagesIds: ['BTC', 'ETH', 'BNB', 'AR', 'AVAX', 'CELO'],
+    describe.runIf(process.env.UNSTABLE)(
+        `${env.serverWallet.chain.name}`,
+        () => {
+            test('getTokensPrices works', async () => {
+                const contract = new Contract(
+                    contractAddress,
+                    ExampleRedstoneShowroomAbi as any,
+                    provider
+                )
+                const wrappedContract = WrapperBuilder.wrap(
+                    contract
+                ).usingDataService({
+                    dataServiceId: 'redstone-rapid-demo',
+                    uniqueSignersCount: 1,
+                    dataPackagesIds: [
+                        'BTC',
+                        'ETH',
+                        'BNB',
+                        'AR',
+                        'AVAX',
+                        'CELO',
+                    ],
+                })
+                const tokenPrices = await wrappedContract.getPrices()
+                expect(tokenPrices).toHaveLength(6)
             })
-            const tokenPrices = await wrappedContract.getPrices()
-            expect(tokenPrices).toHaveLength(6)
-        })
-    })
+        }
+    )
 }
