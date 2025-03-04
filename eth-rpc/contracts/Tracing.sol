@@ -5,7 +5,7 @@ contract TracingCaller {
 	event TraceEvent(uint256 value, string message);
     address payable public callee;
 
-	constructor(address payable _callee) public payable {
+	constructor(address payable _callee) payable {
         require(_callee != address(0), "Callee address cannot be zero");
         callee = _callee;
     }

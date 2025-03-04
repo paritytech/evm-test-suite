@@ -2,9 +2,10 @@ import { defineWorkspace } from 'vitest/config'
 
 export default defineWorkspace([
     {
-        extends: './vitest.config.ts',
         test: {
+            globals: true,
             name: 'unit',
+            globalSetup: './src/test-setup.ts',
             include: ['./src/*.test.ts'],
         },
     },

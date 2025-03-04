@@ -1,7 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
-import { Buffer } from 'node:buffer'
 import {
     CallParameters,
     createClient,
@@ -31,15 +29,14 @@ export type JsonRpcError = {
 export function killProcessOnPort(port: number) {
     // Check which process is using the specified port
     const result = spawnSync('lsof', ['-ti', `:${port}`])
-    const output = result.stdout.toString().trim()
+    const pids = result.stdout.toString().trim().split('\n').filter(Boolean)
 
-    if (output) {
-        console.log(`Port ${port} is in use. Killing process...`)
-        const pids = output.split('\n')
+    if (pids.length) {
+        console.log(` Port ${port} is in use. Killing process...`)
 
         // Kill each process using the port
         for (const pid of pids) {
-            spawnSync('kill', ['-9', pid])
+            process.kill(Number(pid), 'SIGKILL')
             console.log(`Killed process with PID: ${pid}`)
         }
     }
@@ -47,8 +44,8 @@ export function killProcessOnPort(port: number) {
 
 export let jsonRpcErrors: JsonRpcError[] = []
 export async function createEnv(name: 'geth' | 'eth-rpc') {
-    const gethPort = process.env.GETH_PORT || '8546'
-    const ethRpcPort = process.env.ETH_RPC_PORT || '8545'
+    const gethPort = process.env.GETH_PORT ?? '8546'
+    const ethRpcPort = process.env.ETH_RPC_PORT ?? '8545'
     const url = `http://localhost:${name == 'geth' ? gethPort : ethRpcPort}`
 
     let id = await (async () => {
@@ -164,6 +161,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
     }))
 
     return {
+        chain,
         debugClient,
         emptyWallet,
         serverWallet,

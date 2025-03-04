@@ -1,6 +1,6 @@
 /// <reference path="./solc.d.ts" />
 
-import { compile, SolcOutput } from '@parity/revive'
+import { compile, SolcOutput, tryResolveImport } from '@parity/revive'
 import { format } from 'prettier'
 import { parseArgs } from 'node:util'
 import solc from 'solc'
@@ -27,7 +27,6 @@ const {
         },
     },
 })
-
 function evmCompile(sources: CompileInput) {
     const input = {
         language: 'Solidity',
@@ -41,7 +40,12 @@ function evmCompile(sources: CompileInput) {
         },
     }
 
-    return solc.compile(JSON.stringify(input))
+    return solc.compile(JSON.stringify(input), {
+        import: (relativePath) => {
+            const source = readFileSync(tryResolveImport(relativePath), 'utf8')
+            return { contents: source }
+        },
+    })
 }
 
 console.log('Compiling contracts...')
@@ -66,8 +70,14 @@ for (const file of input) {
     }
 
     if (!solcOnly) {
-        console.log('Compiling with revive...')
-        const reviveOut = await compile(input)
+        if (process.env.REVIVE_BIN === undefined) {
+            console.log('Compiling with revive...')
+        } else {
+            console.log(
+                `Compiling with revive (using ${process.env.REVIVE_BIN})...`
+            )
+        }
+        const reviveOut = await compile(input, { bin: process.env.REVIVE_BIN })
 
         for (const contracts of Object.values(reviveOut.contracts)) {
             for (const [name, contract] of Object.entries(contracts)) {
@@ -82,6 +92,13 @@ for (const file of input) {
 
     console.log(`Compile with solc ${file}`)
     const evmOut = JSON.parse(evmCompile(input)) as SolcOutput
+
+    if (evmOut.errors) {
+        for (const error of evmOut.errors) {
+            console.error(error.formattedMessage)
+        }
+        process.exit(1)
+    }
 
     for (const contracts of Object.values(evmOut.contracts)) {
         for (const [name, contract] of Object.entries(contracts)) {

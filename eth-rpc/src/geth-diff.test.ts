@@ -1,103 +1,19 @@
-import {
-    jsonRpcErrors,
-    createEnv,
-    getByteCode,
-    killProcessOnPort,
-    waitForHealth,
-    visit,
-} from './util.ts'
-import { afterAll, afterEach, describe, expect, test } from 'vitest'
+import { jsonRpcErrors, getByteCode, visit, createEnv } from './util.ts'
+import { afterEach, describe, expect, inject, test } from 'vitest'
 import fs from 'node:fs'
-import assert, { fail } from 'node:assert'
+import { fail } from 'node:assert'
 
 import { encodeFunctionData, Hex, parseEther, decodeEventLog } from 'viem'
 import { ErrorsAbi } from '../abi/Errors.ts'
 import { EventExampleAbi } from '../abi/EventExample.ts'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
 import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
-import { ChildProcess, spawn } from 'node:child_process'
-
-const procs: ChildProcess[] = []
-if (process.env.START_GETH) {
-    process.env.USE_GETH = 'true'
-    const geth = process.env.GETH_BIN ?? 'geth'
-    const gethArgs = [
-        '--http',
-        '--http.api',
-        'web3,eth,debug,personal,net',
-        '--http.port',
-        '8546',
-        '--dev',
-        '--verbosity',
-        '0',
-    ]
-
-    procs.push(
-        // Run geth on port 8546
-        await (async () => {
-            killProcessOnPort(8546)
-            console.log('Starting geth')
-
-            const proc = spawn(geth, gethArgs)
-
-            await waitForHealth('http://localhost:8546').catch()
-            return proc
-        })()
-    )
-}
-
-if (process.env.START_SUBSTRATE_NODE) {
-    const substrateNodeArgs = [
-        '--dev',
-        '-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
-    ]
-
-    procs.push(
-        //Run the substate node
-        (() => {
-            killProcessOnPort(9944)
-            assert(process.env.NODE_PATH, 'NODE_PATH should be set')
-            console.log('Starting substrate node')
-            return spawn(process.env.NODE_PATH, substrateNodeArgs)
-        })()
-    )
-}
-
-if (process.env.START_ETH_RPC) {
-    process.env.USE_ETH_RPC = 'true'
-
-    // Run eth-rpc on 8545
-    const ethRpcArgs = [
-        '--dev',
-        '--node-rpc-url=ws://localhost:9944',
-        '-l=rpc-metrics=debug,eth-rpc=debug',
-    ]
-
-    procs.push(
-        await (async () => {
-            killProcessOnPort(8545)
-            assert(process.env.ADAPTER_PATH, 'ADAPTER_PATH should be set')
-            console.log('Starting eth-rpc')
-            const proc = spawn(process.env.ADAPTER_PATH, ethRpcArgs)
-            await waitForHealth('http://localhost:8545').catch()
-            return proc
-        })()
-    )
-}
 
 afterEach(() => {
     jsonRpcErrors.length = 0
 })
 
-afterAll(async () => {
-    procs.forEach((proc) => proc.kill())
-})
-
-const envs = await Promise.all([
-    ...(process.env.USE_GETH ? [createEnv('geth')] : []),
-    ...(process.env.USE_ETH_RPC ? [createEnv('eth-rpc')] : []),
-])
-
+const envs = await Promise.all(inject('envs').map(createEnv))
 for (const env of envs) {
     describe(`${env.serverWallet.chain.name}`, () => {
         const getErrorTesterAddr = (() => {
