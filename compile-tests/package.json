@@ -1,0 +1,14 @@
+{
+  "name": "testing-proj",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tsx index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "solc": "^0.8.28"
+  }
+}
