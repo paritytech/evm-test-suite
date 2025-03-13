@@ -349,68 +349,7 @@ function extractImports(filePath: string): string[] {
     return deduplicated;
 }
 
-// async function main()
-//     : Promise<void> {
-
-//     const start = Date.now();
-
-//     const files = getFiles(contractsDir)
-//     console.log('LENGTH ', files.length)
-
-//     for (let file of files) {
-
-//         const content = readFileSync(file, 'utf8');
-//         const cont = {
-//             [file.slice(contractsDir.length + 1)]: { content: content }
-//         }
-
-//         try {
-//             const sources = resolveInputs(cont);
-//             const input = JSON.stringify({
-//                 language: 'Solidity',
-//                 sources,
-//                 settings: {
-//                     optimizer: { enabled: true, runs: 200 },
-//                     outputSelection: {
-//                         '*': {
-//                             '*': ['abi'],
-//                         },
-//                     },
-//                 },
-//             })
-
-//             await compilePvmWithJson(file, input);
-
-//         } catch (error) {
-//             console.log(`Error processing file ${file}:`, error);
-//             continue;
-//         }
-//     }
-
-//     for (let file of files) {
-//         try {
-//             await compilePvmWithBin(file);
-
-//         } catch (error) {
-//             console.log(`Error processing file ${file}:`, error);
-//             continue;
-//         }
-//     }
-
-//     writeFileSync('jsonCompilationArtifacts.json', JSON.stringify(jsonArtifacts), 'utf-8')
-
-//     writeFileSync('binCompilationArtifacts.json', JSON.stringify(binArtifacts), 'utf-8')
-//     const end = Date.now();
-
-//     const duration = end - start;
-//     console.log('START', start);
-//     console.log('END', end);
-//     console.log('DURATION', duration)
-
-// }
-
-
-const BATCH_SIZE = 16; // Limit concurrent processes
+const BATCH_SIZE = 16;
 
 async function main(): Promise<void> {
     const start = Date.now();
@@ -418,7 +357,6 @@ async function main(): Promise<void> {
     const files = getFiles(contractsDir);
     console.log('LENGTH ', files.length)
 
-    // Helper function to process files in batches
     const processInBatches = async (files: string[]) => {
         const batches: string[][] = [];
         for (let i = 0; i < files.length; i += BATCH_SIZE) {
@@ -431,7 +369,6 @@ async function main(): Promise<void> {
         }
     };
 
-    // Function to process a single file
     const processFile = async (file: string) => {
         const content = readFileSync(file, 'utf8');
         const cont = {
@@ -439,7 +376,6 @@ async function main(): Promise<void> {
         };
 
         try {
-            // Compile with JSON output first
             const sources = resolveInputs(cont);
             const input = JSON.stringify({
                 language: 'Solidity',
@@ -460,7 +396,6 @@ async function main(): Promise<void> {
         }
         try {
 
-            // Then compile with binary output
             await compilePvmWithBin(file);
 
         } catch (error) {
@@ -470,20 +405,13 @@ async function main(): Promise<void> {
 
     await processInBatches(files);
 
-    // Write the output to the JSON files after all compiles are done
     writeFileSync(`${platform}JsonCompilationArtifacts.json`, JSON.stringify(jsonArtifacts), 'utf-8');
     writeFileSync(`${platform}BinCompilationArtifacts.json`, JSON.stringify(binArtifacts), 'utf-8');
 
-    const end = Date.now();
-    const duration = end - start;
-    console.log('START', start);
-    console.log('END', end);
-    console.log('DURATION', duration);
 }
 
 
 main().catch((error) => {
     console.log(error);
-    // process.exit(1);
 });
 
