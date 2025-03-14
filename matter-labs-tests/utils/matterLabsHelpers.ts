@@ -1,7 +1,7 @@
 import fs from 'fs';
 import readline from 'readline';
 
-import { Input, Metadata, TestNameInputs } from '../types';
+import { Input, Metadata } from '../types';
 
 const SIMPLE_TESTS_INSTANCE = "Test";
 

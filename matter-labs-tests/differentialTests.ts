@@ -352,7 +352,6 @@ describe("Differential Tests", async () => {
 					// get contract bytecode
 					const gethContractCode = await gethEnv.serverWallet.getCode({ address: gethContractAddress });
 					const kitchenSinkContractCode = await kitchenSinkEthRpcEnv.serverWallet.getCode({ address: kitchenSinkContractAddress });
-					console.log("KITCHEN SINK CONTRACT CODE---", kitchenSinkContractCode)
 
 
 					// Storage
@@ -370,10 +369,10 @@ describe("Differential Tests", async () => {
 					const gethContractLogs = await gethEnv.serverWallet.getLogs({
 						address: gethContractAddress,
 						blockHash: gethContractTransactionReceipt.blockHash,
-					})
+					});
 					console.log("Geth Contract Logs JSON---", JSON.stringify(gethContractLogs, (key, value) =>
 						typeof value === 'bigint' ? value.toString() : value
-					))
+					));
 
 					// kitchen sink contract logs
 					const { request: kitchenSinkRequest } = kitchenSinkOutput;
@@ -401,7 +400,7 @@ describe("Differential Tests", async () => {
 								expect(JSON.stringify(kitchenSinkLog.topics), 'KitchenSink and Geth log topics did not match').to.equal(JSON.stringify(gethLog.topics));
 								expect(kitchenSinkLog.data, 'KitchenSink and Geth log data did not match').to.equal(gethLog.data);
 							} else {
-								expect(kitchenSinkLog.data, 'KitchenSink anonymous event log datashould match Geths event').to.equal(gethLog.data);
+								expect(kitchenSinkLog.data, 'KitchenSink anonymous event log data should match Geths event').to.equal(gethLog.data);
 							}
 						}
 					}

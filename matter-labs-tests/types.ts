@@ -170,7 +170,3 @@ export type Libraries = {
 }
 
 export type ContractData =  { metadata: Metadata, contractPath: string, filePath: string }[];
-
-export type TestNameInputs = {
-    [x: string]: Input[]
-}
