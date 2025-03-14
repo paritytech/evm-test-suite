@@ -1,29 +1,38 @@
 {
-  "config": {
-		"chainId": 1,
-		"homesteadBlock": 0,
-		"daoForkSupport": true,
-		"eip150Block": 0,
-		"eip155Block": 0,
-		"eip158Block": 0,
-		"byzantiumBlock": 0,
-		"constantinopleBlock": 0,
-		"petersburgBlock": 0,
-		"istanbulBlock": 0,
-		"muirGlacierBlock": 0,
-		"berlinBlock": 0,
-		"londonBlock": 0,
-		"arrowGlacierBlock": 0,
-		"grayGlacierBlock": 0,
-		"shanghaiTime": 1695897038,
-		"cancunTime": 1695897038,
-		"terminalTotalDifficulty": 0,
-		"terminalTotalDifficultyPassed": true
-	},
-  "difficulty": "1",
-  "gasLimit": "8000000",
-  "alloc": {
-    "7df9a875a174b3bc565e6424a0050ebc1b2d1d82": { "balance": "300000" },
-    "f41c74c9ae680c1aa78f42e5647a62f353b7bdde": { "balance": "400000" }
+	"config": {
+	  "chainId": 1,                  
+	  "homesteadBlock": 0,              
+	  "eip150Block": 0,                 
+	  "eip155Block": 0,                 
+	  "eip158Block": 0,                  
+	  "byzantiumBlock": 0,               
+	  "constantinopleBlock": 0,          
+	  "petersburgBlock": 0,              
+	  "istanbulBlock": 0,                
+	  "muirGlacierBlock": 0,             
+	  "berlinBlock": 0,                  
+	  "londonBlock": 0,                  
+	  "mergeForkBlock": 0,                            
+	  "shanghaiForkBlock": 10,
+	  "shanghaiTime": 0,
+	  "evmVersion": "paris", 
+	  "terminalTotalDifficulty": 0,
+	  "terminalTotalDifficultyPassed": true
+	},        
+	"difficulty": 0,       
+	"gasLimit": "0x1c9c380",                  
+	"alloc": {
+		"0x0Ca8D817056fE587a1ae6d010D3A401CCBdED866": {
+			"balance": "10000000000000000000000000000000000000000000"
+		},
+		"0x0000000000000000000000000000000000000000": {
+		"balance": "1000000000000000000000000000000000000000000"
+		},
+		"0x0000000000000000000000000000000000000001": {
+			"balance": "1000000000000000000000000000000000000000000"
+		},
+		"0x0000000000000000000000000000000000000002": {
+			"balance": "1000000000000000000000000000000000000000000"
+		} 
+	}                     
   }
-}
