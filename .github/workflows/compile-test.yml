@@ -1,0 +1,39 @@
+name: Compile test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  setup_test:
+    strategy:
+      matrix:
+        target: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.target }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+            node-version: '20'
+
+      - run: npm install
+        working-directory: "./compile-tests"
+      - name: run-test
+        run: npm run test
+        working-directory: "./compile-tests"
+
+      # Upload artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-compile-artifacts-${{ github.sha }}
+          path: |
+            compile-tests/*JsonCompilationArtifacts.json
+            compile-tests/*BinCompilationArtifacts.json
