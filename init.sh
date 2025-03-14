@@ -25,18 +25,18 @@ OS_NAME=$(uname)
 case "$OS_NAME" in
 "Darwin")
   export NETWORK_DIR="macOS"
-  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
-  chmod +x ${GETH_DIR}
+  export GETH_BIN=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_BIN}
   ;;
 "Linux")
   export NETWORK_DIR="linux"
-  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
-  chmod +x ${GETH_DIR}
+  export GETH_BIN=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_BIN}
   ;;
 *)
   export NETWORK_DIR="linux"
-  export GETH_DIR=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
-  chmod +x ${GETH_DIR}
+  export GETH_BIN=${PWD}/networks/ethereum/build/bin/${NETWORK_DIR}/geth
+  chmod +x ${GETH_BIN}
   ;;
 esac
 
@@ -46,7 +46,6 @@ run_matter_labs_tests() {
     cd ./matter-labs-tests &&
     npm i --force &&
     git submodule update --init --recursive &&
-    TEST_LOG="../$LOG_DIR/matter-labs-tests.log" &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
@@ -80,13 +79,13 @@ run_matter_labs_tests() {
 #   parse_hardhat_test_results "../test-logs/open-zeppelin-tests.log"
 # }
 
-run_geth_diff_tests() {
-  echo "Running Geth Differential Tests" &&
-    cd ./geth-diff &&
-    bun install &&
-    bun run src/build-contracts.ts &&
-    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 >".$LOG_DIR/geth-diff-tests.log" 2>&1
-  parse_bun_test_results "../test-logs/geth-diff-tests.log"
+run_eth_rpc_tests() {
+  echo "Running eth-rpc tests" &&
+    cd ./eth-rpc &&
+    npm install &&
+    echo "y" | npm run build &&
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/eth-rpc-tests.log" 2>&1
+  parse_eth_rpc_test_results "../test-logs/eth-rpc-tests.log"
 }
 
 run_all_tests() {
@@ -94,6 +93,7 @@ run_all_tests() {
     echo "Running Matter Labs EVM Tests" &&
     cd ./matter-labs-tests &&
     npm i --force &&
+    git submodule update --init --recursive &&
     case "$USE_REVIVE" in
     true)
       npx hardhat compile --config ./${HARDHAT_CONFIG_NAME}.ts
@@ -125,11 +125,12 @@ run_all_tests() {
 
   # cd ..
 
-  echo "Running Geth Differential Tests" &&
-    cd ./geth-diff &&
-    bun install &&
-    bun run src/build-contracts.ts &&
-    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true bun test --timeout 30000 | tee ".$LOG_DIR/geth-diff-tests.log"
+  echo "Running eth-rpc tests" &&
+    cd ./eth-rpc &&
+    npm install &&
+    echo "y" | npm run build &&
+    START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/eth-rpc-tests.log" 2>&1
+  parse_eth_rpc_test_results "../test-logs/eth-rpc-tests.log"
 
   echo "Test Run Complete"
 }
@@ -139,13 +140,8 @@ parse_hardhat_test_results() {
   passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
   failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
 
-  if [ -z "$passed" ]; then
-    passed=0
-  fi
-
-  if [ -z "$failed" ]; then
-    failed=0
-  fi
+  passed=${passed:-0}
+  failed=${failed:-0}
 
   total=$((passed + failed))
 
@@ -157,18 +153,13 @@ parse_hardhat_test_results() {
   echo "Total: $total | Passed: $passed | Failed: $failed"
 }
 
-parse_bun_test_results() {
+parse_eth_rpc_test_results() {
   log_file=$1
-  passed=$(grep -o '[0-9]\+ pass' "$log_file" | awk '{print $1}')
-  failed=$(grep -o '[0-9]\+ fail' "$log_file" | awk '{print $1}')
+  passed=$(grep -o 'Tests  [0-9]\+ passed' "$log_file" | awk '{print $2}')
+  failed=$(grep -o 'Tests  [0-9]\+ failed' "$log_file" | awk '{print $2}')
 
-  if [ -z "$passed" ]; then
-    passed=0
-  fi
-
-  if [ -z "$failed" ]; then
-    failed=0
-  fi
+  passed=${passed:-0}
+  failed=${failed:-0}
 
   total=$((passed + failed))
 
@@ -283,7 +274,7 @@ case "$chain" in
 --ethereum)
   echo "Cleaning up"
   rm -rf ./output-logs/geth-output.log
-  if [ "${tests}" = "--geth-diff" ]; then
+  if [ "${tests}" = "--eth-rpc" ]; then
     echo "Starting Geth Ethereum Node"
   else
     echo "Starting Geth Ethereum Node"
@@ -366,8 +357,8 @@ case "$chain" in
   #   kill -9 $(lsof -t -i:30304)
   #   echo "Geth Ethereum Node Stopped"
   #   ;;
-  --geth-diff)
-    run_geth_diff_tests
+  --eth-rpc)
+    run_eth_rpc_tests
     sleep 1
     ;;
   *)
@@ -439,8 +430,8 @@ case "$chain" in
   # --open-zeppelin)
   #   run_open_zeppelin_tests
   #   ;;
-  --geth-diff)
-    run_geth_diff_tests
+  --eth-rpc)
+    run_eth_rpc_tests
     sleep 1
     ;;
   *)

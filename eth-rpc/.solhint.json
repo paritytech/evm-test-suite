@@ -1,0 +1,11 @@
+{
+    "extends": "solhint:recommended",
+    "rules": {
+        "no-global-import": "off",
+        "func-visibility": "off",
+        "compiler-version": ["error", "^0.8.0"],
+        "gas-custom-errors": "off",
+        "one-contract-per-file": "off",
+        "no-empty-blocks": "off"
+    }
+}
