@@ -1,5 +1,18 @@
 node_modules
+
+# environment setup
 .env
+
+# contract artifacts
+
+abi/*
+!abi/.gitkeep
+
+evm/*
+!evm/.gitkeep
+
+pvm/*
+!pvm/.gitkeep
 
 # Hardhat files
 /cache
@@ -16,6 +29,3 @@ node_modules
 # solidity-coverage files
 /coverage
 /coverage.json
-
-# Hardhat Ignition default folder for deployments against a local node
-ignition/deployments/chain-31337

@@ -1,6 +1,9 @@
 import { Calldata } from "../types";
 
 export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, filePath: string, method: string, testCaseName: string): any[] => {
+    console.log("parseCallData METHOD: ", method)
+    console.log("parseCallData callData: ", rawCallData)
+
     const callDataLength = rawCallData.length;
     const calldata: any[] = [];
 
