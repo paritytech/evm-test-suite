@@ -249,7 +249,7 @@ export const initializeGeth = async (gethPath: string, genesisJsonPath: string, 
 	return new Promise(async (resolve, reject) => {
     // Step 1: Initialize Geth with genesis.json
     const initProcess = spawn(gethPath, [
-		'--datadir', `dev-db/dev-chain-${gethNodePort}`,
+		'--datadir', `geth-db/dev-chain-${gethNodePort}`,
 		'init', genesisJsonPath,
 	]);
 
@@ -277,7 +277,7 @@ export const initializeGeth = async (gethPath: string, genesisJsonPath: string, 
 
 
 // Function to delete all files in a folder
-export const deleteFilesInFolderSync = (folderPath: string) => {
+export const removeDBFiles = (folderPath: string) => {
     const files = fs.readdirSync(folderPath);
 
     files.forEach(file => {
@@ -288,25 +288,3 @@ export const deleteFilesInFolderSync = (folderPath: string) => {
         }
     });
 }
-
-
-export const deleteFilesInFolderAsync = async (folderPath: string) => {
-	try {
-	  // Get the list of files in the folder
-	  const files = await fs.promises.readdir(folderPath);
-  
-	  // Loop through the files and delete them
-	  for (const file of files) {
-		const filePath = path.join(folderPath, file);
-		const stats = await fs.promises.stat(filePath);
-  
-		if (stats.isFile()) {
-		  // Delete the file
-		  await fs.promises.unlink(filePath);
-		  console.log('Deleted file:', filePath);
-		}
-	  }
-	} catch (err) {
-	  console.error('Error removing files:', err);
-	}
-  }

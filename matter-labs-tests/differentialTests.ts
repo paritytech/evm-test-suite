@@ -9,7 +9,7 @@ import { Abi, AbiFunction, parseGwei } from 'viem';
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
-import { waitForHealth, killProcessOnPort, createEnv, getByteCode, Env, testContractStorageState, initializeGeth, deleteFilesInFolderSync, deleteFilesInFolderAsync } from './util';
+import { waitForHealth, killProcessOnPort, createEnv, getByteCode, Env, testContractStorageState, initializeGeth, removeDBFiles } from './util';
 import { EventItem, Extended, Metadata } from './types';
 import { getMatterLabsFilePaths } from './utils/matterLabsHelpers'
 import { parseCallData } from './utils/parseCalldata'
@@ -80,13 +80,11 @@ beforeAll(async () => {
 				let gethNodeProcess: ChildProcessWithoutNullStreams;
 				gethNodePort += i;
 				killProcessOnPort(gethNodePort);
-				console.log("GETH DEFAULT PORT---", gethNodePort)
-				await deleteFilesInFolderAsync('./dev-db');
-
+				console.log("GETH DEFAULT PORT---", gethNodePort);
 				await initializeGeth(ethereumNodeBin, genesisJsonFile, gethNodePort);
 
 				const ethereumArgs = [
-					'--datadir', `dev-db/dev-chain-${gethNodePort}`,
+					'--datadir', `geth-db/dev-chain-${gethNodePort}`,
 					'--syncmode', 'snap',
 					'--http',
 					'--dev',
@@ -103,7 +101,7 @@ beforeAll(async () => {
 
 					// Check node ready message
 					if (output.includes('HTTP endpoint opened')) {
-						console.log(`Geth node is ready on port ${gethNodePort}`)
+						console.log(`Geth node is ready on port ${gethNodePort}`);
 					}
 				});
 
@@ -117,13 +115,13 @@ beforeAll(async () => {
 
 				const url = `http:localhost:${gethNodePort}`;
 				console.log("Waiting for health on ", url);
-				await waitForHealth(url).catch()
+				await waitForHealth(url).catch();
 
-				gethEnvs.push(await createEnv('geth', gethNodeProcess.pid!, gethNodePort))
+				gethEnvs.push(await createEnv('geth', gethNodeProcess.pid!, gethNodePort));
 
-				return gethNodeProcess
+				return gethNodeProcess;
 			})()
-			gethNodes.push(ethereumNodeProcess)
+			gethNodes.push(ethereumNodeProcess);
 
 			const kitchenSinkNodeProcess = await (async () => {
 				kitchenSinkDefaultPort += i;
@@ -132,7 +130,7 @@ beforeAll(async () => {
 					'--rpc-port', `${kitchenSinkDefaultPort}`,
 					'--dev',
 					'-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
-				]
+				];
 				const kitchenSinkNodeProcess = spawn(kitchenSinkNodeBin, kitchenSinkArgs);
 
 				// stdout
@@ -142,7 +140,7 @@ beforeAll(async () => {
 
 					// Check node ready message
 					if (output.includes('HTTP endpoint opened')) {
-						console.log(`KitchenSink node is ready on port ${kitchenSinkDefaultPort}!}`)
+						console.log(`KitchenSink node is ready on port ${kitchenSinkDefaultPort}!}`);
 					}
 				});
 
@@ -173,7 +171,7 @@ beforeAll(async () => {
 
 						// Check node ready message
 						if (output.includes('HTTP endpoint opened')) {
-							console.log(`KitchenSink eth-rpc node is ready on port ${kitchenSinkDefaultPort}!}`)
+							console.log(`KitchenSink eth-rpc node is ready on port ${kitchenSinkDefaultPort}!}`);
 						}
 					});
 
@@ -187,26 +185,27 @@ beforeAll(async () => {
 
 					const url = `http://localhost:${ethRpcDefaultPort}`;
 					console.log("Waiting for health on ", url);
-					await waitForHealth(url).catch()
+					await waitForHealth(url).catch();
 
-					kitchenSinkEthRpcEnvs.push(await createEnv('eth-rpc', kitchenSinkEthRpcNodeProcess.pid!, ethRpcDefaultPort))
+					kitchenSinkEthRpcEnvs.push(await createEnv('eth-rpc', kitchenSinkEthRpcNodeProcess.pid!, ethRpcDefaultPort));
 
-					return kitchenSinkEthRpcNodeProcess
+					return kitchenSinkEthRpcNodeProcess;
 				})()
-				kitchenSinkEthRpcNodes.push(kitchenSinkEthRpcProcess)
+				kitchenSinkEthRpcNodes.push(kitchenSinkEthRpcProcess);
 
-				return kitchenSinkNodeProcess
+				return kitchenSinkNodeProcess;
 			})()
-			kitchenSinkNodes.push(kitchenSinkNodeProcess)
+			kitchenSinkNodes.push(kitchenSinkNodeProcess);
 		})
 	)
 }, 500000);
 
 afterAll(async () => {
-	gethNodes.forEach((node) => node.kill())
-	kitchenSinkNodes.forEach((node) => node.kill())
-	kitchenSinkEthRpcNodes.forEach((node) => node.kill())
-	deleteFilesInFolderSync('./dev-db');
+	gethNodes.forEach((node) => node.kill());
+	kitchenSinkNodes.forEach((node) => node.kill());
+	kitchenSinkEthRpcNodes.forEach((node) => node.kill());
+
+	removeDBFiles('./geth-db');
 });
 
 describe("Differential Tests", async () => {
