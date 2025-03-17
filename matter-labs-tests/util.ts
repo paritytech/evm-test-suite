@@ -275,8 +275,6 @@ export const initializeGeth = async (gethPath: string, genesisJsonPath: string, 
   });
 }
 
-
-// Function to delete all files in a folder
 export const removeDBFiles = (folderPath: string) => {
     const files = fs.readdirSync(folderPath);
 
