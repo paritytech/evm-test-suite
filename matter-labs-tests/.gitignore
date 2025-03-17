@@ -15,7 +15,7 @@ pvm/*
 !pvm/.gitkeep
 
 geth-db/*
-!geth-db/ .gitkeep
+!geth-db/.gitkeep
 
 # Hardhat files
 /cache
