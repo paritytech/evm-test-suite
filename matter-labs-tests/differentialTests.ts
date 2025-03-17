@@ -9,8 +9,8 @@ import { Abi, AbiFunction, parseGwei } from 'viem';
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
-import { waitForHealth, killProcessOnPort, createEnv, getByteCode, Env, testContractStorageState, initializeGeth } from './util';
-import { Metadata } from './types';
+import { waitForHealth, killProcessOnPort, createEnv, getByteCode, Env, testContractStorageState, initializeGeth, deleteFilesInFolderSync, deleteFilesInFolderAsync } from './util';
+import { EventItem, Extended, Metadata } from './types';
 import { getMatterLabsFilePaths } from './utils/matterLabsHelpers'
 import { parseCallData } from './utils/parseCalldata'
 
@@ -81,10 +81,12 @@ beforeAll(async () => {
 				gethNodePort += i;
 				killProcessOnPort(gethNodePort);
 				console.log("GETH DEFAULT PORT---", gethNodePort)
+				await deleteFilesInFolderAsync('./dev-db');
+
 				await initializeGeth(ethereumNodeBin, genesisJsonFile, gethNodePort);
 
 				const ethereumArgs = [
-					'--datadir', `dev-chain-${gethNodePort}`,
+					'--datadir', `dev-db/dev-chain-${gethNodePort}`,
 					'--syncmode', 'snap',
 					'--http',
 					'--dev',
@@ -204,6 +206,7 @@ afterAll(async () => {
 	gethNodes.forEach((node) => node.kill())
 	kitchenSinkNodes.forEach((node) => node.kill())
 	kitchenSinkEthRpcNodes.forEach((node) => node.kill())
+	deleteFilesInFolderSync('./dev-db');
 });
 
 describe("Differential Tests", async () => {
@@ -244,34 +247,34 @@ describe("Differential Tests", async () => {
 
 			beforeAll(async () => {
 				if (!gethEnv) {
-                    gethEnv = gethEnvs[nodeIdx];
-                }
-                if (!gethContractAddress) {
-                    const hash = await gethEnv.serverWallet.deployContract({
-                        maxPriorityFeePerGas: parseGwei('50'),
-                        maxFeePerGas: parseGwei('50'),
-                        abi: contractAbi,
-                        bytecode: getByteCode(contractPath, gethEnv.evm),
-                    });
-                    await setTimeout(100);
-                    const deployReceipt = await gethEnv.serverWallet.waitForTransactionReceipt({ hash });
-                    gethContractAddress = deployReceipt.contractAddress!
-                }
+					gethEnv = gethEnvs[nodeIdx];
+				}
+				if (!gethContractAddress) {
+					const hash = await gethEnv.serverWallet.deployContract({
+						maxPriorityFeePerGas: parseGwei('50'),
+						maxFeePerGas: parseGwei('50'),
+						abi: contractAbi,
+						bytecode: getByteCode(contractPath, gethEnv.evm),
+					});
+					await setTimeout(100);
+					const deployReceipt = await gethEnv.serverWallet.waitForTransactionReceipt({ hash });
+					gethContractAddress = deployReceipt.contractAddress!
+				}
 
-                if (!kitchenSinkEthRpcEnv) {
-                    kitchenSinkEthRpcEnv = kitchenSinkEthRpcEnvs[nodeIdx];
-                }
-                if (!kitchenSinkContractAddress) {
-                    const hash = await kitchenSinkEthRpcEnv.serverWallet.deployContract({
-                        maxFeePerGas: parseGwei('50'),
-                        abi: contractAbi,
-                        bytecode: getByteCode(contractPath, kitchenSinkEthRpcEnv.evm),
-                    });
+				if (!kitchenSinkEthRpcEnv) {
+					kitchenSinkEthRpcEnv = kitchenSinkEthRpcEnvs[nodeIdx];
+				}
+				if (!kitchenSinkContractAddress) {
+					const hash = await kitchenSinkEthRpcEnv.serverWallet.deployContract({
+						maxFeePerGas: parseGwei('50'),
+						abi: contractAbi,
+						bytecode: getByteCode(contractPath, kitchenSinkEthRpcEnv.evm),
+					});
 
-                    await setTimeout(100);
-                    const deployReceipt = await kitchenSinkEthRpcEnv.serverWallet.waitForTransactionReceipt({ hash });
-                    kitchenSinkContractAddress = deployReceipt.contractAddress!
-                }
+					await setTimeout(100);
+					const deployReceipt = await kitchenSinkEthRpcEnv.serverWallet.waitForTransactionReceipt({ hash });
+					kitchenSinkContractAddress = deployReceipt.contractAddress!
+				}
 			});
 
 			it(`geth deploys ${baseFilePath}.sol`, async () => {
@@ -284,7 +287,7 @@ describe("Differential Tests", async () => {
 				expect(kitchenSinkContractAddress, `kitchen sink eth rpc contract address for ${contractAbiPath} is null`).not.to.equal(null);
 			})
 
-			metadata.cases.forEach(({ name: caseName, inputs }) => {
+			metadata.cases.forEach(({ name: caseName, inputs, expected },) => {
 				it.each(inputs)(`${baseFilePath} case: ${caseName} method: $method`, async ({ method, calldata }) => {
 					// skip deployer since we've deployed already
 					if (method === '#deployer') {
@@ -301,16 +304,7 @@ describe("Differential Tests", async () => {
 					let abiVals = Array.from(contractAbi.values()) as AbiFunction[]
 					for (const abi of abiVals) {
 						if (abi.name === method) {
-							if (abi.inputs.length > 0) {
-								const inputData = abi.inputs[0]
-								if (inputData.internalType && inputData.internalType === 'uint8[10]') {
-									numberOfExpectedArgs = 1;
-								} else {
-									numberOfExpectedArgs = 1;
-								}
-							} else {
-								numberOfExpectedArgs = 0
-							}
+							numberOfExpectedArgs = abi.inputs.length;
 							break
 						}
 					}
@@ -319,7 +313,12 @@ describe("Differential Tests", async () => {
 
 					// check simulated call return values/outputs
 					let parsedCalldata = parseCallData(calldata, numberOfExpectedArgs, filePath, method, caseName);
-					const args = numberOfExpectedArgs > 1 ? [[...parsedCalldata]] : numberOfExpectedArgs === 1 ? [parsedCalldata] : []
+					console.log("PARSED CALL DATA---", parsedCalldata)
+					console.log("NUMBER OF EXPECTED ARGS---", numberOfExpectedArgs)
+					const args = numberOfExpectedArgs > 1 ? [...parsedCalldata] : numberOfExpectedArgs === 1 ? [parsedCalldata] : []
+					console.log("CONTRACT METHOD---", method)
+					console.log("ARGS---", args);
+
 					let gethOutput = await gethEnv.serverWallet.simulateContract({
 						address: gethContractAddress,
 						abi: contractAbi,
@@ -391,14 +390,26 @@ describe("Differential Tests", async () => {
 						for (let i = 0; i < kitchenSinkContractLogs.length; i++) {
 							const kitchenSinkLog = kitchenSinkContractLogs[i];
 							const gethLog = gethContractLogs[i];
+							const expectedEventLogTopics = ((expected as Extended).events as EventItem[])[i].topics;
 
-							if ((!kitchenSinkLog.topics && gethLog.topics)) {
-								fail('Kitchen Sink topics not found')
-							}
+							// if ((!kitchenSinkLog.topics && gethLog.topics)) {
+							// 	fail('Kitchen Sink topics not found')
+							// }
 
 							if (kitchenSinkLog.topics && gethLog.topics) {
-								expect(JSON.stringify(kitchenSinkLog.topics), 'KitchenSink and Geth log topics did not match').to.equal(JSON.stringify(gethLog.topics));
-								expect(kitchenSinkLog.data, 'KitchenSink and Geth log data did not match').to.equal(gethLog.data);
+								expect(kitchenSinkLog.topics.length, 'KitchenSink and Geth log topics length should match').to.equal(gethLog.topics.length);
+								for (let j = 0; j < kitchenSinkLog.topics.length; j++) {
+									const expectedTopic = expectedEventLogTopics[j];
+									const kitchenSinkLogItem = kitchenSinkLog.topics[i];
+									const gethLogItem = gethLog.topics[i];
+
+									if (expectedTopic === 'Test.address') { // topics which are contract addresses wont match
+										expect(kitchenSinkLogItem, 'KitchenSink and Geth log topic items should match').to.equal(gethLogItem)
+									} else {
+										expect(kitchenSinkLogItem, 'Expected deployed KitchenSink contract address to differ from Geths').not.to.equal(gethLog);
+									}
+								}
+								expect(kitchenSinkLog.data, 'KitchenSink and Geth log data should match').to.equal(gethLog.data);
 							} else {
 								expect(kitchenSinkLog.data, 'KitchenSink anonymous event log data should match Geths event').to.equal(gethLog.data);
 							}

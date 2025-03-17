@@ -27,7 +27,7 @@
     "dotenv": "^16.4.5",
     "hardhat-resolc": "^0.0.5",
     "hardhat-revive-node": "^0.0.4",
-    "solc": "^0.8.28",
+    "solc": "0.8.19",
     "viem": "^2.23.9"
   }
 }

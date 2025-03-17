@@ -1,4 +1,6 @@
 import { spawnSync, spawn } from 'child_process'
+import fs from 'fs';
+import path from 'path';
 import { readFileSync } from 'fs'
 import {
 	CallParameters,
@@ -220,7 +222,7 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 
 	try {
 		for (let slot = 0; slot < maxStorageSlots; slot++) {
-			const ethSlotData = await ethEnv.serverWallet.getStorageAt({
+			const gethSlotData = await ethEnv.serverWallet.getStorageAt({
 				address: gethContractAddress,
 				slot: `0x${slot.toString(16)}`
 			});
@@ -232,11 +234,11 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 			console.log(`KITCHENSINK SLOT DATA at idx ${slot} is ${kitchenSinkSlotData}`)
 
 			// exit if both contract storage slots are empty
-			if ((ethSlotData === emptyStringResponse || ethSlotData === emptyStorageSlot) && (kitchenSinkSlotData === emptyStringResponse || kitchenSinkSlotData === emptyStorageSlot)) {
+			if ((gethSlotData === emptyStringResponse || gethSlotData === emptyStorageSlot) && (kitchenSinkSlotData === emptyStringResponse || kitchenSinkSlotData === emptyStorageSlot)) {
 				break;
 			}
 
-			expect(kitchenSinkSlotData, `Expected KitchenSink and Geth contract storage to match at storage slot ${slot}`).to.equal('hello');
+			expect(kitchenSinkSlotData, `Expected KitchenSink and Geth contract storage to match at storage slot ${slot}`).to.equal(gethSlotData);
 		}
 	} catch (err) {
 		console.log('Error while reading contract storage:', err);
@@ -244,10 +246,10 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 }
 
 export const initializeGeth = async (gethPath: string, genesisJsonPath: string, gethNodePort: number): Promise<void> => {
-  return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
     // Step 1: Initialize Geth with genesis.json
     const initProcess = spawn(gethPath, [
-		'--datadir', `dev-chain-${gethNodePort}`,
+		'--datadir', `dev-db/dev-chain-${gethNodePort}`,
 		'init', genesisJsonPath,
 	]);
 
@@ -272,3 +274,39 @@ export const initializeGeth = async (gethPath: string, genesisJsonPath: string, 
     });
   });
 }
+
+
+// Function to delete all files in a folder
+export const deleteFilesInFolderSync = (folderPath: string) => {
+    const files = fs.readdirSync(folderPath);
+
+    files.forEach(file => {
+        const filePath = path.join(folderPath, file);
+        if (fs.statSync(filePath).isFile()) {
+            fs.unlinkSync(filePath);
+            console.log(`Deleted file: ${filePath}`);
+        }
+    });
+}
+
+
+export const deleteFilesInFolderAsync = async (folderPath: string) => {
+	try {
+	  // Get the list of files in the folder
+	  const files = await fs.promises.readdir(folderPath);
+  
+	  // Loop through the files and delete them
+	  for (const file of files) {
+		const filePath = path.join(folderPath, file);
+		const stats = await fs.promises.stat(filePath);
+  
+		if (stats.isFile()) {
+		  // Delete the file
+		  await fs.promises.unlink(filePath);
+		  console.log('Deleted file:', filePath);
+		}
+	  }
+	} catch (err) {
+	  console.error('Error removing files:', err);
+	}
+  }
