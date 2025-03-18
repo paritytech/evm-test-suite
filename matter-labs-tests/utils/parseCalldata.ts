@@ -171,7 +171,12 @@ export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: numbe
 
     // length 3 calldata
     if (callDataLength === 3) {
-        if ((filePath.includes("structure_immutable_method.sol") || filePath.includes("structure_mutable_method.sol")) && testCaseName === "main") {
+        if (method === "#deployer" && filePath.includes("simple.sol")) {
+            const shouldRevert = rawCallData[2] === '0' ? false : true;
+            calldata.push(rawCallData[0]);
+            calldata.push(rawCallData[1]);
+            calldata.push(shouldRevert);
+        } else if ((filePath.includes("structure_immutable_method.sol") || filePath.includes("structure_mutable_method.sol")) && testCaseName === "main") {
             const structArg = {
                 a: rawCallData[0],
                 b: rawCallData[1],

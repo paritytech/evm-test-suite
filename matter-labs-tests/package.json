@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "compile": "npx tsx ./compileContracts.ts",
-    "differential-tests": "vitest --reporter=verbose --reporter=json --outputFile=./diff-test-output.json"
+    "differential-tests": "vitest --reporter=verbose --reporter=json --outputFile=./diff-test-output.json",
+    "update-submodule": "git submodule update --init --recursive"
   },
   "author": "",
   "license": "ISC",

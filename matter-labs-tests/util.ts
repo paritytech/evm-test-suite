@@ -220,7 +220,7 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 	const emptyStringResponse = '0x';
 	const emptyStorageSlot = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-	try {
+	// try {
 		for (let slot = 0; slot < maxStorageSlots; slot++) {
 			const gethSlotData = await ethEnv.serverWallet.getStorageAt({
 				address: gethContractAddress,
@@ -240,9 +240,9 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 
 			expect(kitchenSinkSlotData, `Expected KitchenSink and Geth contract storage to match at storage slot ${slot}`).to.equal(gethSlotData);
 		}
-	} catch (err) {
-		console.log('Error while reading contract storage:', err);
-	}
+	// } catch (err) {
+	// 	console.log('Error while reading contract storage:', err);
+	// }
 }
 
 export const initializeGeth = async (gethPath: string, genesisJsonPath: string, gethNodePort: number): Promise<void> => {
@@ -279,10 +279,21 @@ export const removeDBFiles = (folderPath: string) => {
     const files = fs.readdirSync(folderPath);
 
     files.forEach(file => {
-        const filePath = path.join(folderPath, file);
-        if (fs.statSync(filePath).isFile()) {
-            fs.unlinkSync(filePath);
-            console.log(`Deleted file: ${filePath}`);
-        }
+
+		if (file !== '.gitkeep') {
+			const filePath = path.join(folderPath, file);
+			if (fs.statSync(filePath).isFile()) {
+				fs.unlinkSync(filePath);
+				console.log(`Deleted file: ${filePath}`);
+			}
+		}
     });
+}
+
+export const getCallDataArgs = (parsedCalldata: any[], numberOfExpectedArgs: number, inputType: string): any[] => {
+	const args = numberOfExpectedArgs > 1 ? [...parsedCalldata] : 
+	numberOfExpectedArgs === 1 && (inputType === 'tuple' || inputType === 'uint8[4][4]' || inputType === 'bool[3]' || inputType === 'bool') ? [parsedCalldata[0]] : 
+	numberOfExpectedArgs === 1 ? [parsedCalldata] : [];
+
+	return args;
 }
