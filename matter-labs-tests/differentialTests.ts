@@ -381,7 +381,7 @@ describe("Differential Tests", async () => {
 				}
 			});
 
-			it(`geth calls deploys ${baseFilePath}.sol`, async () => {
+			it(`geth deploys ${baseFilePath}.sol`, async () => {
 				expect(gethContractAddress, `geth contract address for ${contractAbiPath} is undefined`).not.to.equal(undefined);
 				expect(gethContractAddress, `geth contract address for ${contractAbiPath} is null`).not.to.equal(null);
 			})
