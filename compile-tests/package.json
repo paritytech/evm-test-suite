@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "npx tsx index.ts"
+    "setup": "npx tsx index.ts > compilation_logs.log",
+    "test": "npx tsx compare.ts > comparison_logs.log"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/dotenv": "^8.2.3",
+    "dotenv": "^16.4.7",
     "solc": "^0.8.28"
   }
 }

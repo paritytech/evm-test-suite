@@ -1,9 +1,12 @@
-import { spawn } from 'node:child_process';
+import { exec, spawn } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import path, { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import solc from 'solc';
 import os from 'os';
+import { createHash } from 'node:crypto';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 type SolcInput = {
     [contractName: string]: {
@@ -47,13 +50,13 @@ type SolcError = {
 
 type BinOutput = {
     [contractName: string]: {
-        bytecode: string,
+        bytecodeHash: string,
+        solcVersion: string,
         errors: string
     },
 }
 
 const __filename = fileURLToPath(import.meta.url)
-console.log(__filename)
 const __dirname = path.dirname(__filename)
 const contractsDir = join(__dirname, '../matter-labs-tests/contracts')
 const binArtifacts: { contracts: BinOutput[] } = {
@@ -63,7 +66,19 @@ const jsonArtifacts: { contracts: BinOutput[] } = {
     contracts: []
 };
 
+let solcVersion = '';
+
+let binConfig = process.env.BIN_RESOLC_CONFIG;
+let jsonConfig = process.env.JSON_RESOLC_CONFIG;
+
 const platform = os.platform();
+
+function hashString(str: string): string {
+    const hash = createHash('sha256');
+    hash.update(str);
+    return hash.digest('hex');
+}
+
 
 function tryResolveJsonImport(importPath: string) {
     // resolve local path
@@ -171,7 +186,8 @@ function resolveBinOutput(output?: string): BinOutput | undefined {
         const splitted = output.split(" ");
         const resolvedOutput: BinOutput = {
             [splitted[1].replace(/`/g, '').split(contractsDir)[1]]: {
-                bytecode: splitted[3].split("\n")[0],
+                bytecodeHash: hashString(splitted[3].split("\n")[0]),
+                solcVersion: solcVersion,
                 errors: ''
             }
         };
@@ -183,26 +199,22 @@ function resolveBinOutput(output?: string): BinOutput | undefined {
 
 }
 
-function resolveJsonOutput(filePath: string, output?: SolcOutput): BinOutput | undefined {
-    if (output) {
-        for (const contractPath in output.contracts) {
-            const contractInfo = output.contracts[contractPath];
-            for (const contract in contractInfo) {
-                if (path.basename(contractPath) === path.basename(filePath)) {
-                    const resolvedOutput: BinOutput = {
-                        [`${contractPath}:${contract}`]: {
-                            bytecode: contractInfo[contract].evm.bytecode.object,
-                            errors: ''
-                        }
+function resolveJsonOutput(filePath: string, output: SolcOutput, solcVersion: string): void {
+    for (const contractPath in output.contracts) {
+        const contractInfo = output.contracts[contractPath];
+        for (const contract in contractInfo) {
+            if (path.basename(contractPath) === path.basename(filePath)) {
+                const resolvedOutput: BinOutput = {
+                    [`${contractPath}:${contract}`]: {
+                        bytecodeHash: hashString(contractInfo[contract].evm.bytecode.object),
+                        solcVersion: solcVersion,
+                        errors: ''
                     }
-                    jsonArtifacts.contracts.push(resolvedOutput)
                 }
+                jsonArtifacts.contracts.push(resolvedOutput)
             }
         }
-    } else {
-        return undefined
     }
-
 }
 
 function getFiles(dir: string, files_?: string[]): string[] {
@@ -227,9 +239,9 @@ function checkForSplitsources(filePath: string): string[] {
     return fullPath;
 }
 
-function compilePvmWithJson(filePath: string, input: string): PromiseLike<SolcOutput> {
+function compilePvmWithJson(filePath: string, input: string, solcVersion: string): PromiseLike<SolcOutput> {
     return new Promise((resolve, reject) => {
-        const process = spawn('resolc', ['--standard-json'])
+        const process = spawn('resolc', ['--standard-json', jsonConfig || ''])
 
         let output = ''
         let error = ''
@@ -249,7 +261,7 @@ function compilePvmWithJson(filePath: string, input: string): PromiseLike<SolcOu
             if (code === 0) {
                 try {
                     const result: SolcOutput = JSON.parse(output)
-                    resolveJsonOutput(filePath, result);
+                    resolveJsonOutput(filePath, result, solcVersion);
                     resolve(result)
                 } catch {
                     console.log(`Failed to parse output`)
@@ -257,8 +269,9 @@ function compilePvmWithJson(filePath: string, input: string): PromiseLike<SolcOu
             } else {
                 const resolvedOutput: BinOutput = {
                     [filePath]: {
-                        bytecode: '',
-                        errors: `PHASE 2 ${error}`
+                        bytecodeHash: '',
+                        solcVersion: solcVersion,
+                        errors: `${error}`
                     }
                 };
                 jsonArtifacts.contracts.push(resolvedOutput)
@@ -268,7 +281,7 @@ function compilePvmWithJson(filePath: string, input: string): PromiseLike<SolcOu
     })
 }
 
-function compilePvmWithBin(filePath: string): PromiseLike<void> {
+function compilePvmWithBin(filePath: string, solcVersion: string): PromiseLike<void> {
     let imports: string[] = [];
     try {
         imports.push(...checkForSplitsources(filePath));
@@ -276,8 +289,9 @@ function compilePvmWithBin(filePath: string): PromiseLike<void> {
     } catch (error) {
         const resolvedOutput: BinOutput = {
             [filePath.split(contractsDir)[1]]: {
-                bytecode: '',
-                errors: `PHASE 3 ${error}`
+                bytecodeHash: '',
+                solcVersion: solcVersion,
+                errors: `${error}`
             }
         };
         binArtifacts.contracts.push(resolvedOutput);
@@ -285,7 +299,7 @@ function compilePvmWithBin(filePath: string): PromiseLike<void> {
     }
 
     return new Promise((resolve, reject) => {
-        const process = spawn('resolc', ['--bin', `${filePath}`, ...imports])
+        const process = spawn('resolc', ['--bin', binConfig || '', `${filePath}`, ...imports])
 
         let output = ''
         let error = ''
@@ -310,8 +324,9 @@ function compilePvmWithBin(filePath: string): PromiseLike<void> {
             } else {
                 const resolvedOutput: BinOutput = {
                     [filePath.split(contractsDir)[1]]: {
-                        bytecode: '',
-                        errors: ` PHASE 4 ${error}`
+                        bytecodeHash: '',
+                        solcVersion: solcVersion,
+                        errors: `${error}`
                     }
                 };
                 binArtifacts.contracts.push(resolvedOutput)
@@ -349,21 +364,19 @@ function extractImports(filePath: string): string[] {
     return deduplicated;
 }
 
-const BATCH_SIZE = 16;
+const THREADS_NUMBER = process.env.THREADS_NUMBER ? parseInt(process.env.THREADS_NUMBER) : 16;
 
 async function main(): Promise<void> {
-    const start = Date.now();
-
+    exec(`solc --version | awk -F": " '{print $2}'`, function (err, stdout, stderr) {
+        solcVersion = stdout.trim();
+    });
     const files = getFiles(contractsDir);
-    console.log('LENGTH ', files.length)
 
     const processInBatches = async (files: string[]) => {
         const batches: string[][] = [];
-        for (let i = 0; i < files.length; i += BATCH_SIZE) {
-            batches.push(files.slice(i, i + BATCH_SIZE));
+        for (let i = 0; i < files.length; i += THREADS_NUMBER) {
+            batches.push(files.slice(i, i + THREADS_NUMBER));
         }
-        console.log('BATCH', ...batches)
-        console.log('BATCH LENGTH', batches.length)
         for (const batch of batches) {
             await Promise.all(batch.map(file => processFile(file)));
         }
@@ -390,13 +403,13 @@ async function main(): Promise<void> {
                 },
             });
 
-            await compilePvmWithJson(file, input);
+            await compilePvmWithJson(file, input, solcVersion);
         } catch (error) {
             console.log(`Error processing file ${file}:`, error);
         }
         try {
 
-            await compilePvmWithBin(file);
+            await compilePvmWithBin(file, solcVersion);
 
         } catch (error) {
             console.log(`Error processing file ${file}:`, error);
@@ -405,13 +418,13 @@ async function main(): Promise<void> {
 
     await processInBatches(files);
 
-    writeFileSync(`${platform}JsonCompilationArtifacts.json`, JSON.stringify(jsonArtifacts), 'utf-8');
-    writeFileSync(`${platform}BinCompilationArtifacts.json`, JSON.stringify(binArtifacts), 'utf-8');
+    const logDir = process.env.LOGS_DIR;
 
+    writeFileSync(`${logDir}/${platform}JsonCompilationArtifacts.json`, JSON.stringify(jsonArtifacts), 'utf-8');
+    writeFileSync(`${logDir}/${platform}BinCompilationArtifacts.json`, JSON.stringify(binArtifacts), 'utf-8');
 }
 
 
 main().catch((error) => {
     console.log(error);
 });
-

@@ -25,8 +25,8 @@ jobs:
 
       - run: npm install
         working-directory: "./compile-tests"
-      - name: run-test
-        run: npm run test
+      - name: run-setup
+        run: npm run setup
         working-directory: "./compile-tests"
 
       # Upload artifacts
@@ -37,3 +37,26 @@ jobs:
           path: |
             compile-tests/*JsonCompilationArtifacts.json
             compile-tests/*BinCompilationArtifacts.json
+  
+  comparison_test:
+    needs: setup_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+        working-directory: "./compile-tests"
+      - name: run-test
+        run: npm run test
+        working-directory: "./compile-tests"
+
+      - name: Post-processing step
+        run: |
+          echo "Running post-processing on Ubuntu after tests!"
+          # Add your post-processing commands here, e.g., data aggregation, final tests, cleanup, etc.
