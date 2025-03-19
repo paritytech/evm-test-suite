@@ -24,17 +24,17 @@ jobs:
             node-version: '20'
       - name: Download solc binary for the platform
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
+          if [ "${{ runner.os }}" == "Linux" ]; then
             echo "Downloading solc for Ubuntu..."
-            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-linux -O solc
+            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-linux-x86_64 -O solc
             chmod +x solc
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          elif [ "${{ runner.os }}" == "Darwin" ]; then
             echo "Downloading solc for macOS..."
-            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-macos -O solc
+            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-osx-x86_64 -O solc
             chmod +x solc
-          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+          elif [ "${{ runner.os }}" == "Windows" ]; then
             echo "Downloading solc for Windows..."
-            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-windows.exe -O solc.exe
+            Invoke-WebRequest https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-windows-x86_64.exe -OutFile solc.exe
           fi
       - name: Clone repo for resolc binary build
         run: |
