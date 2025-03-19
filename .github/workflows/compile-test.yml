@@ -26,15 +26,15 @@ jobs:
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             echo "Downloading solc for Ubuntu..."
-            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-linux-x86_64 -O solc
+            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-linux -O solc
             chmod +x solc
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             echo "Downloading solc for macOS..."
-            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-osx-x86_64 -O solc
+            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-macos -O solc
             chmod +x solc
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             echo "Downloading solc for Windows..."
-            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-static-windows-x86_64.exe -O solc.exe
+            wget https://github.com/ethereum/solidity/releases/download/v0.8.18/solc-windows.exe -O solc.exe
           fi
       - name: Clone repo for resolc binary build
         run: |
