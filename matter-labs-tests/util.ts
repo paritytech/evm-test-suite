@@ -220,7 +220,6 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 	const emptyStringResponse = '0x';
 	const emptyStorageSlot = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-	// try {
 		for (let slot = 0; slot < maxStorageSlots; slot++) {
 			const gethSlotData = await ethEnv.serverWallet.getStorageAt({
 				address: gethContractAddress,
@@ -240,9 +239,6 @@ export const testContractStorageState = async (ethEnv: Env, kitchenSinkEnv: Env,
 
 			expect(kitchenSinkSlotData, `Expected KitchenSink and Geth contract storage to match at storage slot ${slot}`).to.equal(gethSlotData);
 		}
-	// } catch (err) {
-	// 	console.log('Error while reading contract storage:', err);
-	// }
 }
 
 export const initializeGeth = async (gethPath: string, genesisJsonPath: string, gethNodePort: number): Promise<void> => {
