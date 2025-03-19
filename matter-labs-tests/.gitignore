@@ -17,6 +17,8 @@ pvm/*
 geth-db/*
 !geth-db/.gitkeep
 
+diff-test-output.json
+
 # Hardhat files
 /cache
 /artifacts

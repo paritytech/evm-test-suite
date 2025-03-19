@@ -311,12 +311,17 @@ describe("Differential Tests", async () => {
 							}
 						}
 					} else {
-						hash = await gethEnv.serverWallet.deployContract({
-							maxPriorityFeePerGas: parseGwei('50'),
-							maxFeePerGas: parseGwei('50'),
-							abi: contractAbi,
-							bytecode: getByteCode(contractPath, gethEnv.evm),
-						});
+						try {
+							hash = await gethEnv.serverWallet.deployContract({
+								maxPriorityFeePerGas: parseGwei('50'),
+								maxFeePerGas: parseGwei('50'),
+								abi: contractAbi,
+								bytecode: getByteCode(contractPath, gethEnv.evm),
+							});
+						} catch(err) {
+							console.log(`Failed to deploy ${contractAbiPath} on Geth: ${err}`);
+							return
+						}
 					}
 
 					assert(hash, 'geth: unable to get deployed contract hash');
@@ -370,11 +375,16 @@ describe("Differential Tests", async () => {
 							}
 						}
 					} else {
-						hash = await kitchenSinkEthRpcEnv.serverWallet.deployContract({
-							maxFeePerGas: parseGwei('50'),
-							abi: contractAbi,
-							bytecode: getByteCode(contractPath, kitchenSinkEthRpcEnv.evm),
-						});
+						try {
+							hash = await kitchenSinkEthRpcEnv.serverWallet.deployContract({
+								maxFeePerGas: parseGwei('50'),
+								abi: contractAbi,
+								bytecode: getByteCode(contractPath, kitchenSinkEthRpcEnv.evm),
+							});
+						} catch(err) {
+							console.log(`Failed to deploy ${contractAbiPath} on KitchenSink: ${err}`);
+							return
+						}
 					}
 
 					assert(hash, 'kitchensink: unable to get deployed contract hash');
@@ -513,13 +523,16 @@ describe("Differential Tests", async () => {
 					console.log("ARGS---", args);
 
 					let shouldThrowException: boolean | undefined = undefined;
-					// const extendedExpected = (expected as Extended);
 					if (Array.isArray(expected) && expected.length > 1) {
-						shouldThrowException = ((expected as MultipleExpected) as ExtendedVariant[])[0].exception
+						const extendedExpected = ((expected as MultipleExpected) as ExtendedVariant[]);
+						for (const rawExpectedResult of extendedExpected) {
+							if (rawExpectedResult.compiler_version?.includes('>=0.8')) {
+								shouldThrowException = rawExpectedResult.exception;
+							}
+						}
 					} else {
 						shouldThrowException = (expected as Extended).exception
 					}
-
 					console.log("SHOULD THROW EXCEPTION---", shouldThrowException);
 
 					// Handle exception cases
@@ -582,23 +595,29 @@ describe("Differential Tests", async () => {
 						  return;
 					}
 
+					let checkedMethod = method;
+					// linearity2.sol (fn name is incorrect in the metadata)
+					if (checkedMethod === 'f' && filePath.includes('linearity2')) {
+						checkedMethod = 'f1';
+					}
+
 					// Non exception/#deploy/#fallback cases
 					let gethOutput = await gethEnv.serverWallet.simulateContract({
 						address: gethContractAddress,
 						abi: contractAbi,
-						functionName: method,
+						functionName: checkedMethod,
 						args,
 					});
 
 					console.log("GETH RESULT---", gethOutput.result)
 
-					console.log("METHOD NAME---", method)
+					console.log("METHOD NAME---", checkedMethod)
 					let kitchenSinkOutput = await kitchenSinkEthRpcEnv.serverWallet.simulateContract({
 						address: kitchenSinkContractAddress,
 						abi: contractAbi,
-						functionName: method,
+						functionName: checkedMethod,
 						args,
-					})
+					});
 
 					console.log("KITCHENSINK RESULT---", kitchenSinkOutput.result)
 

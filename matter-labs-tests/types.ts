@@ -67,7 +67,7 @@ export type Extended = {
     /// Whether an exception is expected,
    exception: boolean;
     /// The compiler version filter.
-   compilerVersion: string | undefined;
+   compiler_version: string | undefined;
 }
 
 export type SingleVariant =  string[];

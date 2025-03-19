@@ -86,6 +86,7 @@ for (const data of filePaths) {
         const reviveOut = await compile(input, { bin: 'resolc' })
 
         for (const contracts of Object.values(reviveOut.contracts)) {
+            console.log("contracts----", contracts)
             for (let [name, contract] of Object.entries(contracts)) {
                 console.log(`📜 Add PVM contract ${name}`)
                 writeFileSync(

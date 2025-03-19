@@ -18,11 +18,11 @@
 		"arrowGlacierBlock": 0,
 		"greyGlacierBlock": 0,
 		"mergeNetsplitBlock": 0,
-		"cancunBlock": 0,
-		"evmVersion": "cancun",
-		"ethash": {} ,
 		"terminalTotalDifficulty": 0,
-		"terminalTotalDifficultyPassed": true
+		"terminalTotalDifficultyPassed": true,
+		"shanghaiTime": 0,
+		"cancunBlock": 0,
+		"evmVersion": "cancun"
 	},        
 	"difficulty": 0,       
 	"gasLimit": "0x1c9c380",                  
