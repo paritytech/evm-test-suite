@@ -71,6 +71,10 @@ await getMatterLabsFilePaths(contractsDir, filePaths, filters);
 for (const data of filePaths) {
     const file = data.filePath;
 
+    const lastSlashIndex = file.lastIndexOf('/');
+    const lastSegment = file.substring(0, lastSlashIndex);
+    const fileDirInfo = lastSegment.split('/').pop() || '';
+
     console.log(`🔨 Compiling ${file}...`)
     const fileName = basename(file, '.sol')
     const input = {
@@ -85,7 +89,7 @@ for (const data of filePaths) {
             for (let [name, contract] of Object.entries(contracts)) {
                 console.log(`📜 Add PVM contract ${name}`)
                 writeFileSync(
-                    join(pvmDir, `${fileName}:${name}.polkavm`),
+                    join(pvmDir, `${fileDirInfo}:${fileName}:${name}.polkavm`),
                     Buffer.from(contract.evm.bytecode.object, 'hex')
                 )
             }
@@ -99,16 +103,16 @@ for (const data of filePaths) {
         for (const [name, contract] of Object.entries(contracts)) {
             console.log(`📜 Add EVM contract ${name}`)
             writeFileSync(
-                join(evmDir, `${fileName}:${name}.bin`),
+                join(evmDir, `${fileDirInfo}:${fileName}:${name}.bin`),
                 Buffer.from(contract.evm.bytecode.object, 'hex')
             )
 
             const abi = contract.abi
             const abiName = `${name}Abi`
-            writeFileSync(join(abiDir, `${fileName}:${name}.json`), JSON.stringify(abi, null, 2))
+            writeFileSync(join(abiDir, `${fileDirInfo}:${fileName}:${name}.json`), JSON.stringify(abi, null, 2))
 
             writeFileSync(
-                join(abiDir, `${fileName}:${name}.ts`),
+                join(abiDir, `${fileDirInfo}:${fileName}:${name}.ts`),
                 await format(`export const ${abiName} = ${JSON.stringify(abi, null, 2)} as const`, {
                     parser: 'typescript',
                 })

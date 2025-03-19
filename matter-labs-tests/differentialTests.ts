@@ -239,9 +239,13 @@ describe("Differential Tests", async () => {
 		let kitchenSinkEthRpcEnv: Env | undefined = kitchenSinkEthRpcEnvs[nodeIdx];
 
 		fileChunk.forEach(async ({ filePath, metadata }, idx) => {
+		    const lastSlashIndex = filePath.lastIndexOf('/');
+			const lastSegment = filePath.substring(0, lastSlashIndex);
+			const fileDirInfo = lastSegment.split('/').pop() || '';
+		
 			const baseFilePath = basename(filePath, '.sol')
-			const contractPath = `${baseFilePath}:Test`;
-			const contractAbiPath = `${baseFilePath}:Test.json`;
+			const contractPath = `${fileDirInfo}:${baseFilePath}:Test`;
+			const contractAbiPath = `${fileDirInfo}:${baseFilePath}:Test.json`;
 			const contractAbi = JSON.parse(fs.readFileSync(`./abi/${contractAbiPath}`, 'utf-8')) as Abi
 
 			// Skip eravm target contracts
@@ -281,16 +285,16 @@ describe("Differential Tests", async () => {
 									} else {
 										gethShouldFailDeployment = (expected as Extended).exception
 									}
-									
+
 									console.log("SHOULD THROW AN EXCEPTION---", gethShouldFailDeployment)
-									const { calldata, method } = input;
+									let { calldata, method } = input;
 									let parsedCalldata = parseCallData(calldata, numberOfExpectedConstructorArgs, filePath, method, name);
 									console.log("PARSED CALL DATA BEFORE ARGS---", parsedCalldata)
 									console.log("NUMBER OF EXPECTED ARGS---", numberOfExpectedConstructorArgs)
 
-									const args = numberOfExpectedConstructorArgs > 1 ? [...parsedCalldata] : 
-									numberOfExpectedConstructorArgs === 1 && (inputType === 'tuple' || inputType === 'uint8[4][4]' || inputType === 'bool[3]' || inputType === 'bool') ? [parsedCalldata[0]] : 
-									numberOfExpectedConstructorArgs === 1 ? [parsedCalldata] : [];
+									const args = numberOfExpectedConstructorArgs > 1 ? [...parsedCalldata] :
+										numberOfExpectedConstructorArgs === 1 && (inputType === 'tuple' || inputType === 'uint8[4][4]' || inputType === 'bool[3]' || inputType === 'bool') ? [parsedCalldata[0]] :
+											numberOfExpectedConstructorArgs === 1 ? [parsedCalldata] : [];
 
 									console.log("ARGS FOR CONSTRUCTOR---", args);
 
@@ -365,7 +369,7 @@ describe("Differential Tests", async () => {
 								}
 							}
 						}
-					}  else {
+					} else {
 						hash = await kitchenSinkEthRpcEnv.serverWallet.deployContract({
 							maxFeePerGas: parseGwei('50'),
 							abi: contractAbi,
@@ -391,7 +395,7 @@ describe("Differential Tests", async () => {
 				expect(kitchenSinkContractAddress, `kitchen sink eth rpc contract address for ${contractAbiPath} is null`).not.to.equal(null);
 			})
 
-			metadata.cases.forEach(({ name: caseName, inputs, expected},) => {
+			metadata.cases.forEach(({ name: caseName, inputs, expected },) => {
 				it.each(inputs)(`${baseFilePath} case: ${caseName} method: $method`, async ({ method, calldata }) => {
 					assert(gethEnv, 'geth env is undefined')
 					assert(kitchenSinkEthRpcEnv, 'kitchen sink eth-rpc env is undefined')
@@ -418,7 +422,7 @@ describe("Differential Tests", async () => {
 									inputType = abi.type
 								}
 							}
-							
+
 							try {
 								if (numberOfExpectedConstructorArgs) {
 									let parsedCalldata = parseCallData(calldata, numberOfExpectedConstructorArgs, filePath, method, caseName);
@@ -427,12 +431,12 @@ describe("Differential Tests", async () => {
 
 									const args = getCallDataArgs(parsedCalldata, numberOfExpectedConstructorArgs, inputType);
 									console.log("ARGS FOR FAILED CONSTRUCTOR---", args);
-			
+
 									await gethEnv.serverWallet.deployContract({
-											abi: contractAbi,
-											bytecode: getByteCode(contractPath, gethEnv.evm),
-											args,
-										});
+										abi: contractAbi,
+										bytecode: getByteCode(contractPath, gethEnv.evm),
+										args,
+									});
 								} else {
 									await gethEnv.serverWallet.deployContract({
 										maxPriorityFeePerGas: parseGwei('50'),
@@ -441,7 +445,7 @@ describe("Differential Tests", async () => {
 										bytecode: getByteCode(contractPath, gethEnv.evm),
 									});
 								}
-							} catch(err) {
+							} catch (err) {
 								gethDeploymentErr = err;
 							}
 
@@ -453,13 +457,13 @@ describe("Differential Tests", async () => {
 
 									const args = getCallDataArgs(parsedCalldata, numberOfExpectedConstructorArgs, inputType);
 									console.log("ARGS FOR FAILED CONSTRUCTOR---", args);
-			
+
 									await kitchenSinkEthRpcEnv.serverWallet.deployContract({
 										abi: contractAbi,
 										bytecode: getByteCode(contractPath, kitchenSinkEthRpcEnv.evm),
 										args,
 									});
-							 	} else {
+								} else {
 									await kitchenSinkEthRpcEnv.serverWallet.deployContract({
 										maxPriorityFeePerGas: parseGwei('50'),
 										maxFeePerGas: parseGwei('50'),
@@ -467,7 +471,7 @@ describe("Differential Tests", async () => {
 										bytecode: getByteCode(contractPath, kitchenSinkEthRpcEnv.evm),
 									});
 								}
-							} catch(err) {
+							} catch (err) {
 								kitchenSinkDeploymentErr = err;
 							}
 						} else {
@@ -507,7 +511,7 @@ describe("Differential Tests", async () => {
 
 					console.log("CONTRACT METHOD---", method)
 					console.log("ARGS---", args);
-					
+
 					let shouldThrowException: boolean | undefined = undefined;
 					// const extendedExpected = (expected as Extended);
 					if (Array.isArray(expected) && expected.length > 1) {
@@ -519,16 +523,16 @@ describe("Differential Tests", async () => {
 					console.log("SHOULD THROW EXCEPTION---", shouldThrowException);
 
 					// Handle exception cases
-					if (shouldThrowException) { 
+					if (shouldThrowException) {
 						let gethException;
 						try {
-								await gethEnv.serverWallet.simulateContract({
+							await gethEnv.serverWallet.simulateContract({
 								address: gethContractAddress,
 								abi: contractAbi,
 								functionName: method,
 								args,
 							});
-						} catch(err) {
+						} catch (err) {
 							gethException = err;
 						}
 
@@ -540,7 +544,7 @@ describe("Differential Tests", async () => {
 								functionName: method,
 								args,
 							})
-						} catch(err) {
+						} catch (err) {
 							kitchenSinkException = err;
 						}
 
@@ -549,7 +553,36 @@ describe("Differential Tests", async () => {
 						return;
 					}
 
-					// Non exception cases
+					// fallback
+					if (method === '#fallback') {
+						const data: `0x${string}` = '0x';
+						let value = 10000000000n;
+
+						let abiVals = Array.from(contractAbi.values()) as AbiFunction[]
+						if (abiVals.length === 1) {
+							if (abiVals[0].stateMutability === 'nonpayable') {
+								value = 0n;
+							}
+						}
+						const gethFallbackTransaction = {
+							to: gethContractAddress,
+							value,  
+							data,
+						  };
+						  const gethFallbackOutput = await gethEnv.serverWallet.call(gethFallbackTransaction);
+
+						  const kitchenSinkTransaction = {
+							to: kitchenSinkContractAddress,
+							value,  
+							data,
+						  };
+						  const kitchenSinkFallbackOutput = await kitchenSinkEthRpcEnv.serverWallet.call(kitchenSinkTransaction);
+
+						  expect(JSON.stringify(kitchenSinkFallbackOutput), 'KitchenSink Fallback output should match Geth').to.equal(JSON.stringify(gethFallbackOutput));
+						  return;
+					}
+
+					// Non exception/#deploy/#fallback cases
 					let gethOutput = await gethEnv.serverWallet.simulateContract({
 						address: gethContractAddress,
 						abi: contractAbi,
