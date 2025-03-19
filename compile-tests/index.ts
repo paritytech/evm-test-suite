@@ -58,7 +58,8 @@ type BinOutput = {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const contractsDir = join(__dirname, '../matter-labs-tests/contracts')
+const contractsPath = process.env.CONTRACTS_DIR;
+const contractsDir = join(__dirname, contractsPath || '.');
 const binArtifacts: { contracts: BinOutput[] } = {
     contracts: []
 }
