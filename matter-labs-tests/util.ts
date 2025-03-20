@@ -287,6 +287,10 @@ export const removeDBFiles = (folderPath: string) => {
 }
 
 export const getCallDataArgs = (parsedCalldata: any[], numberOfExpectedArgs: number, inputType: string): any[] => {
+	if (inputType === 'bytes' && numberOfExpectedArgs === 1 &&  parsedCalldata.length === 3) {
+		return [parsedCalldata[0]];
+	}
+	
 	const args = numberOfExpectedArgs > 1 ? [...parsedCalldata] : 
 	numberOfExpectedArgs === 1 && (inputType === 'tuple' || inputType === 'uint8[4][4]' || inputType === 'bool[3]' || inputType === 'bool') ? [parsedCalldata[0]] : 
 	numberOfExpectedArgs === 1 ? [parsedCalldata] : [];

@@ -90,7 +90,7 @@ export type Input = {
     /// `#fallback` for the fallback
     method: string;
     /// The passed calldata.
-    calldata: Calldata;
+    calldata: any[];
     /// The passed value.
     value: string | undefined;
     /// The initial contracts storage.

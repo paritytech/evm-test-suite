@@ -1,6 +1,6 @@
 import { Calldata } from "../types";
 
-export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: number, filePath: string, method: string, testCaseName: string): any[] => {
+export const parseCallData = (rawCallData: any[], numberOfExpectedArgs: number, filePath: string, method: string, testCaseName: string): any[] => {
     console.log("parseCallData METHOD: ", method)
     console.log("parseCallData callData: ", rawCallData)
 
@@ -210,13 +210,13 @@ export const parseCallData = (rawCallData: Calldata, numberOfExpectedArgs: numbe
             const arg = rawCallData[0] === '0' ? false : true;
             calldata.push(arg);
         } else if (method === "sphere") {
-           calldata.push({ r: rawCallData[0] });
-    } else if (method === "cube") {
-        calldata.push({ a: rawCallData[0] });
-    } else if (filePath.includes("require.sol")) {
-        const arg = rawCallData[0] === "0" ? false : true;
-        calldata.push(arg);
-    } else {
+            calldata.push({ r: rawCallData[0] });
+        } else if (method === "cube") {
+            calldata.push({ a: rawCallData[0] });
+        } else if (filePath.includes("require.sol")) {
+            const arg = rawCallData[0] === "0" ? false : true;
+            calldata.push(arg);
+        } else {
             calldata.push(rawCallData[0]);
         }
     }

@@ -505,7 +505,26 @@ describe("Differential Tests", async () => {
 							console.log("ABI IS---", abi);
 							numberOfExpectedArgs = abi.inputs.length;
 							if (numberOfExpectedArgs === 1) {
-								inputType = abi.inputs[0].type;
+								const calldataAtIdx = calldata[0];
+								const input = abi.inputs[0];
+
+								inputType = input.type;
+								if (input.type === 'bool' && (calldataAtIdx === '1' || calldataAtIdx === '0')) {
+									calldata[0] = calldataAtIdx === '0' ? false : true;
+								}
+							} else if (numberOfExpectedArgs > 1) {
+								for (let i = 0; i < abi.inputs.length; i++) {
+									const input = abi.inputs[i];
+									const calldataAtIdx = calldata[i];
+									if (input.type === 'address' && !calldataAtIdx.includes('0x')) {
+										//non address type metadata when address is expected
+										const dataAtIdx = calldata[i];
+										calldata[i] = '0x' + dataAtIdx.padStart(40, '0'); // format as address
+									}
+									if (input.type === 'bool' && (calldataAtIdx === '1' || calldataAtIdx === '0')) {
+										calldata[i] = calldataAtIdx === '0' ? false : true;
+									}
+								}
 							}
 							break
 						}
@@ -514,6 +533,7 @@ describe("Differential Tests", async () => {
 					// Call Output
 
 					// check simulated call return values/outputs
+					console.log("WHAT IS THE INPUT TYPE---", inputType)
 					let parsedCalldata = parseCallData(calldata, numberOfExpectedArgs, filePath, method, caseName);
 					console.log("PARSED CALL DATA---", parsedCalldata)
 					console.log("NUMBER OF EXPECTED ARGS---", numberOfExpectedArgs)

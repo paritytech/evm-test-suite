@@ -21,6 +21,8 @@ CONTRACT_FILTERS=multidimensional,0_topics_0_bytes
 ```shell
 npm install --force
 
+npm run update-submodule
+
 npm run compile
 
 npm run differential-tests
