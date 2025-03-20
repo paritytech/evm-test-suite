@@ -170,3 +170,21 @@ export type Libraries = {
 }
 
 export type ContractData =  { metadata: Metadata, contractPath: string, filePath: string }[];
+
+export interface IContractErrorInfo {
+    cause: {
+        shortMessage: string,
+        name: string,
+        version: string,
+        data: {
+            abiItem: {
+                inputs: {name: string, type: string}[],
+                name: string, 
+                type: string,
+            },
+            args: string[],
+            errorName: string,
+        }
+        raw: string,
+        reason: string,
+    }};

@@ -5,12 +5,12 @@ import dotenv from 'dotenv';
 import { setTimeout } from 'timers/promises';
 import assert, { fail } from 'assert';
 
-import { Abi, AbiFunction, parseGwei } from 'viem';
+import { Abi, AbiFunction, ContractFunctionExecutionError, parseGwei } from 'viem';
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
 import { waitForHealth, killProcessOnPort, createEnv, getByteCode, Env, testContractStorageState, initializeGeth, removeDBFiles, getCallDataArgs } from './util';
-import { EventItem, Extended, ExtendedVariant, Metadata, MultipleExpected } from './types';
+import { IContractErrorInfo, EventItem, Extended, ExtendedVariant, Metadata, MultipleExpected } from './types';
 import { getMatterLabsFilePaths } from './utils/matterLabsHelpers'
 import { parseCallData } from './utils/parseCalldata'
 
@@ -537,7 +537,7 @@ describe("Differential Tests", async () => {
 
 					// Handle exception cases
 					if (shouldThrowException) {
-						let gethException;
+						let gethException: IContractErrorInfo | undefined = undefined;
 						try {
 							await gethEnv.serverWallet.simulateContract({
 								address: gethContractAddress,
@@ -545,24 +545,31 @@ describe("Differential Tests", async () => {
 								functionName: method,
 								args,
 							});
-						} catch (err) {
-							gethException = err;
+						} catch (error) {
+							gethException = JSON.parse(JSON.stringify(error, (_, value) =>
+								typeof value === 'bigint' ? value.toString() : value
+							)) as IContractErrorInfo;
 						}
 
-						let kitchenSinkException;
+						let kitchenSinkException: IContractErrorInfo | undefined = undefined;
 						try {
 							await kitchenSinkEthRpcEnv.serverWallet.simulateContract({
 								address: kitchenSinkContractAddress,
 								abi: contractAbi,
 								functionName: method,
 								args,
-							})
-						} catch (err) {
-							kitchenSinkException = err;
+							});
+						} catch (error) {
+							kitchenSinkException = JSON.parse(JSON.stringify(error, (_, value) =>
+								typeof value === 'bigint' ? value.toString() : value
+							)) as IContractErrorInfo;
 						}
-
-						// TODO: do we check diff or only assert that exceptions occur?
-						expect(kitchenSinkException).to.equal(gethException);
+						
+						expect(kitchenSinkException, 'Excpected KitchenSink exception should not be undefined').toBeDefined;
+						expect(gethException, 'Expected Geth exception should not be undefined').toBeDefined;
+						expect((kitchenSinkException as IContractErrorInfo).cause.raw).to.equal((gethException as IContractErrorInfo).cause.raw);
+						expect((kitchenSinkException as IContractErrorInfo).cause.reason).to.equal((gethException as IContractErrorInfo).cause.reason);
+						expect(JSON.stringify((kitchenSinkException as IContractErrorInfo).cause.data), 'KitchenSink and Geth exception data should match').to.equal(JSON.stringify((gethException as IContractErrorInfo).cause.data));
 						return;
 					}
 
