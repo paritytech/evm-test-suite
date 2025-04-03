@@ -43,6 +43,7 @@ export function killProcessOnPort(port: number) {
 }
 
 export let jsonRpcErrors: JsonRpcError[] = []
+export type ChainEnv = Awaited<ReturnType<typeof createEnv>>
 export async function createEnv(name: 'geth' | 'eth-rpc') {
     const gethPort = process.env.GETH_PORT ?? '8546'
     const ethRpcPort = process.env.ETH_RPC_PORT ?? '8545'
@@ -232,4 +233,20 @@ export function visit(
     } else {
         return obj
     }
+}
+
+export function deployFactory(env: ChainEnv, deploy: () => Promise<Hex>) {
+    return (() => {
+        let contractAddress: Hex = '0x'
+        return async () => {
+            if (contractAddress !== '0x') {
+                return contractAddress
+            }
+            const hash = await deploy()
+            const deployReceipt =
+                await env.serverWallet.waitForTransactionReceipt({ hash })
+            contractAddress = deployReceipt.contractAddress!
+            return contractAddress
+        }
+    })()
 }

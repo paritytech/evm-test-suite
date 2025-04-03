@@ -1,9 +1,15 @@
-import { jsonRpcErrors, getByteCode, visit, createEnv } from './util.ts'
+import {
+    jsonRpcErrors,
+    getByteCode,
+    visit,
+    createEnv,
+    deployFactory,
+} from './util.ts'
 import { afterEach, describe, expect, inject, test } from 'vitest'
 import fs from 'node:fs'
 import { fail } from 'node:assert'
 
-import { encodeFunctionData, Hex, parseEther, decodeEventLog } from 'viem'
+import { encodeFunctionData, parseEther, decodeEventLog } from 'viem'
 import { ErrorsAbi } from '../abi/Errors.ts'
 import { EventExampleAbi } from '../abi/EventExample.ts'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
@@ -15,78 +21,36 @@ afterEach(() => {
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 for (const env of envs) {
+    const getErrorTesterAddr = deployFactory(env, () =>
+        env.serverWallet.deployContract({
+            abi: ErrorsAbi,
+            bytecode: getByteCode('Errors', env.evm),
+        })
+    )
+
+    const getEventExampleAddr = deployFactory(env, async () =>
+        env.serverWallet.deployContract({
+            abi: EventExampleAbi,
+            bytecode: getByteCode('EventExample', env.evm),
+        })
+    )
+
+    const getTracingCalleeAddr = deployFactory(env, async () =>
+        env.serverWallet.deployContract({
+            abi: TracingCalleeAbi,
+            bytecode: getByteCode('TracingCallee', env.evm),
+        })
+    )
+
+    const getTracingCallerAddr = deployFactory(env, async () =>
+        env.serverWallet.deployContract({
+            abi: TracingCallerAbi,
+            args: [await getTracingCalleeAddr()],
+            bytecode: getByteCode('TracingCaller', env.evm),
+            value: parseEther('10'),
+        })
+    )
     describe(`${env.serverWallet.chain.name}`, () => {
-        const getErrorTesterAddr = (() => {
-            let contractAddress: Hex = '0x'
-            return async () => {
-                if (contractAddress !== '0x') {
-                    return contractAddress
-                }
-                const hash = await env.serverWallet.deployContract({
-                    abi: ErrorsAbi,
-                    bytecode: getByteCode('Errors', env.evm),
-                })
-                const deployReceipt =
-                    await env.serverWallet.waitForTransactionReceipt({ hash })
-                contractAddress = deployReceipt.contractAddress!
-                return contractAddress
-            }
-        })()
-
-        const getEventExampleAddr = (() => {
-            let contractAddress: Hex = '0x'
-            return async () => {
-                if (contractAddress !== '0x') {
-                    return contractAddress
-                }
-                const hash = await env.serverWallet.deployContract({
-                    abi: EventExampleAbi,
-                    bytecode: getByteCode('EventExample', env.evm),
-                })
-                const deployReceipt =
-                    await env.serverWallet.waitForTransactionReceipt({ hash })
-                contractAddress = deployReceipt.contractAddress!
-                return contractAddress
-            }
-        })()
-
-        const getTracingExampleAddrs = (() => {
-            let callerAddr: Hex = '0x'
-            let calleeAddr: Hex = '0x'
-            return async () => {
-                if (callerAddr !== '0x') {
-                    return [callerAddr, calleeAddr]
-                }
-                calleeAddr = await (async () => {
-                    const hash = await env.serverWallet.deployContract({
-                        abi: TracingCalleeAbi,
-                        bytecode: getByteCode('TracingCallee', env.evm),
-                    })
-                    const receipt =
-                        await env.serverWallet.waitForTransactionReceipt({
-                            hash,
-                        })
-                    return receipt.contractAddress!
-                })()
-
-                callerAddr = await (async () => {
-                    const hash = await env.serverWallet.deployContract({
-                        abi: TracingCallerAbi,
-                        args: [calleeAddr],
-                        bytecode: getByteCode('TracingCaller', env.evm),
-                        value: parseEther('10'),
-                    })
-                    const receipt =
-                        await env.serverWallet.waitForTransactionReceipt({
-                            hash,
-                        })
-                    return receipt.contractAddress!
-                })()
-
-                return [callerAddr, calleeAddr]
-            }
-        })()
-
         test('triggerAssertError', async () => {
             try {
                 await env.accountWallet.readContract({
@@ -390,7 +354,8 @@ for (const env of envs) {
         })
 
         test('tracing', async () => {
-            let [callerAddr, calleeAddr] = await getTracingExampleAddrs()
+            const calleeAddr = await getTracingCalleeAddr()
+            const callerAddr = await getTracingCallerAddr()
 
             const receipt = await (async () => {
                 const { request } = await env.serverWallet.simulateContract({
