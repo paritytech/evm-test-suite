@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // Flipper - Stores and toggles a boolean value
 contract Tester {
-    uint public value;
+    uint256 public value;
     string public name;
 
     event TesterDeployed(address indexed creator);
@@ -14,7 +14,7 @@ contract Tester {
         name = "Hello world";
     }
 
-    function setValue(uint v) external {
+    function setValue(uint256 v) external {
         value = v;
     }
 
