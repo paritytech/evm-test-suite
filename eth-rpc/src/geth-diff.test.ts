@@ -21,28 +21,28 @@ afterEach(() => {
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 for (const env of envs) {
-    const getErrorTesterAddr = deployFactory(env, () =>
+    const [getErrorTesterAddr] = deployFactory(env, () =>
         env.serverWallet.deployContract({
             abi: ErrorsAbi,
             bytecode: getByteCode('Errors', env.evm),
         })
     )
 
-    const getEventExampleAddr = deployFactory(env, async () =>
+    const [getEventExampleAddr] = deployFactory(env, async () =>
         env.serverWallet.deployContract({
             abi: EventExampleAbi,
             bytecode: getByteCode('EventExample', env.evm),
         })
     )
 
-    const getTracingCalleeAddr = deployFactory(env, async () =>
+    const [getTracingCalleeAddr] = deployFactory(env, async () =>
         env.serverWallet.deployContract({
             abi: TracingCalleeAbi,
             bytecode: getByteCode('TracingCallee', env.evm),
         })
     )
 
-    const getTracingCallerAddr = deployFactory(env, async () =>
+    const [getTracingCallerAddr] = deployFactory(env, async () =>
         env.serverWallet.deployContract({
             abi: TracingCallerAbi,
             args: [await getTracingCalleeAddr()],

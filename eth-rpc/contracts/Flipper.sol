@@ -5,8 +5,12 @@ pragma solidity ^0.8.0;
 contract Flipper {
     bool public value;
 
+    constructor() {
+        value = true;
+    }
+
     function flip() external {
-		value = !value;
+        value = !value;
     }
 
     function getValue() external view returns (bool) {
