@@ -198,7 +198,7 @@ for (const env of envs) {
             let receipt = await env.serverWallet.waitForTransactionReceipt({
                 hash,
             })
-            expect(receipt.status, 'success')
+            expect(receipt.status).toEqual('success')
         })
 
         test('eth_sendTransaction works', async () => {
@@ -213,7 +213,7 @@ for (const env of envs) {
             let receipt = await env.serverWallet.waitForTransactionReceipt({
                 hash,
             })
-            expect(receipt.status, 'success')
+            expect(receipt.status).toEqual('success')
         })
 
         test('eth_syncing works', async () => {
