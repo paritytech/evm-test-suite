@@ -9,7 +9,9 @@ import {
     type Hex,
     hexToNumber,
     http,
+    parseEther,
     publicActions,
+    TransactionReceipt,
 } from 'viem'
 import { privateKeyToAccount, nonceManager } from 'viem/accounts'
 
@@ -43,6 +45,7 @@ export function killProcessOnPort(port: number) {
 }
 
 export let jsonRpcErrors: JsonRpcError[] = []
+export type ChainEnv = Awaited<ReturnType<typeof createEnv>>
 export async function createEnv(name: 'geth' | 'eth-rpc') {
     const gethPort = process.env.GETH_PORT ?? '8546'
     const ethRpcPort = process.env.ETH_RPC_PORT ?? '8545'
@@ -109,6 +112,20 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         transport,
         chain,
     }).extend(publicActions)
+
+    // On geth let's endow the account wallet with some funds, to match the eth-rpc setup
+    if (name == 'geth') {
+        const endowment = parseEther('1000')
+        const balance = await serverWallet.getBalance(accountWallet.account)
+        if (balance < endowment / 2n) {
+            const hash = await serverWallet.sendTransaction({
+                account: serverWallet.account,
+                to: accountWallet.account.address,
+                value: endowment,
+            })
+            await serverWallet.waitForTransactionReceipt({ hash })
+        }
+    }
 
     const emptyWallet = createWalletClient({
         account: privateKeyToAccount(
@@ -232,4 +249,31 @@ export function visit(
     } else {
         return obj
     }
+}
+
+export function deployFactory(env: ChainEnv, deploy: () => Promise<Hex>) {
+    return (() => {
+        let address: Hex | null = null
+        let receipt: TransactionReceipt | null = null
+        async function getAddress() {
+            if (address) {
+                return address
+            }
+            const hash = await deploy()
+            receipt = await env.serverWallet.waitForTransactionReceipt({
+                hash,
+            })
+            address = receipt.contractAddress!
+            return address
+        }
+        async function getReceipt() {
+            if (receipt) {
+                return receipt
+            }
+            await getAddress()
+            return receipt!
+        }
+
+        return [getAddress, getReceipt] as const
+    })()
 }

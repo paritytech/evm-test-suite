@@ -68,6 +68,10 @@ export default async function setup(project: TestProject) {
         ...(useEthRpc ? ['eth-rpc' as const] : []),
     ]
 
+    if (envs.length === 0) {
+        throw new Error('No environment started. Set USE_GETH or USE_ETH_RPC')
+    }
+
     project.provide('envs', envs)
 
     return () => {

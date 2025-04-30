@@ -5,8 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "npx tsx src/build-contracts.ts",
-        "test": "vitest --test-timeout=30000",
-        "test-init": "vitest run --test-timeout=30000",
+        "test": "vitest --test-timeout=30000 --no-file-parallelism",
+        "test-init": "vitest run --test-timeout=30000 --no-file-parallelism",
         "prettier": "prettier --write .",
         "solhint": "solhint \"contracts/**/*.sol\""
     },

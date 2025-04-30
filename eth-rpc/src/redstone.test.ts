@@ -1,5 +1,5 @@
 import { ExampleRedstoneShowroomAbi } from '../abi/ExampleRedstoneShowroom.ts'
-import { createEnv, getByteCode } from './util.ts'
+import { createEnv, deployFactory, getByteCode } from './util.ts'
 import { Contract, providers } from 'ethers'
 import { WrapperBuilder } from '@redstone-finance/evm-connector'
 import { describe, expect, inject, test } from 'vitest'
@@ -7,15 +7,6 @@ import { describe, expect, inject, test } from 'vitest'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const hash = await env.serverWallet.deployContract({
-        abi: ExampleRedstoneShowroomAbi,
-        bytecode: getByteCode('ExampleRedstoneShowroom', env.evm),
-    })
-    const deployReceipt = await env.serverWallet.waitForTransactionReceipt({
-        hash,
-    })
-    const contractAddress = deployReceipt.contractAddress!
-
     const provider = new providers.JsonRpcProvider(
         env.chain.rpcUrls.default.http[0],
         {
@@ -24,10 +15,17 @@ for (const env of envs) {
         }
     )
 
+    const [getContractAddr] = deployFactory(env, () =>
+        env.serverWallet.deployContract({
+            abi: ExampleRedstoneShowroomAbi,
+            bytecode: getByteCode('ExampleRedstoneShowroom', env.evm),
+        })
+    )
+
     describe(`${env.serverWallet.chain.name}`, () => {
         test('getTokensPrices works', async () => {
             const contract = new Contract(
-                contractAddress,
+                await getContractAddr(),
                 ExampleRedstoneShowroomAbi as any,
                 provider
             )
