@@ -237,5 +237,26 @@ for (const env of envs) {
             })
             expect(res).toBeTruthy()
         })
+
+        test('eth_feeHistory works', async () => {
+            // just to get some transactions
+            await getTesterAddr()
+
+            const feeHistory = await env.serverWallet.getFeeHistory({
+                blockCount: 4,
+                blockTag: 'latest',
+                rewardPercentiles: [25, 75],
+            })
+
+            expect(feeHistory.oldestBlock).toBeGreaterThanOrEqual(0)
+            expect(feeHistory.gasUsedRatio.length).toBeGreaterThanOrEqual(0)
+            expect(feeHistory.reward?.length).toEqual(
+                feeHistory.gasUsedRatio.length
+            )
+
+            expect(feeHistory.baseFeePerGas).toHaveLength(
+                feeHistory.gasUsedRatio.length + 1
+            )
+        })
     })
 }

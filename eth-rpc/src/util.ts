@@ -1,8 +1,9 @@
+import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import {
-    CallParameters,
     createClient,
+    createPublicClient,
     createWalletClient,
     defineChain,
     formatTransactionRequest,
@@ -11,8 +12,12 @@ import {
     http,
     parseEther,
     publicActions,
+    toHex,
     TransactionReceipt,
+    TransactionRequest,
 } from 'viem'
+
+import { hexToBytes, concat, keccak256, pad } from 'viem/utils'
 import { privateKeyToAccount, nonceManager } from 'viem/accounts'
 
 export function getByteCode(name: string, evm: boolean = false): Hex {
@@ -136,42 +141,57 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         chain,
     }).extend(publicActions)
 
+    type TracerType = 'callTracer' | 'prestateTracer'
+    type TracerConfig = {
+        callTracer: { withLog?: boolean; onlyTopCall?: boolean }
+        prestateTracer: {
+            diffMode?: boolean
+            disableCode?: boolean
+            disableStorage?: boolean
+        }
+    }
+
+    const publicClient = createPublicClient({ chain, transport })
+
     const debugClient = createClient({
         chain,
         transport,
     }).extend((client) => ({
-        async traceTransaction(
+        async traceTransaction<Tracer extends TracerType>(
             txHash: Hex,
-            tracerConfig: { withLog: boolean }
+            tracer: Tracer,
+            tracerConfig?: TracerConfig[Tracer]
         ) {
             return client.request({
                 method: 'debug_traceTransaction' as any,
-                params: [txHash, { tracer: 'callTracer', tracerConfig } as any],
+                params: [txHash, { tracer, tracerConfig } as any],
             })
         },
-        async traceBlock(
+        async traceBlock<Tracer extends TracerType>(
             blockNumber: bigint,
-            tracerConfig: { withLog: boolean }
+            tracer: Tracer,
+            tracerConfig?: TracerConfig[Tracer]
         ) {
             return client.request({
                 method: 'debug_traceBlockByNumber' as any,
                 params: [
                     `0x${blockNumber.toString(16)}`,
-                    { tracer: 'callTracer', tracerConfig } as any,
+                    { tracer, tracerConfig } as any,
                 ],
             })
         },
 
-        async traceCall(
-            args: CallParameters,
-            tracerConfig: { withLog: boolean }
+        async traceCall<Tracer extends TracerType>(
+            args: TransactionRequest,
+            tracer: Tracer,
+            tracerConfig?: TracerConfig[Tracer]
         ) {
             return client.request({
                 method: 'debug_traceCall' as any,
                 params: [
                     formatTransactionRequest(args),
                     'latest',
-                    { tracer: 'callTracer', tracerConfig } as any,
+                    { tracer, tracerConfig } as any,
                 ],
             })
         },
@@ -180,6 +200,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
     return {
         chain,
         debugClient,
+        publicClient,
         emptyWallet,
         serverWallet,
         accountWallet,
@@ -237,17 +258,36 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: any,
-    callback: (key: string, value: any) => any
+    callback: (key: string, value: any) => [string, any]
 ): any {
     if (Array.isArray(obj)) {
         return obj.map((item) => visit(item, callback))
     } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce((acc, key) => {
-            acc[key] = visit(callback(key, obj[key]), callback)
+            const [mappedKey, mappedValue] = callback(key, obj[key])
+            if (mappedKey in acc) {
+                throw new Error(`visit(): duplicate mapped key “${mappedKey}”`)
+            }
+            acc[mappedKey] = visit(mappedValue, callback)
             return acc
         }, {} as any)
     } else {
         return obj
+    }
+}
+
+export type Visitor = Parameters<typeof visit>[1]
+
+export function visitorFactory(
+    make: () => Promise<Visitor>
+): () => Promise<Visitor> {
+    let visitor: Visitor | null = null
+    return async () => {
+        if (visitor) {
+            return visitor
+        }
+        visitor = await make()
+        return visitor
     }
 }
 
@@ -277,3 +317,25 @@ export function deployFactory(env: ChainEnv, deploy: () => Promise<Hex>) {
         return [getAddress, getReceipt] as const
     })()
 }
+
+export function fixture(name: string) {
+    return JSON.parse(fs.readFileSync(`./src/fixtures/${name}.json`, 'utf-8'))
+}
+
+export function writeFixture(name: string, data: any) {
+    const json = JSON.stringify(data, null, 2)
+    fs.writeFileSync(`./src/fixtures/${name}.json`, json, 'utf8')
+}
+
+export async function computeMappingSlot(addressKey: Hex, slotIndex: number) {
+    const keyBytes = pad(hexToBytes(addressKey), { size: 32 })
+    const slotBytes = pad(hexToBytes(`0x${slotIndex.toString(16)}`), {
+        size: 32,
+    })
+
+    const unhashedKey = concat([keyBytes, slotBytes])
+    const storageSlot = keccak256(unhashedKey)
+    return storageSlot
+}
+
+// run it

@@ -7,20 +7,22 @@
         "build": "npx tsx src/build-contracts.ts",
         "test": "vitest --test-timeout=30000 --no-file-parallelism",
         "test-init": "vitest run --test-timeout=30000 --no-file-parallelism",
-        "prettier": "prettier --write .",
+        "lint": "prettier --plugin=prettier-plugin-solidity --check . --write",
         "solhint": "solhint \"contracts/**/*.sol\""
     },
     "dependencies": {
-        "@parity/revive": "^0.0.14",
+        "@parity/resolc": "^0.0.1",
         "@redstone-finance/evm-connector": "^0.6.2",
         "ethers": "^5.6.9",
         "prettier": "^3.5.1",
         "solc": "^0.8.28",
-        "solhint": "^5.0.5",
         "viem": "^2.22.4",
         "vitest": "^3.0.6"
     },
     "devDependencies": {
-        "typescript": "^5.7.2"
+        "typescript": "^5.7.2",
+        "solhint": "^5.0.5",
+        "prettier": "^3.5.1",
+        "prettier-plugin-solidity": "^1.4.2"
     }
 }

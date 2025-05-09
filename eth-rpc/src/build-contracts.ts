@@ -1,6 +1,6 @@
 /// <reference path="./solc.d.ts" />
 
-import { compile, SolcOutput, tryResolveImport } from '@parity/revive'
+import { compile, SolcOutput, tryResolveImport } from '@parity/resolc'
 import { format } from 'prettier'
 import { parseArgs } from 'node:util'
 import solc from 'solc'
