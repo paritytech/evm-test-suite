@@ -1,0 +1,13 @@
+{
+  "post": {
+    "<coinbase_addr>": {
+      "nonce": "<nonce>"
+    }
+  },
+  "pre": {
+    "<coinbase_addr>": {
+      "balance": "<balance>",
+      "nonce": "<nonce>"
+    }
+  }
+}

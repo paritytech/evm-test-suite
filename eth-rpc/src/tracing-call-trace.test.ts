@@ -6,6 +6,7 @@ import {
     deployFactory,
     visitorFactory,
     fixture,
+    writeFixture,
 } from './util.ts'
 import { afterEach, expect, inject, test } from 'vitest'
 
@@ -79,9 +80,17 @@ for (const env of envs) {
 
     test('call_tracing', async () => {
         const callerAddr = await getTracingCallerAddr()
-        const visitor = await getVisitor()
-        const matchFixture = (res: any, fixtureName: string) => {
-            expect(visit(res, visitor)).toEqual(fixture(fixtureName))
+
+        const matchFixture = async (res: any, fixtureName: string) => {
+            const visitor = await getVisitor()
+            res = visit(res, visitor)
+            const fixturePath = `call_${fixtureName}`
+            if (process.env.WRITE_FIXTURES) {
+                console.warn(`Updating fixture: ${fixturePath}`)
+                writeFixture(fixturePath, res)
+            } else {
+                expect(res).toEqual(fixture(fixturePath))
+            }
         }
 
         const receipt = await (async () => {
