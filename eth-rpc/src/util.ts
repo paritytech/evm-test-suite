@@ -12,7 +12,6 @@ import {
     http,
     parseEther,
     publicActions,
-    TransactionReceipt,
     TransactionRequest,
 } from 'viem'
 

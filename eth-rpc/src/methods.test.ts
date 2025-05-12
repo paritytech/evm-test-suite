@@ -136,15 +136,9 @@ for (const env of envs) {
             })
 
             // revive store value as little endian. When this change in the compiler, or the runtime API, we can amend this test
-            if (env.evm) {
-                expect(storage).toEqual(
-                    '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
-                )
-            } else {
-                expect(storage).toEqual(
-                    '0x160000000000000000000000000000000000000000646c726f77206f6c6c6548'
-                )
-            }
+            expect(storage).toEqual(
+                '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
+            )
         })
 
         test('get_transaction_by_block_hash_and_index, eth_getTransactionByBlockNumberAndIndex and eth_getTransactionByHash works', async () => {
