@@ -3,7 +3,6 @@ import assert from 'node:assert'
 import { ChildProcess, spawn } from 'node:child_process'
 import { TestProject } from 'vitest/node.js'
 
-
 declare module 'vitest' {
     export interface ProvidedContext {
         envs: Array<'geth' | 'eth-rpc'>

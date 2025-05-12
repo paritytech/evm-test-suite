@@ -24,17 +24,19 @@ contract PretraceFixture {
     }
 
     function withdraw(uint256 amount) external {
-        require(balances[msg.sender] >= amount, "Insufficient balance");
+        require(balances[msg.sender] >= amount, 'Insufficient balance');
         balances[msg.sender] -= amount;
-        (bool sent, ) = msg.sender.call{value: amount}("");
-        require(sent, "Transfer failed");
+        (bool sent, ) = msg.sender.call{value: amount}('');
+        require(sent, 'Transfer failed');
     }
 
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
-    function getExternalBalance(address account) external view returns (uint256) {
+    function getExternalBalance(
+        address account
+    ) external view returns (uint256) {
         return account.balance;
     }
 

@@ -27,5 +27,4 @@ contract Storage {
     function write_n2(uint256 num) public {
         n2 = num;
     }
-
 }
