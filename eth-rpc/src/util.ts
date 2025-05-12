@@ -12,7 +12,6 @@ import {
     http,
     parseEther,
     publicActions,
-    toHex,
     TransactionReceipt,
     TransactionRequest,
 } from 'viem'
@@ -278,44 +277,36 @@ export function visit(
 
 export type Visitor = Parameters<typeof visit>[1]
 
-export function visitorFactory(
-    make: () => Promise<Visitor>
-): () => Promise<Visitor> {
-    let visitor: Visitor | null = null
-    return async () => {
-        if (visitor) {
-            return visitor
+export function memoized<T>(transact: () => Promise<T>) {
+    return (() => {
+        let result: T | null = null
+        async function getResult() {
+            if (result) {
+                return result
+            }
+            result = await transact()
+            return result
         }
-        visitor = await make()
-        return visitor
-    }
+
+        return getResult
+    })()
 }
 
-export function deployFactory(env: ChainEnv, deploy: () => Promise<Hex>) {
-    return (() => {
-        let address: Hex | null = null
-        let receipt: TransactionReceipt | null = null
-        async function getAddress() {
-            if (address) {
-                return address
-            }
-            const hash = await deploy()
-            receipt = await env.serverWallet.waitForTransactionReceipt({
-                hash,
-            })
-            address = receipt.contractAddress!
-            return address
-        }
-        async function getReceipt() {
-            if (receipt) {
-                return receipt
-            }
-            await getAddress()
-            return receipt!
-        }
+export function memoizedTx(env: ChainEnv, transact: () => Promise<Hex>) {
+    return memoized(async () => {
+        const hash = await transact()
+        return await env.serverWallet.waitForTransactionReceipt({
+            hash,
+        })
+    })
+}
 
-        return [getAddress, getReceipt] as const
-    })()
+export function memoizedDeploy(env: ChainEnv, transact: () => Promise<Hex>) {
+    const getReceipt = memoizedTx(env, transact)
+    return async () => {
+        const receipt = await getReceipt()
+        return receipt.contractAddress!
+    }
 }
 
 export function fixture(name: string) {

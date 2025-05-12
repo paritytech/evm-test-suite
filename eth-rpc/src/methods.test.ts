@@ -5,20 +5,23 @@ import {
     hexToNumber,
     parseEther,
 } from 'viem'
-import { createEnv, deployFactory, getByteCode } from './util.ts'
+import { createEnv, getByteCode, memoizedTx } from './util.ts'
 import { describe, expect, inject, test } from 'vitest'
 import { TesterAbi } from '../abi/Tester.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const [getTesterAddr, getTesterReceipt] = deployFactory(env, async () =>
+    const getTesterReceipt = memoizedTx(env, async () =>
         env.serverWallet.deployContract({
             abi: TesterAbi,
             bytecode: getByteCode('Tester', env.evm),
             value: parseEther('2'),
         })
     )
+    const getTesterAddr = () =>
+        getTesterReceipt().then((r) => r.contractAddress!)
+
     describe(`${env.serverWallet.chain.name}`, () => {
         test('eth_accounts works', async () => {
             const addresses = await env.debugClient.request({

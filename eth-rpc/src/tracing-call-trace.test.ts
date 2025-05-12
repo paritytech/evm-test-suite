@@ -3,10 +3,10 @@ import {
     getByteCode,
     visit,
     createEnv,
-    deployFactory,
-    visitorFactory,
+    memoizedDeploy,
     fixture,
     writeFixture,
+    Visitor,
 } from './util.ts'
 import { afterEach, expect, inject, test } from 'vitest'
 
@@ -20,14 +20,14 @@ afterEach(() => {
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 for (const env of envs) {
-    const [getTracingCalleeAddr] = deployFactory(env, async () =>
+    const getTracingCalleeAddr = memoizedDeploy(env, async () =>
         env.serverWallet.deployContract({
             abi: TracingCalleeAbi,
             bytecode: getByteCode('TracingCallee', env.evm),
         })
     )
 
-    const [getTracingCallerAddr, _] = deployFactory(env, async () =>
+    const getTracingCallerAddr = memoizedDeploy(env, async () =>
         env.serverWallet.deployContract({
             abi: TracingCallerAbi,
             args: [await getTracingCalleeAddr()],
@@ -36,7 +36,7 @@ for (const env of envs) {
         })
     )
 
-    const getVisitor = visitorFactory(async () => {
+    const getVisitor = async (): Promise<Visitor> => {
         const callerAddr = await getTracingCallerAddr()
         const calleeAddr = await getTracingCalleeAddr()
         return (key, value) => {
@@ -76,7 +76,7 @@ for (const env of envs) {
                 }
             }
         }
-    })
+    }
 
     test('call_tracing', async () => {
         const callerAddr = await getTracingCallerAddr()
@@ -84,13 +84,9 @@ for (const env of envs) {
         const matchFixture = async (res: any, fixtureName: string) => {
             const visitor = await getVisitor()
             res = visit(res, visitor)
-            const fixturePath = `call_${fixtureName}`
-            if (process.env.WRITE_FIXTURES) {
-                console.warn(`Updating fixture: ${fixturePath}`)
-                writeFixture(fixturePath, res)
-            } else {
-                expect(res).toEqual(fixture(fixturePath))
-            }
+            await expect(res).toMatchFileSnapshot(
+                `snapshots/call_tracer_${fixtureName}.snap`
+            )
         }
 
         const receipt = await (async () => {

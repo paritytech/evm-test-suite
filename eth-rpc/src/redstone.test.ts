@@ -1,5 +1,5 @@
 import { ExampleRedstoneShowroomAbi } from '../abi/ExampleRedstoneShowroom.ts'
-import { createEnv, deployFactory, getByteCode } from './util.ts'
+import { createEnv, memoizedDeploy, getByteCode } from './util.ts'
 import { Contract, providers } from 'ethers'
 import { WrapperBuilder } from '@redstone-finance/evm-connector'
 import { describe, expect, inject, test } from 'vitest'
@@ -15,7 +15,7 @@ for (const env of envs) {
         }
     )
 
-    const [getContractAddr] = deployFactory(env, () =>
+    const getContractAddr = memoizedDeploy(env, () =>
         env.serverWallet.deployContract({
             abi: ExampleRedstoneShowroomAbi,
             bytecode: getByteCode('ExampleRedstoneShowroom', env.evm),

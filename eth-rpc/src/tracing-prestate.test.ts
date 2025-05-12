@@ -1,7 +1,7 @@
 import {
     getByteCode,
     createEnv,
-    deployFactory,
+    memoizedDeploy,
     visit,
     fixture,
     Visitor,
@@ -11,24 +11,22 @@ import {
 import { expect, inject, test } from 'vitest'
 import { encodeFunctionData, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../abi/PretraceFixture.ts'
-import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
+import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
-const configs = [{ diffMode: true }, { diffMode: false }]
 for (const env of envs) {
-    const [getAddr] = deployFactory(env, async () =>
+    const getAddr = memoizedDeploy(env, async () =>
         env.serverWallet.deployContract({
-            abi: TracingCalleeAbi,
+            abi: PretraceFixtureAbi,
             bytecode: getByteCode('PretraceFixture', env.evm),
             value: parseEther('10'),
         })
     )
 
-    const [getAddr2] = deployFactory(env, async () =>
+    const getAddr2 = memoizedDeploy(env, async () =>
         env.serverWallet.deployContract({
-            abi: TracingCalleeAbi,
-            bytecode: getByteCode('PretraceFixture', env.evm),
-            value: parseEther('5'),
+            abi: PretraceFixtureChildAbi,
+            bytecode: getByteCode('PretraceFixtureChild', env.evm),
         })
     )
 
@@ -67,18 +65,14 @@ for (const env of envs) {
         }
     }
 
-    for (const config of configs) {
+    for (const config of [{ diffMode: true }, { diffMode: false }]) {
         const matchFixture = async (res: any, fixtureName: string) => {
             const visitor = await getVisitor()
             res = visit(res, visitor)
             const diffMode = config.diffMode ? 'diff' : 'no_diff'
-            const fixturePath = `prestate_${fixtureName}_${diffMode}`
-            if (process.env.WRITE_FIXTURES) {
-                console.warn(`Updating fixture: ${fixturePath}`)
-                writeFixture(fixturePath, res)
-            } else {
-                expect(res).toEqual(fixture(fixturePath))
-            }
+            await expect(res).toMatchFileSnapshot(
+                `snapshots/prestate_tracer_${fixtureName}_${diffMode}.snap`
+            )
         }
 
         test('write_storage', async () => {

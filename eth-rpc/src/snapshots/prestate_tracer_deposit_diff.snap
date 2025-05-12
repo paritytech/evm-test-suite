@@ -1,0 +1,28 @@
+{
+  "post": {
+    "<coinbase_addr>": {
+      "balance": "<balance>",
+      "nonce": "<nonce>",
+    },
+    "<contract_addr>": {
+      "balance": "<balance>",
+      "storage": {
+        "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
+      },
+    },
+  },
+  "pre": {
+    "<coinbase_addr>": {
+      "balance": "<balance>",
+      "nonce": "<nonce>",
+    },
+    "<contract_addr>": {
+      "balance": "<balance>",
+      "code": "<code>",
+      "nonce": "<nonce>",
+      "storage": {
+        "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
+      },
+    },
+  },
+}

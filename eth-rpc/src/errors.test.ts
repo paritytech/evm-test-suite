@@ -1,4 +1,9 @@
-import { jsonRpcErrors, getByteCode, createEnv, deployFactory } from './util.ts'
+import {
+    jsonRpcErrors,
+    getByteCode,
+    createEnv,
+    memoizedDeploy,
+} from './util.ts'
 import { afterEach, describe, expect, inject, test } from 'vitest'
 import { fail } from 'node:assert'
 import { ErrorsAbi } from '../abi/Errors.ts'
@@ -9,7 +14,7 @@ afterEach(() => {
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 for (const env of envs) {
-    const [getErrorTesterAddr] = deployFactory(env, () =>
+    const getErrorTesterAddr = memoizedDeploy(env, () =>
         env.serverWallet.deployContract({
             abi: ErrorsAbi,
             bytecode: getByteCode('Errors', env.evm),
