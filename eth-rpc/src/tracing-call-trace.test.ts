@@ -13,7 +13,7 @@ import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
-describe.only('call tracer', () => {
+describe('call tracer', () => {
     afterEach(() => {
         jsonRpcErrors.length = 0
     })

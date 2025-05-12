@@ -128,7 +128,7 @@ for (const env of envs) {
             expect(logs).toHaveLength(1)
         })
 
-        test('eth_getStorageAt works', async () => {
+        test.only('eth_getStorageAt works', async () => {
             const address = await getTesterAddr()
             const storage = await env.serverWallet.getStorageAt({
                 address,

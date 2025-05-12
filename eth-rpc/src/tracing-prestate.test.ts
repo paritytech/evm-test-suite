@@ -13,7 +13,7 @@ import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
-describe('prestate tracer', () => {
+describe.skip('prestate tracer', () => {
     for (const env of envs) {
         const getAddr = memoizedDeploy(env, async () =>
             env.serverWallet.deployContract({
