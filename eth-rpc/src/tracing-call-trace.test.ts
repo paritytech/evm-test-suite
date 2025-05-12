@@ -1,12 +1,12 @@
 import {
-    jsonRpcErrors,
     getByteCode,
     visit,
     createEnv,
     memoizedDeploy,
     Visitor,
+    memoizedTx,
 } from './util.ts'
-import { afterEach, describe, expect, inject, test } from 'vitest'
+import { describe, expect, inject, test } from 'vitest'
 import { encodeFunctionData, parseEther } from 'viem'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
 import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
@@ -14,10 +14,6 @@ import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 describe('call tracer', () => {
-    afterEach(() => {
-        jsonRpcErrors.length = 0
-    })
-
     for (const env of envs) {
         const getTracingCalleeAddr = memoizedDeploy(env, async () =>
             env.serverWallet.deployContract({
@@ -34,6 +30,16 @@ describe('call tracer', () => {
                 value: parseEther('10'),
             })
         )
+
+        const getReceipt = memoizedTx(env, async () => {
+            const { request } = await env.serverWallet.simulateContract({
+                address: await getTracingCallerAddr(),
+                abi: TracingCallerAbi,
+                functionName: 'start',
+                args: [2n],
+            })
+            return await env.serverWallet.writeContract(request)
+        })
 
         const getVisitor = async (): Promise<Visitor> => {
             const callerAddr = await getTracingCallerAddr()
@@ -78,71 +84,53 @@ describe('call tracer', () => {
             }
         }
 
-        test('call_tracing', async () => {
-            const callerAddr = await getTracingCallerAddr()
+        const matchFixture = async (res: any, fixtureName: string) => {
+            const visitor = await getVisitor()
+            res = visit(res, visitor)
+            await expect(res).toMatchFileSnapshot(
+                `snapshots/call_tracer/${fixtureName}.snap`
+            )
+        }
 
-            const matchFixture = async (res: any, fixtureName: string) => {
-                const visitor = await getVisitor()
-                res = visit(res, visitor)
-                await expect(res).toMatchFileSnapshot(
-                    `snapshots/call_tracer/${fixtureName}.snap`
-                )
-            }
+        test('debug_traceTransaction', async () => {
+            const receipt = await getReceipt()
+            const res = await env.debugClient.traceTransaction(
+                receipt.transactionHash,
+                'callTracer',
+                {
+                    withLog: true,
+                }
+            )
+            await matchFixture(res, 'trace_transaction')
+        })
 
-            const receipt = await (async () => {
-                const { request } = await env.serverWallet.simulateContract({
-                    address: callerAddr,
-                    abi: TracingCallerAbi,
-                    functionName: 'start',
-                    args: [2n],
-                })
-                const hash = await env.serverWallet.writeContract(request)
-                return await env.serverWallet.waitForTransactionReceipt({
-                    hash,
-                })
-            })()
+        test('debug_traceBlock', async () => {
+            const receipt = await getReceipt()
+            const res = await env.debugClient.traceBlock(
+                receipt.blockNumber,
+                'callTracer',
+                {
+                    withLog: true,
+                }
+            )
+            await matchFixture(res, 'trace_block')
+        })
 
-            // test debug_traceTransaction
-            {
-                const res = await env.debugClient.traceTransaction(
-                    receipt.transactionHash,
-                    'callTracer',
-                    {
-                        withLog: true,
-                    }
-                )
-                await matchFixture(res, 'trace_transaction')
-            }
+        test('debug_traceCall', async () => {
+            const res = await env.debugClient.traceCall(
+                {
+                    to: await getTracingCallerAddr(),
+                    data: encodeFunctionData({
+                        abi: TracingCallerAbi,
+                        functionName: 'start',
+                        args: [2n],
+                    }),
+                },
+                'callTracer',
+                { withLog: true }
+            )
 
-            // test debug_traceBlock
-            {
-                const res = await env.debugClient.traceBlock(
-                    receipt.blockNumber,
-                    'callTracer',
-                    {
-                        withLog: true,
-                    }
-                )
-                await matchFixture(res, 'trace_block')
-            }
-
-            // test debug_traceCall
-            {
-                const res = await env.debugClient.traceCall(
-                    {
-                        to: callerAddr,
-                        data: encodeFunctionData({
-                            abi: TracingCallerAbi,
-                            functionName: 'start',
-                            args: [2n],
-                        }),
-                    },
-                    'callTracer',
-                    { withLog: true }
-                )
-
-                await matchFixture(res, 'debug_traceCall')
-            }
+            await matchFixture(res, 'debug_traceCall')
         })
     }
 })
