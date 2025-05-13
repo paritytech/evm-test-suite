@@ -31,7 +31,7 @@ for (const env of envs) {
         })
     )
 
-    describe(`${env.serverWallet.chain.name}`, () => {
+    describe(env.serverWallet.chain.name, () => {
         test('eth_call (not enough funds)', async () => {
             try {
                 await env.emptyWallet.simulateContract({

@@ -13,77 +13,76 @@ import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
-describe('call tracer', () => {
-    for (const env of envs) {
-        const getTracingCalleeAddr = memoizedDeploy(env, async () =>
-            env.serverWallet.deployContract({
-                abi: TracingCalleeAbi,
-                bytecode: getByteCode('TracingCallee', env.evm),
-            })
-        )
-
-        const getTracingCallerAddr = memoizedDeploy(env, async () =>
-            env.serverWallet.deployContract({
-                abi: TracingCallerAbi,
-                args: [await getTracingCalleeAddr()],
-                bytecode: getByteCode('TracingCaller', env.evm),
-                value: parseEther('10'),
-            })
-        )
-
-        const getReceipt = memoizedTx(env, async () => {
-            const { request } = await env.serverWallet.simulateContract({
-                address: await getTracingCallerAddr(),
-                abi: TracingCallerAbi,
-                functionName: 'start',
-                args: [2n],
-            })
-            return await env.serverWallet.writeContract(request)
+for (const env of envs) {
+    const getTracingCalleeAddr = memoizedDeploy(env, async () =>
+        env.serverWallet.deployContract({
+            abi: TracingCalleeAbi,
+            bytecode: getByteCode('TracingCallee', env.evm),
         })
+    )
 
-        const getVisitor = async (): Promise<Visitor> => {
-            const callerAddr = await getTracingCallerAddr()
-            const calleeAddr = await getTracingCalleeAddr()
-            return (key, value) => {
-                switch (key) {
-                    case 'address':
-                    case 'from':
-                    case 'to': {
-                        if (value === callerAddr) {
-                            return [key, '<contract_addr>']
-                        } else if (value === calleeAddr) {
-                            return [key, '<contract_callee_addr>']
-                        } else if (
-                            value ==
-                            env.serverWallet.account.address.toLowerCase()
-                        ) {
-                            return [key, '<caller>']
-                        }
+    const getTracingCallerAddr = memoizedDeploy(env, async () =>
+        env.serverWallet.deployContract({
+            abi: TracingCallerAbi,
+            args: [await getTracingCalleeAddr()],
+            bytecode: getByteCode('TracingCaller', env.evm),
+            value: parseEther('10'),
+        })
+    )
 
-                        return [key, value]
-                    }
-                    case 'revertReason':
-                        return [
-                            key,
-                            value.startsWith('revert: ')
-                                ? value.slice('revert: '.length)
-                                : value,
-                        ]
+    const getReceipt = memoizedTx(env, async () => {
+        const { request } = await env.serverWallet.simulateContract({
+            address: await getTracingCallerAddr(),
+            abi: TracingCallerAbi,
+            functionName: 'start',
+            args: [2n],
+        })
+        return await env.serverWallet.writeContract(request)
+    })
 
-                    case 'gas':
-                    case 'gasUsed': {
-                        return [key, '0x42']
+    const getVisitor = async (): Promise<Visitor> => {
+        const callerAddr = await getTracingCallerAddr()
+        const calleeAddr = await getTracingCalleeAddr()
+        return (key, value) => {
+            switch (key) {
+                case 'address':
+                case 'from':
+                case 'to': {
+                    if (value === callerAddr) {
+                        return [key, '<contract_addr>']
+                    } else if (value === calleeAddr) {
+                        return [key, '<contract_callee_addr>']
+                    } else if (
+                        value == env.serverWallet.account.address.toLowerCase()
+                    ) {
+                        return [key, '<caller>']
                     }
-                    case 'txHash': {
-                        return [key, '<hash>']
-                    }
-                    default: {
-                        return [key, value]
-                    }
+
+                    return [key, value]
+                }
+                case 'revertReason':
+                    return [
+                        key,
+                        value.startsWith('revert: ')
+                            ? value.slice('revert: '.length)
+                            : value,
+                    ]
+
+                case 'gas':
+                case 'gasUsed': {
+                    return [key, '0x42']
+                }
+                case 'txHash': {
+                    return [key, '<hash>']
+                }
+                default: {
+                    return [key, value]
                 }
             }
         }
+    }
 
+    describe(env.serverWallet.chain.name, () => {
         const matchFixture = async (res: any, fixtureName: string) => {
             const visitor = await getVisitor()
             res = visit(res, visitor)
@@ -132,5 +131,5 @@ describe('call tracer', () => {
 
             await matchFixture(res, 'debug_traceCall')
         })
-    }
-})
+    })
+}

@@ -22,7 +22,7 @@ for (const env of envs) {
     const getTesterAddr = () =>
         getTesterReceipt().then((r) => r.contractAddress!)
 
-    describe(`${env.serverWallet.chain.name}`, () => {
+    describe(env.serverWallet.chain.name, () => {
         test('eth_accounts works', async () => {
             const addresses = await env.debugClient.request({
                 method: 'eth_accounts',
@@ -128,7 +128,7 @@ for (const env of envs) {
             expect(logs).toHaveLength(1)
         })
 
-        test.only('eth_getStorageAt works', async () => {
+        test('eth_getStorageAt works', async () => {
             const address = await getTesterAddr()
             const storage = await env.serverWallet.getStorageAt({
                 address,
