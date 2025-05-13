@@ -9,6 +9,7 @@ contract PretraceFixture {
 
     constructor() payable {
         balances[msg.sender] = msg.value;
+        storedValue = 42;
     }
 
     function writeStorage(uint256 _value) external {
