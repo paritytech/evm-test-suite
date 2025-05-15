@@ -4,20 +4,20 @@ pragma solidity ^0.8.0;
 /// @title PretraceFixture
 /// @notice A simple contract to exercise storage, balance, and nonce changes
 contract PretraceFixture {
-    uint256 public storedValue;
+    uint256 public value;
     mapping(address => uint256) public balances;
 
     constructor() payable {
         balances[msg.sender] = msg.value;
-        storedValue = 42;
+        value = 42;
     }
 
     function writeStorage(uint256 _value) external {
-        storedValue = _value;
+        value = _value;
     }
 
     function readStorage() external view returns (uint256) {
-        return storedValue;
+        return value;
     }
 
     function deposit() external payable {
@@ -45,10 +45,25 @@ contract PretraceFixture {
         PretraceFixtureChild c = new PretraceFixtureChild();
         return address(c);
     }
-}
+
+    function callContract(address childAddr) external {
+        PretraceFixtureChild(childAddr).increment();
+    }
+
+    function delegatecallContract(address childAddr) external {
+        (bool success, ) = childAddr.delegatecall(
+            abi.encodeWithSelector(PretraceFixtureChild.increment.selector)
+        );
+        require(success, "Delegatecall failed");
+    }}
 
 /// @title Child
-/// @notice A disposable child contract to bump parent nonce
+/// @notice A disposable child contract used to test contract deployment and calls
 contract PretraceFixtureChild {
-    uint256 public dummy = 1;
+    uint256 public value = 1;
+
+    function increment() external {
+        value += 1;
+    }
+
 }

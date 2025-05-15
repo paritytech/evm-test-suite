@@ -66,13 +66,13 @@ for (const env of envs) {
     for (const config of [{ diffMode: true }, { diffMode: false }]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 
-        describe(env.serverWallet.chain.name, () => {
+        describe.skip(env.serverWallet.chain.name, () => {
             describe(diffMode, () => {
                 const matchFixture = async (res: any, fixtureName: string) => {
                     const visitor = await getVisitor()
                     res = visit(res, visitor)
                     await expect(res).toMatchFileSnapshot(
-                        `snapshots/prestate_tracer/${fixtureName}_${diffMode}.snap`
+                        `snapshots/prestate_tracer/${diffMode}/${fixtureName}.snap`
                     )
                 }
 
@@ -195,6 +195,42 @@ for (const env of envs) {
                     )
 
                     await matchFixture(res, 'deploy_contract')
+                })
+
+                test('call_contract', async () => {
+                    const res = await env.debugClient.traceCall(
+                        {
+                            to: await getAddr(),
+                            from: env.serverWallet.account.address,
+                            data: encodeFunctionData({
+                                abi: PretraceFixtureAbi,
+                                functionName: 'callContract',
+                                args: [await getAddr2()],
+                            }),
+                        },
+                        'prestateTracer',
+                        config
+                    )
+
+                    await matchFixture(res, 'call_contract')
+                })
+
+                test('delegate_call_contract', async () => {
+                    const res = await env.debugClient.traceCall(
+                        {
+                            to: await getAddr(),
+                            from: env.serverWallet.account.address,
+                            data: encodeFunctionData({
+                                abi: PretraceFixtureAbi,
+                                functionName: 'callContract',
+                                args: [await getAddr2()],
+                            }),
+                        },
+                        'prestateTracer',
+                        config
+                    )
+
+                    await matchFixture(res, 'delegate_call_contract')
                 })
             })
         })

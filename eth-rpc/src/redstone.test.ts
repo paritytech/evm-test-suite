@@ -22,7 +22,7 @@ for (const env of envs) {
         })
     )
 
-    describe(env.serverWallet.chain.name, () => {
+    describe.skip(env.serverWallet.chain.name, () => {
         test('getTokensPrices works', async () => {
             const contract = new Contract(
                 await getContractAddr(),

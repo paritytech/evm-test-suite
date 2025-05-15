@@ -6,7 +6,7 @@
     "scripts": {
         "build": "npx tsx src/build-contracts.ts",
         "test": "vitest --test-timeout=30000 --no-file-parallelism",
-        "test-init": "vitest run --test-timeout=30000 --no-file-parallelism",
+        "test-init": "vitest run --reporter=verbose --test-timeout=30000 --no-file-parallelism",
         "lint": "prettier --plugin=prettier-plugin-solidity --check . --write",
         "solhint": "solhint \"contracts/**/*.sol\""
     },
