@@ -49,6 +49,14 @@ const flipperAddr = deployReceipt.contractAddress
 
 let nonce = await wallet.getTransactionCount(wallet.account)
 
+setInterval(async () => {
+    await env.serverWallet.getFeeHistory({
+        blockCount: 4,
+        blockTag: 'latest',
+        rewardPercentiles: [25, 75],
+    })
+}, 500)
+
 console.log('🔄 Starting loop...')
 console.log('Starting nonce:', nonce)
 try {
