@@ -41,10 +41,10 @@ for (const env of envs) {
         )
         let mappedKeys = {
             [walletbalanceStorageSlot]: `<wallet_balance>`,
-            [coinbaseAddr]: `<coinbase_addr>`,
-            [env.accountWallet.account.address]: `<caller_addr>`,
-            [await getAddr()]: `<contract_addr>`,
-            [await getAddr2()]: `<contract_addr_2>`,
+            [coinbaseAddr.toLowerCase()]: `<coinbase_addr>`,
+            [env.accountWallet.account.address.toLowerCase()]: `<caller_addr>`,
+            [(await getAddr()).toLowerCase()]: `<contract_addr>`,
+            [(await getAddr2()).toLowerCase()]: `<contract_addr_2>`,
         }
 
         return (key, value) => {
@@ -59,13 +59,21 @@ for (const env of envs) {
                 case 'balance': {
                     return [key, '<balance>']
                 }
+                case 'txHash': {
+                    return [key, '<tx_hash>']
+                }
                 default: {
                     return [key, value]
                 }
             }
         }
     }
-    for (const config of [{ diffMode: true }, { diffMode: false }]) {
+    for (const config of [
+        //
+        { diffMode: true },
+        //
+        { diffMode: false },
+    ]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 
         describe(env.serverWallet.chain.name, () => {
@@ -81,6 +89,7 @@ for (const env of envs) {
                 test('write_storage', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -99,6 +108,7 @@ for (const env of envs) {
                 test('read_storage', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -116,8 +126,8 @@ for (const env of envs) {
                 test('deposit', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
-                            from: env.serverWallet.account.address,
                             value: parseEther('1'),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -135,8 +145,8 @@ for (const env of envs) {
                 test('withdraw', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
-                            from: env.serverWallet.account.address,
                             value: parseEther('1'),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -146,7 +156,6 @@ for (const env of envs) {
                         'prestateTracer',
                         config,
                         block.hash
-
                     )
 
                     await matchFixture(res, 'withdraw')
@@ -155,6 +164,7 @@ for (const env of envs) {
                 test('get_balance', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -173,6 +183,7 @@ for (const env of envs) {
                     const addr = await getAddr2()
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -191,8 +202,8 @@ for (const env of envs) {
                 test('deploy_contract', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
-                            from: env.serverWallet.account.address,
                             value: parseEther('1'),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -202,7 +213,6 @@ for (const env of envs) {
                         'prestateTracer',
                         config,
                         block.hash
-
                     )
 
                     await matchFixture(res, 'deploy_contract')
@@ -211,8 +221,8 @@ for (const env of envs) {
                 test('call_contract', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
-                            from: env.serverWallet.account.address,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'callContract',
@@ -230,8 +240,8 @@ for (const env of envs) {
                 test('delegate_call_contract', async () => {
                     const res = await env.debugClient.traceCall(
                         {
+                            from: env.accountWallet.account.address,
                             to: await getAddr(),
-                            from: env.serverWallet.account.address,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'callContract',
@@ -247,7 +257,7 @@ for (const env of envs) {
                     await matchFixture(res, 'delegate_call_contract')
                 })
 
-                test.skip('write_storage twice', async () => {
+                test('write_storage twice', async () => {
                     const nonce = await env.accountWallet.getTransactionCount(
                         env.accountWallet.account
                     )
@@ -259,7 +269,7 @@ for (const env of envs) {
                                     address: await getAddr(),
                                     abi: PretraceFixtureAbi,
                                     functionName: 'writeStorage',
-                                    args: [BigInt(Date.now())],
+                                    args: [BigInt(nonce + 42)],
                                     nonce,
                                 })
                             return request

@@ -1,7 +1,6 @@
 {
-  "0x650bfc4caf0ec187ee81ffb475af450efe0d3ebe": {
+  "<caller_addr>": {
     "balance": "<balance>",
-    "nonce": "<nonce>",
   },
   "<coinbase_addr>": {
     "balance": "<balance>",

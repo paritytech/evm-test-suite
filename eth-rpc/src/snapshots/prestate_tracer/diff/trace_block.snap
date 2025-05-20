@@ -2,7 +2,29 @@
   {
     "result": {
       "post": {
-        "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac": {
+        "<caller_addr>": {
+          "balance": "<balance>",
+          "nonce": "<nonce>",
+        },
+        "<coinbase_addr>": {
+          "balance": "<balance>",
+        },
+      },
+      "pre": {
+        "<caller_addr>": {
+          "balance": "<balance>",
+        },
+        "<coinbase_addr>": {
+          "balance": "<balance>",
+        },
+      },
+    },
+    "txHash": "<tx_hash>",
+  },
+  {
+    "result": {
+      "post": {
+        "<caller_addr>": {
           "balance": "<balance>",
           "nonce": "<nonce>",
         },
@@ -11,12 +33,12 @@
         },
         "<contract_addr>": {
           "storage": {
-            "0x0000000000000000000000000000000000000000000000000000000000000000": "0x00000000000000000000000000000000000000000000000000000196ecfc8b97",
+            "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
           },
         },
       },
       "pre": {
-        "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac": {
+        "<caller_addr>": {
           "balance": "<balance>",
           "nonce": "<nonce>",
         },
@@ -33,29 +55,6 @@
         },
       },
     },
-    "txHash": "0xa8cc2f241c95094f08333af7d7bd738a0e8d717b75345284a8b66fc7e4db652a",
-  },
-  {
-    "result": {
-      "post": {
-        "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac": {
-          "balance": "<balance>",
-          "nonce": "<nonce>",
-        },
-        "<coinbase_addr>": {
-          "balance": "<balance>",
-        },
-      },
-      "pre": {
-        "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac": {
-          "balance": "<balance>",
-          "nonce": "<nonce>",
-        },
-        "<coinbase_addr>": {
-          "balance": "<balance>",
-        },
-      },
-    },
-    "txHash": "0x90b9db1a66fc7ecebe477792d7b6133a8332c3f8859bf4547935c85a3080cf14",
+    "txHash": "<tx_hash>",
   },
 ]

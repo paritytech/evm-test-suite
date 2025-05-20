@@ -1,4 +1,7 @@
 {
+  "<caller_addr>": {
+    "balance": "<balance>",
+  },
   "<coinbase_addr>": {
     "balance": "<balance>",
   },

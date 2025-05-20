@@ -1,11 +1,11 @@
 {
   "post": {
-    "<coinbase_addr>": {
+    "<caller_addr>": {
       "nonce": "<nonce>",
     },
   },
   "pre": {
-    "<coinbase_addr>": {
+    "<caller_addr>": {
       "balance": "<balance>",
     },
   },
