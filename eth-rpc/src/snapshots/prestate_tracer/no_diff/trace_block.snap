@@ -1,0 +1,42 @@
+[
+  {
+    "result": {
+      "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac": {
+        "balance": "<balance>",
+        "nonce": "<nonce>",
+      },
+      "<coinbase_addr>": {
+        "balance": "<balance>",
+      },
+      "<contract_addr>": {
+        "balance": "<balance>",
+        "code": "<code>",
+        "nonce": "<nonce>",
+        "storage": {
+          "0x0000000000000000000000000000000000000000000000000000000000000000": "0x00000000000000000000000000000000000000000000000000000196ecfc8b97",
+        },
+      },
+    },
+    "txHash": "0xef41970a3461860475199982988e58d2f879a3d53599f941b6e8b9880fcb7e70",
+  },
+  {
+    "result": {
+      "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac": {
+        "balance": "<balance>",
+        "nonce": "<nonce>",
+      },
+      "<coinbase_addr>": {
+        "balance": "<balance>",
+      },
+      "<contract_addr>": {
+        "balance": "<balance>",
+        "code": "<code>",
+        "nonce": "<nonce>",
+        "storage": {
+          "0x0000000000000000000000000000000000000000000000000000000000000000": "0x00000000000000000000000000000000000000000000000000000196ecfc9b6e",
+        },
+      },
+    },
+    "txHash": "0x964424644ac5df1db6724398c9c52f951f8959edf1abacf7d42f1ccb41f5ec38",
+  },
+]

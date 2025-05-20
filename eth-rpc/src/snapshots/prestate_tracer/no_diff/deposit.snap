@@ -1,14 +1,12 @@
 {
-  "<coinbase_addr>": {
+  "0x650bfc4caf0ec187ee81ffb475af450efe0d3ebe": {
     "balance": "<balance>",
     "nonce": "<nonce>",
   },
+  "<coinbase_addr>": {
+    "balance": "<balance>",
+  },
   "<contract_addr>": {
     "balance": "<balance>",
-    "code": "<code>",
-    "nonce": "<nonce>",
-    "storage": {
-      "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
-    },
   },
 }

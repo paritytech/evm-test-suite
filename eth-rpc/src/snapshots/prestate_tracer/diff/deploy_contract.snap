@@ -1,13 +1,20 @@
 {
   "post": {
-    "<coinbase_addr>": {
+    "0x650bfc4caf0ec187ee81ffb475af450efe0d3ebe": {
+      "balance": "<balance>",
       "nonce": "<nonce>",
+    },
+    "<contract_addr>": {
+      "balance": "<balance>",
     },
   },
   "pre": {
-    "<coinbase_addr>": {
+    "0x650bfc4caf0ec187ee81ffb475af450efe0d3ebe": {
       "balance": "<balance>",
       "nonce": "<nonce>",
+    },
+    "<contract_addr>": {
+      "balance": "<balance>",
     },
   },
 }

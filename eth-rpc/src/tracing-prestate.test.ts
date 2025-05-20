@@ -14,6 +14,10 @@ import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
+    const block = await env.publicClient.getBlock({
+        blockTag: 'latest',
+    })
+
     const getAddr = memoizedDeploy(env, async () =>
         env.serverWallet.deployContract({
             abi: PretraceFixtureAbi,
@@ -30,10 +34,7 @@ for (const env of envs) {
     )
 
     const getVisitor = async (): Promise<Visitor> => {
-        let { miner: coinbaseAddr } = await env.publicClient.getBlock({
-            blockTag: 'latest',
-        })
-
+        let { miner: coinbaseAddr } = block
         const walletbalanceStorageSlot = await computeMappingSlot(
             env.serverWallet.account.address,
             1
@@ -41,6 +42,7 @@ for (const env of envs) {
         let mappedKeys = {
             [walletbalanceStorageSlot]: `<wallet_balance>`,
             [coinbaseAddr]: `<coinbase_addr>`,
+            [env.accountWallet.account.address]: `<caller_addr>`,
             [await getAddr()]: `<contract_addr>`,
             [await getAddr2()]: `<contract_addr_2>`,
         }
@@ -66,7 +68,7 @@ for (const env of envs) {
     for (const config of [{ diffMode: true }, { diffMode: false }]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 
-        describe.skip(env.serverWallet.chain.name, () => {
+        describe(env.serverWallet.chain.name, () => {
             describe(diffMode, () => {
                 const matchFixture = async (res: any, fixtureName: string) => {
                     const visitor = await getVisitor()
@@ -87,7 +89,8 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
                     )
 
                     await matchFixture(res, 'write_storage')
@@ -103,7 +106,8 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
                     )
 
                     await matchFixture(res, 'read_storage')
@@ -121,7 +125,8 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
                     )
 
                     await matchFixture(res, 'deposit')
@@ -139,7 +144,9 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
+
                     )
 
                     await matchFixture(res, 'withdraw')
@@ -155,7 +162,8 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
                     )
 
                     await matchFixture(res, 'get_balance')
@@ -173,7 +181,8 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
                     )
 
                     await matchFixture(res, 'get_external_balance')
@@ -191,7 +200,9 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
+
                     )
 
                     await matchFixture(res, 'deploy_contract')
@@ -209,7 +220,8 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+                        block.hash
                     )
 
                     await matchFixture(res, 'call_contract')
@@ -227,10 +239,57 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config
+                        config,
+
+                        block.hash
                     )
 
                     await matchFixture(res, 'delegate_call_contract')
+                })
+
+                test.skip('write_storage twice', async () => {
+                    const nonce = await env.accountWallet.getTransactionCount(
+                        env.accountWallet.account
+                    )
+
+                    const requests = await Promise.all(
+                        [nonce, nonce + 1].map(async (nonce) => {
+                            const { request } =
+                                await env.accountWallet.simulateContract({
+                                    address: await getAddr(),
+                                    abi: PretraceFixtureAbi,
+                                    functionName: 'writeStorage',
+                                    args: [BigInt(Date.now())],
+                                    nonce,
+                                })
+                            return request
+                        })
+                    )
+
+                    const hashes = await Promise.all(
+                        requests.map((request) =>
+                            env.accountWallet.writeContract(request)
+                        )
+                    )
+
+                    const receipts = await Promise.all(
+                        hashes.map((hash) =>
+                            env.accountWallet.waitForTransactionReceipt({
+                                hash,
+                            })
+                        )
+                    )
+
+                    const status = receipts.every((r) => r.status)
+                    expect(status).toBeTruthy()
+
+                    const res = await env.debugClient.traceBlock(
+                        receipts[0].blockNumber,
+                        'prestateTracer',
+                        config
+                    )
+
+                    await matchFixture(res, 'trace_block')
                 })
             })
         })

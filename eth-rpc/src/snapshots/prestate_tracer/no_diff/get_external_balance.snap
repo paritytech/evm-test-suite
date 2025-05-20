@@ -1,19 +1,8 @@
 {
-  "0x0000000000000000000000000000000000000000": {
-    "balance": "<balance>",
-  },
   "<coinbase_addr>": {
     "balance": "<balance>",
-    "nonce": "<nonce>",
   },
   "<contract_addr>": {
     "balance": "<balance>",
-    "code": "<code>",
-    "nonce": "<nonce>",
-  },
-  "<contract_addr_2>": {
-    "balance": "<balance>",
-    "code": "<code>",
-    "nonce": "<nonce>",
   },
 }

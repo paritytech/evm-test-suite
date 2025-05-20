@@ -24,6 +24,8 @@ export default async function setup(project: TestProject) {
             '--http.port',
             '8546',
             '--dev',
+            '--dev.period',
+            '2',
             '--verbosity',
             '0',
         ]
