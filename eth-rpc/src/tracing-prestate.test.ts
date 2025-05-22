@@ -14,10 +14,6 @@ import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const block = await env.publicClient.getBlock({
-        blockTag: 'latest',
-    })
-
     const getAddr = memoizedDeploy(env, async () =>
         env.serverWallet.deployContract({
             abi: PretraceFixtureAbi,
@@ -32,6 +28,11 @@ for (const env of envs) {
             bytecode: getByteCode('PretraceFixtureChild', env.evm),
         })
     )
+
+    await Promise.all([getAddr, getAddr2])
+    const block = await env.publicClient.getBlock({
+        blockTag: 'latest',
+    })
 
     const getVisitor = async (): Promise<Visitor> => {
         let { miner: coinbaseAddr } = block
@@ -230,8 +231,7 @@ for (const env of envs) {
                             }),
                         },
                         'prestateTracer',
-                        config,
-                        block.hash
+                        config
                     )
 
                     await matchFixture(res, 'call_contract')
