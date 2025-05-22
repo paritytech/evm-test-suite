@@ -263,13 +263,13 @@ for (const env of envs) {
                     )
 
                     const requests = await Promise.all(
-                        [nonce, nonce + 1].map(async (nonce) => {
+                        [nonce, nonce + 1].map(async (nonce, i) => {
                             const { request } =
                                 await env.accountWallet.simulateContract({
                                     address: await getAddr(),
                                     abi: PretraceFixtureAbi,
                                     functionName: 'writeStorage',
-                                    args: [BigInt(nonce + 42)],
+                                    args: [BigInt(i + 42)],
                                     nonce,
                                 })
                             return request
