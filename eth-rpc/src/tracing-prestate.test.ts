@@ -14,22 +14,21 @@ import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const getAddr = memoizedDeploy(env, async () => {
+    const addr = await memoizedDeploy(env, async () => {
         return env.accountWallet.deployContract({
             abi: PretraceFixtureAbi,
             bytecode: getByteCode('PretraceFixture', env.evm),
             value: parseEther('10'),
         })
-    })
+    })()
 
-    const getAddr2 = memoizedDeploy(env, async () =>
+    const addr2 = await memoizedDeploy(env, async () =>
         env.accountWallet.deployContract({
             abi: PretraceFixtureChildAbi,
             bytecode: getByteCode('PretraceFixtureChild', env.evm),
         })
-    )
+    )()
 
-    await Promise.all([getAddr(), getAddr2()])
     const block = await env.publicClient.getBlock({
         blockTag: 'latest',
     })
@@ -44,8 +43,8 @@ for (const env of envs) {
             [walletbalanceStorageSlot]: `<wallet_balance>`,
             [coinbaseAddr.toLowerCase()]: `<coinbase_addr>`,
             [env.accountWallet.account.address.toLowerCase()]: `<caller_addr>`,
-            [(await getAddr()).toLowerCase()]: `<contract_addr>`,
-            [(await getAddr2()).toLowerCase()]: `<contract_addr_2>`,
+            [addr.toLowerCase()]: `<contract_addr>`,
+            [addr2.toLowerCase()]: `<contract_addr_2>`,
         }
 
         return (key, value) => {
@@ -88,7 +87,7 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'writeStorage',
@@ -107,7 +106,7 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'readStorage',
@@ -125,7 +124,7 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             value: parseEther('1'),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -144,7 +143,7 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             value: parseEther('1'),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -163,7 +162,7 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'getContractBalance',
@@ -178,15 +177,14 @@ for (const env of envs) {
                 })
 
                 test('get_external_balance', async () => {
-                    const addr = await getAddr2()
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'getExternalBalance',
-                                args: [addr],
+                                args: [addr2],
                             }),
                         },
                         'prestateTracer',
@@ -201,7 +199,7 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             value: parseEther('1'),
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
@@ -220,11 +218,11 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'callContract',
-                                args: [await getAddr2()],
+                                args: [addr2],
                             }),
                         },
                         'prestateTracer',
@@ -238,11 +236,11 @@ for (const env of envs) {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
-                            to: await getAddr(),
+                            to: addr,
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'callContract',
-                                args: [await getAddr2()],
+                                args: [addr2],
                             }),
                         },
                         'prestateTracer',
@@ -262,7 +260,7 @@ for (const env of envs) {
                         [nonce, nonce + 1].map(async (nonce, i) => {
                             const { request } =
                                 await env.accountWallet.simulateContract({
-                                    address: await getAddr(),
+                                    address: addr,
                                     abi: PretraceFixtureAbi,
                                     functionName: 'writeStorage',
                                     args: [BigInt(i + 42)],
