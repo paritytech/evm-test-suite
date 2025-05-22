@@ -85,8 +85,7 @@ for (const env of envs) {
     describe(env.serverWallet.chain.name, () => {
         const matchFixture = async (res: any, fixtureName: string) => {
             const visitor = await getVisitor()
-            res = visit(res, visitor)
-            await expect(res).toMatchFileSnapshot(
+            await expect(visit(res, visitor)).toMatchFileSnapshot(
                 `snapshots/call_tracer/${fixtureName}.snap`
             )
         }

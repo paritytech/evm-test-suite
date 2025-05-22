@@ -14,22 +14,22 @@ import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const getAddr = memoizedDeploy(env, async () =>
-        env.serverWallet.deployContract({
+    const getAddr = memoizedDeploy(env, async () => {
+        return env.accountWallet.deployContract({
             abi: PretraceFixtureAbi,
             bytecode: getByteCode('PretraceFixture', env.evm),
             value: parseEther('10'),
         })
-    )
+    })
 
     const getAddr2 = memoizedDeploy(env, async () =>
-        env.serverWallet.deployContract({
+        env.accountWallet.deployContract({
             abi: PretraceFixtureChildAbi,
             bytecode: getByteCode('PretraceFixtureChild', env.evm),
         })
     )
 
-    await Promise.all([getAddr, getAddr2])
+    await Promise.all([getAddr(), getAddr2()])
     const block = await env.publicClient.getBlock({
         blockTag: 'latest',
     })
@@ -70,10 +70,8 @@ for (const env of envs) {
         }
     }
     for (const config of [
-        //
-        { diffMode: true },
-        //
-        { diffMode: false },
+        { diffMode: true, disableCode: true },
+        { diffMode: false, disableCode: true },
     ]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 
@@ -81,8 +79,7 @@ for (const env of envs) {
             describe(diffMode, () => {
                 const matchFixture = async (res: any, fixtureName: string) => {
                     const visitor = await getVisitor()
-                    res = visit(res, visitor)
-                    await expect(res).toMatchFileSnapshot(
+                    await expect(visit(res, visitor)).toMatchFileSnapshot(
                         `snapshots/prestate_tracer/${diffMode}/${fixtureName}.snap`
                     )
                 }
@@ -250,7 +247,6 @@ for (const env of envs) {
                         },
                         'prestateTracer',
                         config,
-
                         block.hash
                     )
 

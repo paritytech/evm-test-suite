@@ -1,20 +1,13 @@
 {
   "post": {
     "<caller_addr>": {
-      "balance": "<balance>",
       "nonce": "<nonce>",
-    },
-    "<contract_addr>": {
-      "balance": "<balance>",
     },
   },
   "pre": {
     "<caller_addr>": {
       "balance": "<balance>",
       "nonce": "<nonce>",
-    },
-    "<contract_addr>": {
-      "balance": "<balance>",
     },
   },
 }

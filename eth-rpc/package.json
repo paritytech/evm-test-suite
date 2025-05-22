@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "npx tsx src/build-contracts.ts",
-        "test": "vitest --test-timeout=30000 --no-file-parallelism --bail 0",
+        "test": "vitest --test-timeout=30000 --no-file-parallelism --bail 1",
         "test:update": "vitest run --reporter=verbose --test-timeout=30000 --no-file-parallelism --update",
         "test-init": "vitest run --reporter=verbose --test-timeout=30000 --no-file-parallelism",
         "lint": "prettier --plugin=prettier-plugin-solidity --check . --write",
