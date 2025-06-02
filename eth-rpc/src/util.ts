@@ -309,15 +309,6 @@ export function memoizedDeploy(env: ChainEnv, transact: () => Promise<Hex>) {
     }
 }
 
-export function fixture(name: string) {
-    return JSON.parse(fs.readFileSync(`./src/fixtures/${name}.json`, 'utf-8'))
-}
-
-export function writeFixture(name: string, data: any) {
-    const json = JSON.stringify(data, null, 2)
-    fs.writeFileSync(`./src/fixtures/${name}.json`, json, 'utf8')
-}
-
 export async function computeMappingSlot(addressKey: Hex, slotIndex: number) {
     const keyBytes = pad(hexToBytes(addressKey), { size: 32 })
     const slotBytes = pad(hexToBytes(`0x${slotIndex.toString(16)}`), {
@@ -328,5 +319,3 @@ export async function computeMappingSlot(addressKey: Hex, slotIndex: number) {
     const storageSlot = keccak256(unhashedKey)
     return storageSlot
 }
-
-// run it

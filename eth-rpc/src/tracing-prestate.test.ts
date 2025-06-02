@@ -10,6 +10,7 @@ import { describe, expect, inject, test } from 'vitest'
 import { encodeFunctionData, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../abi/PretraceFixture.ts'
 import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
+import { mkdirSync, writeFileSync } from 'node:fs'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
@@ -78,12 +79,25 @@ for (const env of envs) {
             describe(diffMode, () => {
                 const matchFixture = async (res: any, fixtureName: string) => {
                     const visitor = await getVisitor()
-                    await expect(visit(res, visitor)).toMatchFileSnapshot(
+                    const dir = `/home/pg/github/evm-test-suite/eth-rpc/src/samples/${env.chain.name}/prestate_tracer/${diffMode}/`
+                    mkdirSync(dir, { recursive: true })
+
+                    writeFileSync(
+                        `${dir}/${fixtureName}.json`,
+                        JSON.stringify(res, null, 2)
+                    )
+
+                    const sortedRes = Object.fromEntries(
+                        Object.entries(res).sort(([k1], [k2]) => {
+                            return k2.localeCompare(k1)
+                        })
+                    )
+                    await expect(visit(sortedRes, visitor)).toMatchFileSnapshot(
                         `snapshots/prestate_tracer/${diffMode}/${fixtureName}.snap`
                     )
                 }
 
-                test('write_storage', async () => {
+                test('write_storage', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -99,10 +113,28 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'write_storage')
+                    await matchFixture(res, task.name)
                 })
 
-                test('read_storage', async () => {
+                test('write_storage_from_0', async ({ task }) => {
+                    const res = await env.debugClient.traceCall(
+                        {
+                            to: addr,
+                            data: encodeFunctionData({
+                                abi: PretraceFixtureAbi,
+                                functionName: 'writeStorage',
+                                args: [2n],
+                            }),
+                        },
+                        'prestateTracer',
+                        config,
+                        block.hash
+                    )
+
+                    await matchFixture(res, task.name)
+                })
+
+                test('read_storage', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -117,10 +149,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'read_storage')
+                    await matchFixture(res, task.name)
                 })
 
-                test('deposit', async () => {
+                test('deposit', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -136,10 +168,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'deposit')
+                    await matchFixture(res, task.name)
                 })
 
-                test('withdraw', async () => {
+                test('withdraw', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -155,10 +187,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'withdraw')
+                    await matchFixture(res, task.name)
                 })
 
-                test('get_balance', async () => {
+                test('get_balance', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -173,10 +205,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'get_balance')
+                    await matchFixture(res, task.name)
                 })
 
-                test('get_external_balance', async () => {
+                test('get_external_balance', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -192,10 +224,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'get_external_balance')
+                    await matchFixture(res, task.name)
                 })
 
-                test('deploy_contract', async () => {
+                test('deploy_contract', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -211,10 +243,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'deploy_contract')
+                    await matchFixture(res, task.name)
                 })
 
-                test('call_contract', async () => {
+                test('call_contract', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -229,10 +261,10 @@ for (const env of envs) {
                         config
                     )
 
-                    await matchFixture(res, 'call_contract')
+                    await matchFixture(res, task.name)
                 })
 
-                test('delegate_call_contract', async () => {
+                test('delegate_call_contract', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -248,10 +280,10 @@ for (const env of envs) {
                         block.hash
                     )
 
-                    await matchFixture(res, 'delegate_call_contract')
+                    await matchFixture(res, task.name)
                 })
 
-                test('write_storage twice', async () => {
+                test('write_storage twice', async ({ task }) => {
                     const nonce = await env.accountWallet.getTransactionCount(
                         env.accountWallet.account
                     )
@@ -293,7 +325,7 @@ for (const env of envs) {
                         config
                     )
 
-                    await matchFixture(res, 'trace_block')
+                    await matchFixture(res, task.name)
                 })
             })
         })

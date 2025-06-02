@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import '@redstone-finance/evm-connector/contracts/data-services/RapidDemoConsumerBase.sol';
+import '@redstone-finance/evm-connector/contracts/data-services/PrimaryProdDataServiceConsumerBase.sol';
 
-contract ExampleRedstoneShowroom is RapidDemoConsumerBase {
+contract ExampleRedstoneShowroom is  PrimaryProdDataServiceConsumerBase {
     function getPrices() public view returns (uint256[] memory) {
         bytes32[] memory dataFeedIds = new bytes32[](6);
         dataFeedIds[0] = bytes32('BTC');
@@ -16,3 +16,6 @@ contract ExampleRedstoneShowroom is RapidDemoConsumerBase {
         return getOracleNumericValuesFromTxMsg(dataFeedIds);
     }
 }
+
+
+

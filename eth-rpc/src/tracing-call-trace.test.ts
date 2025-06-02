@@ -90,7 +90,7 @@ for (const env of envs) {
             )
         }
 
-        test('debug_traceTransaction', async () => {
+        test('debug_traceTransaction', async ({ task }) => {
             const receipt = await getReceipt()
             const res = await env.debugClient.traceTransaction(
                 receipt.transactionHash,
@@ -99,10 +99,10 @@ for (const env of envs) {
                     withLog: true,
                 }
             )
-            await matchFixture(res, 'trace_transaction')
+            await matchFixture(res, task.name)
         })
 
-        test('debug_traceBlock', async () => {
+        test('debug_traceBlock', async ({ task }) => {
             const receipt = await getReceipt()
             const res = await env.debugClient.traceBlock(
                 receipt.blockNumber,
@@ -111,10 +111,10 @@ for (const env of envs) {
                     withLog: true,
                 }
             )
-            await matchFixture(res, 'trace_block')
+            await matchFixture(res, task.name)
         })
 
-        test('debug_traceCall', async () => {
+        test('debug_traceCall', async ({ task }) => {
             const res = await env.debugClient.traceCall(
                 {
                     to: await getTracingCallerAddr(),
@@ -128,7 +128,7 @@ for (const env of envs) {
                 { withLog: true }
             )
 
-            await matchFixture(res, 'debug_traceCall')
+            await matchFixture(res, task.name)
         })
     })
 }

@@ -1,5 +1,5 @@
-[
-  {
+{
+  "0": {
     "result": {
       "post": {
         "<caller_addr>": {
@@ -17,12 +17,13 @@
         },
         "<coinbase_addr>": {
           "balance": "<balance>",
+          "nonce": "<nonce>",
         },
       },
     },
     "txHash": "<tx_hash>",
   },
-  {
+  "1": {
     "result": {
       "post": {
         "<caller_addr>": {
@@ -45,6 +46,7 @@
         },
         "<coinbase_addr>": {
           "balance": "<balance>",
+          "nonce": "<nonce>",
         },
         "<contract_addr>": {
           "balance": "<balance>",
@@ -57,4 +59,4 @@
     },
     "txHash": "<tx_hash>",
   },
-]
+}
