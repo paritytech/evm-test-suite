@@ -295,7 +295,7 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test.skip('write_storage twice', async ({ task }) => {
+                test('write_storage twice', async ({ task }) => {
                     const nonce = await env.accountWallet.getTransactionCount(
                         env.accountWallet.account
                     )
