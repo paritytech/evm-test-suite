@@ -35,13 +35,6 @@ for (const env of envs) {
         blockTag: 'latest',
     })
 
-    // get transaction count of miner
-    const txCount = await env.publicClient.getTransactionCount({
-        address: block.miner,
-    })
-
-    console.log(txCount)
-
     const getVisitor = async (): Promise<Visitor> => {
         let { miner: coinbaseAddr } = block
         const walletbalanceStorageSlot = await computeMappingSlot(
@@ -171,7 +164,7 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test.only('deposit', async ({ task }) => {
+                test('deposit', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,

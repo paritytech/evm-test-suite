@@ -4,7 +4,6 @@
   },
   "<coinbase_addr>": {
     "balance": "<balance>",
-    "nonce": "<nonce>",
   },
   "<contract_addr>": {
     "balance": "<balance>",
