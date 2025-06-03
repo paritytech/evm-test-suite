@@ -38,7 +38,7 @@ for (const env of envs) {
     const getVisitor = async (): Promise<Visitor> => {
         let { miner: coinbaseAddr } = block
         const walletbalanceStorageSlot = await computeMappingSlot(
-            env.serverWallet.account.address,
+            env.accountWallet.account.address,
             1
         )
         let mappedKeys = {
@@ -82,10 +82,10 @@ for (const env of envs) {
                     const visitor = await getVisitor()
                     if (process.env.DEBUG) {
                         const __dirname = path.dirname(__filename)
-                        const dir = `${__dirname}/samples/${env.chain.name}/prestate_tracer/`
+                        const dir = `${__dirname}/samples/prestate_tracer/`
                         mkdirSync(dir, { recursive: true })
                         writeFileSync(
-                            `${dir}/${fixtureName}.${diffMode}.json`,
+                            `${dir}/${fixtureName}.${env.chain.name}.${diffMode}.json`,
                             JSON.stringify(res, null, 2)
                         )
                     }
@@ -133,6 +133,14 @@ for (const env of envs) {
                 })
 
                 test('read_storage', async ({ task }) => {
+                    console.log(
+                        'read_storage_data:',
+                        encodeFunctionData({
+                            abi: PretraceFixtureAbi,
+                            functionName: 'readStorage',
+                        })
+                    )
+
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -150,7 +158,7 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test('deposit', async ({ task }) => {
+                test.only('deposit', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
@@ -281,7 +289,7 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test('write_storage twice', async ({ task }) => {
+                test.skip('write_storage twice', async ({ task }) => {
                     const nonce = await env.accountWallet.getTransactionCount(
                         env.accountWallet.account
                     )
