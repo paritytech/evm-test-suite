@@ -139,14 +139,6 @@ for (const env of envs) {
                 })
 
                 test('read_storage', async ({ task }) => {
-                    console.log(
-                        'read_storage_data:',
-                        encodeFunctionData({
-                            abi: PretraceFixtureAbi,
-                            functionName: 'readStorage',
-                        })
-                    )
-
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
