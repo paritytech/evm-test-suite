@@ -35,6 +35,13 @@ for (const env of envs) {
         blockTag: 'latest',
     })
 
+    // get transaction count of miner
+    const txCount = await env.publicClient.getTransactionCount({
+        address: block.miner,
+    })
+
+    console.log(txCount)
+
     const getVisitor = async (): Promise<Visitor> => {
         let { miner: coinbaseAddr } = block
         const walletbalanceStorageSlot = await computeMappingSlot(
@@ -63,6 +70,12 @@ for (const env of envs) {
                 }
                 case 'txHash': {
                     return [key, '<tx_hash>']
+                }
+                case '<coinbase_addr>': {
+                    // Nonce on substrate will start at 0 and thus be stripped from the output
+                    // So we remove it for the coinbase address
+                    delete value?.nonce
+                    return [key, value]
                 }
                 default: {
                     return [key, value]
