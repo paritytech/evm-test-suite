@@ -11,6 +11,7 @@ import { encodeFunctionData, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../abi/PretraceFixture.ts'
 import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 import { mkdirSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
@@ -79,21 +80,18 @@ for (const env of envs) {
             describe(diffMode, () => {
                 const matchFixture = async (res: any, fixtureName: string) => {
                     const visitor = await getVisitor()
-                    const dir = `/home/pg/github/evm-test-suite/eth-rpc/src/samples/${env.chain.name}/prestate_tracer/${diffMode}/`
-                    mkdirSync(dir, { recursive: true })
+                    if (process.env.DEBUG) {
+                        const __dirname = path.dirname(__filename)
+                        const dir = `${__dirname}/samples/${env.chain.name}/prestate_tracer/`
+                        mkdirSync(dir, { recursive: true })
+                        writeFileSync(
+                            `${dir}/${fixtureName}.${diffMode}.json`,
+                            JSON.stringify(res, null, 2)
+                        )
+                    }
 
-                    writeFileSync(
-                        `${dir}/${fixtureName}.json`,
-                        JSON.stringify(res, null, 2)
-                    )
-
-                    const sortedRes = Object.fromEntries(
-                        Object.entries(res).sort(([k1], [k2]) => {
-                            return k2.localeCompare(k1)
-                        })
-                    )
-                    await expect(visit(sortedRes, visitor)).toMatchFileSnapshot(
-                        `snapshots/prestate_tracer/${diffMode}/${fixtureName}.snap`
+                    await expect(visit(res, visitor)).toMatchFileSnapshot(
+                        `snapshots/prestate_tracer//${fixtureName}.${diffMode}.snap`
                     )
                 }
 

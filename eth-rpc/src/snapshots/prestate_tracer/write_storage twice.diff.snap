@@ -1,5 +1,5 @@
-{
-  "0": {
+[
+  {
     "result": {
       "post": {
         "<caller_addr>": {
@@ -23,7 +23,7 @@
     },
     "txHash": "<tx_hash>",
   },
-  "1": {
+  {
     "result": {
       "post": {
         "<caller_addr>": {
@@ -59,4 +59,4 @@
     },
     "txHash": "<tx_hash>",
   },
-}
+]
