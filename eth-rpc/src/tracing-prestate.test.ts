@@ -77,8 +77,8 @@ for (const env of envs) {
         }
     }
     for (const config of [
-        { diffMode: true, disableCode: true },
-        { diffMode: false, disableCode: true },
+        { diffMode: true },
+        { diffMode: false },
     ]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 

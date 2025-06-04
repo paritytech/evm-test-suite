@@ -8,6 +8,7 @@
   },
   "<contract_addr>": {
     "balance": "<balance>",
+    "code": "<code>",
     "nonce": "<nonce>",
   },
 }
