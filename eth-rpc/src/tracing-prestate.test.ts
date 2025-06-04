@@ -287,10 +287,16 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test('write_storage twice', async ({ task }) => {
+                test.only('write_storage twice', async ({ task }) => {
                     const nonce = await env.accountWallet.getTransactionCount(
                         env.accountWallet.account
                     )
+
+                    const value = await env.accountWallet.readContract({
+                        address: addr,
+                        abi: PretraceFixtureAbi,
+                        functionName: 'readStorage',
+                    })
 
                     const requests = await Promise.all(
                         [nonce, nonce + 1].map(async (nonce, i) => {
@@ -299,7 +305,7 @@ for (const env of envs) {
                                     address: addr,
                                     abi: PretraceFixtureAbi,
                                     functionName: 'writeStorage',
-                                    args: [BigInt(i + 42)],
+                                    args: [value + BigInt(1 + i)],
                                     nonce,
                                 })
                             return request
@@ -320,8 +326,11 @@ for (const env of envs) {
                         )
                     )
 
-                    const status = receipts.every((r) => r.status)
-                    expect(status).toBeTruthy()
+                    expect(receipts).toHaveLength(2)
+                    expect(receipts.every((r) => r.status)).toBeTruthy()
+                    expect(receipts[0].blockNumber).toEqual(
+                        receipts[1].blockNumber
+                    )
 
                     const res = await env.debugClient.traceBlock(
                         receipts[0].blockNumber,

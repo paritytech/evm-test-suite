@@ -9,29 +9,6 @@
         "<coinbase_addr>": {
           "balance": "<balance>",
         },
-      },
-      "pre": {
-        "<caller_addr>": {
-          "balance": "<balance>",
-          "nonce": "<nonce>",
-        },
-        "<coinbase_addr>": {
-          "balance": "<balance>",
-        },
-      },
-    },
-    "txHash": "<tx_hash>",
-  },
-  {
-    "result": {
-      "post": {
-        "<caller_addr>": {
-          "balance": "<balance>",
-          "nonce": "<nonce>",
-        },
-        "<coinbase_addr>": {
-          "balance": "<balance>",
-        },
         "<contract_addr>": {
           "storage": {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
@@ -51,6 +28,41 @@
           "nonce": "<nonce>",
           "storage": {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
+          },
+        },
+      },
+    },
+    "txHash": "<tx_hash>",
+  },
+  {
+    "result": {
+      "post": {
+        "<caller_addr>": {
+          "balance": "<balance>",
+          "nonce": "<nonce>",
+        },
+        "<coinbase_addr>": {
+          "balance": "<balance>",
+        },
+        "<contract_addr>": {
+          "storage": {
+            "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
+          },
+        },
+      },
+      "pre": {
+        "<caller_addr>": {
+          "balance": "<balance>",
+          "nonce": "<nonce>",
+        },
+        "<coinbase_addr>": {
+          "balance": "<balance>",
+        },
+        "<contract_addr>": {
+          "balance": "<balance>",
+          "nonce": "<nonce>",
+          "storage": {
+            "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
           },
         },
       },
