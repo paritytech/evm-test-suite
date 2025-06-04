@@ -287,7 +287,7 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test('write_storage twice', async ({ task }) => {
+                test('write_storage_twice', async ({ task }) => {
                     const nonce = await env.accountWallet.getTransactionCount(
                         env.accountWallet.account
                     )
@@ -332,13 +332,27 @@ for (const env of envs) {
                         receipts[1].blockNumber
                     )
 
-                    const res = await env.debugClient.traceBlock(
-                        receipts[0].blockNumber,
-                        'prestateTracer',
-                        config
-                    )
+                    // Test traceBlock
+                    {
+                        const res = await env.debugClient.traceBlock(
+                            receipts[0].blockNumber,
+                            'prestateTracer',
+                            config
+                        )
 
-                    await matchFixture(res, task.name)
+                        await matchFixture(res, `trace_block_${task.name}`)
+                    }
+
+                    // Test traceTransaction
+                    {
+                        const res = await env.debugClient.traceTransaction(
+                            receipts[1].transactionHash,
+                            'prestateTracer',
+                            config
+                        )
+
+                        await matchFixture(res, `trace_tx_${task.name}`)
+                    }
                 })
             })
         })
