@@ -10,19 +10,26 @@ import { describe, expect, inject, test } from 'vitest'
 import { encodeFunctionData, parseEther } from 'viem'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
 import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
+import path from 'node:path'
+import { mkdirSync, writeFileSync } from 'node:fs'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const getTracingCalleeAddr = memoizedDeploy(env, async () =>
-        env.serverWallet.deployContract({
+    const getDeployTracingCalleeReceipt = memoizedTx(env, async () =>
+        env.accountWallet.deployContract({
             abi: TracingCalleeAbi,
             bytecode: getByteCode('TracingCallee', env.evm),
         })
     )
 
+    const getTracingCalleeAddr = async () => {
+        const receipt = await getDeployTracingCalleeReceipt()
+        return receipt.contractAddress!
+    }
+
     const getTracingCallerAddr = memoizedDeploy(env, async () =>
-        env.serverWallet.deployContract({
+        env.accountWallet.deployContract({
             abi: TracingCallerAbi,
             args: [await getTracingCalleeAddr()],
             bytecode: getByteCode('TracingCaller', env.evm),
@@ -30,14 +37,32 @@ for (const env of envs) {
         })
     )
 
-    const getReceipt = memoizedTx(env, async () => {
-        const { request } = await env.serverWallet.simulateContract({
+    const getStartReceipt = memoizedTx(env, async () => {
+        const { request } = await env.accountWallet.simulateContract({
             address: await getTracingCallerAddr(),
             abi: TracingCallerAbi,
             functionName: 'start',
             args: [2n],
         })
-        return await env.serverWallet.writeContract(request)
+        return await env.accountWallet.writeContract(request)
+    })
+
+    const getCreateReceipt = memoizedTx(env, async () => {
+        const { request } = await env.accountWallet.simulateContract({
+            address: await getTracingCallerAddr(),
+            abi: TracingCallerAbi,
+            functionName: 'create',
+        })
+        return await env.accountWallet.writeContract(request)
+    })
+
+    const getCreate2Receipt = memoizedTx(env, async () => {
+        const { request } = await env.accountWallet.simulateContract({
+            address: await getTracingCallerAddr(),
+            abi: TracingCallerAbi,
+            functionName: 'create2',
+        })
+        return await env.accountWallet.writeContract(request)
     })
 
     const getVisitor = async (): Promise<Visitor> => {
@@ -53,7 +78,7 @@ for (const env of envs) {
                     } else if (value === calleeAddr) {
                         return [key, '<contract_callee_addr>']
                     } else if (
-                        value == env.serverWallet.account.address.toLowerCase()
+                        value == env.accountWallet.account.address.toLowerCase()
                     ) {
                         return [key, '<caller>']
                     }
@@ -82,16 +107,79 @@ for (const env of envs) {
         }
     }
 
-    describe(env.serverWallet.chain.name, () => {
+    describe(env.accountWallet.chain.name, () => {
         const matchFixture = async (res: any, fixtureName: string) => {
             const visitor = await getVisitor()
+
+            if (process.env.DEBUG) {
+                const __dirname = path.dirname(__filename)
+                const dir = `${__dirname}/samples/call_tracer/`
+                mkdirSync(dir, { recursive: true })
+                writeFileSync(
+                    `${dir}/${fixtureName}.${env.chain.name}.json`,
+                    JSON.stringify(res, null, 2)
+                )
+            }
+
             await expect(visit(res, visitor)).toMatchFileSnapshot(
                 `snapshots/call_tracer/${fixtureName}.snap`
             )
         }
 
         test('debug_traceTransaction', async ({ task }) => {
-            const receipt = await getReceipt()
+            const receipt = await getStartReceipt()
+            const res = await env.debugClient.traceTransaction(
+                receipt.transactionHash,
+                'callTracer',
+                {
+                    withLog: true,
+                }
+            )
+            await matchFixture(res, task.name)
+        })
+
+        test('debug_deploy_traceTransaction', async ({ task }) => {
+            const receipt = await getDeployTracingCalleeReceipt()
+
+            const res = await env.debugClient.traceTransaction(
+                receipt.transactionHash,
+                'callTracer',
+                {
+                    withLog: true,
+                }
+            )
+            await matchFixture(res, task.name)
+        })
+
+        test('debug_create', async ({ task }) => {
+            const receipt = await getCreateReceipt()
+
+            const res = await env.debugClient.traceTransaction(
+                receipt.transactionHash,
+                'callTracer',
+                {
+                    withLog: true,
+                }
+            )
+            await matchFixture(res, task.name)
+        })
+
+        test('debug_create2', async ({ task }) => {
+            const receipt = await getCreate2Receipt()
+
+            const res = await env.debugClient.traceTransaction(
+                receipt.transactionHash,
+                'callTracer',
+                {
+                    withLog: true,
+                }
+            )
+            await matchFixture(res, task.name)
+        })
+
+        test('debug_new_callee', async ({ task }) => {
+            const receipt = await getDeployTracingCalleeReceipt()
+
             const res = await env.debugClient.traceTransaction(
                 receipt.transactionHash,
                 'callTracer',
@@ -103,7 +191,7 @@ for (const env of envs) {
         })
 
         test('debug_traceBlock', async ({ task }) => {
-            const receipt = await getReceipt()
+            const receipt = await getStartReceipt()
             const res = await env.debugClient.traceBlock(
                 receipt.blockNumber,
                 'callTracer',

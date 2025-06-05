@@ -12,7 +12,7 @@
         "solhint": "solhint \"contracts/**/*.sol\""
     },
     "dependencies": {
-        "@parity/resolc": "^0.0.1",
+        "@parity/resolc": "^0.2.0",
         "@redstone-finance/evm-connector": "^0.8.0",
         "@redstone-finance/sdk": "^0.8.0",
         "ethers": "^5.6.9",

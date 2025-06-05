@@ -28,6 +28,17 @@ contract TracingCaller {
 
         this.start(counter - 1);
     }
+
+    function create() external returns (address) {
+        TracingCallee newCallee = new TracingCallee();
+        return address(newCallee);
+    }
+
+    function create2() external returns (address) {
+        bytes32 salt = bytes32(uint256(0x42));
+        TracingCallee newCallee = new TracingCallee{salt: salt}();
+        return address(newCallee);
+    }
 }
 
 contract TracingCallee {
