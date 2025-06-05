@@ -159,7 +159,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
             txHash: Hex,
             tracer: Tracer,
             tracerConfig?: TracerConfig[Tracer]
-        ) {
+        ): Promise<any> {
             return client.request({
                 method: 'debug_traceTransaction' as any,
                 params: [txHash, { tracer, tracerConfig } as any],
@@ -169,7 +169,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
             blockNumber: bigint,
             tracer: Tracer,
             tracerConfig?: TracerConfig[Tracer]
-        ) {
+        ): Promise<any> {
             return client.request({
                 method: 'debug_traceBlockByNumber' as any,
                 params: [
@@ -184,7 +184,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
             tracer: Tracer,
             tracerConfig: TracerConfig[Tracer],
             blockOrTag: 'latest' | Hex = 'latest'
-        ) {
+        ): Promise<any> {
             return client.request({
                 method: 'debug_traceCall' as any,
                 params: [

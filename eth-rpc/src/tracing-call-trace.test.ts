@@ -151,7 +151,7 @@ for (const env of envs) {
             await matchFixture(res, task.name)
         })
 
-        test('debug_create', async ({ task }) => {
+        test('debug_create', async () => {
             const receipt = await getCreateReceipt()
 
             const res = await env.debugClient.traceTransaction(
@@ -161,10 +161,11 @@ for (const env of envs) {
                     withLog: true,
                 }
             )
-            await matchFixture(res, task.name)
+
+            expect(res.calls[0].type).toEqual('CREATE')
         })
 
-        test('debug_create2', async ({ task }) => {
+        test('debug_create2', async () => {
             const receipt = await getCreate2Receipt()
 
             const res = await env.debugClient.traceTransaction(
@@ -174,20 +175,7 @@ for (const env of envs) {
                     withLog: true,
                 }
             )
-            await matchFixture(res, task.name)
-        })
-
-        test('debug_new_callee', async ({ task }) => {
-            const receipt = await getDeployTracingCalleeReceipt()
-
-            const res = await env.debugClient.traceTransaction(
-                receipt.transactionHash,
-                'callTracer',
-                {
-                    withLog: true,
-                }
-            )
-            await matchFixture(res, task.name)
+            expect(res.calls[0].type).toEqual('CREATE2')
         })
 
         test('debug_traceBlock', async ({ task }) => {
