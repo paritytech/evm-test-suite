@@ -81,11 +81,13 @@ for (const file of input) {
 
         for (const contracts of Object.values(reviveOut.contracts)) {
             for (const [name, contract] of Object.entries(contracts)) {
-                console.log(`📜 Add PVM contract ${name}`)
-                writeFileSync(
-                    join(pvmDir, `${name}.polkavm`),
-                    Buffer.from(contract.evm.bytecode.object, 'hex')
-                )
+                if (contract?.evm?.bytecode?.object) {
+                    console.log(`📜 Add PVM contract ${name}`)
+                    writeFileSync(
+                        join(pvmDir, `${name}.polkavm`),
+                        Buffer.from(contract.evm.bytecode.object, 'hex')
+                    )
+                }
             }
         }
     }

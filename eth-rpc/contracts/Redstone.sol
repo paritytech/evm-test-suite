@@ -2,7 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import '@redstone-finance/evm-connector/contracts/data-services/PrimaryProdDataServiceConsumerBase.sol';
+// TODO restore once https://github.com/paritytech/revive/pull/343 is released
+// import '@redstone-finance/evm-connector/contracts/data-services/PrimaryProdDataServiceConsumerBase.sol';
+import './node_modules/@redstone-finance/evm-connector/contracts/data-services/PrimaryProdDataServiceConsumerBase.sol';
 
 contract ExampleRedstoneShowroom is  PrimaryProdDataServiceConsumerBase {
     function getPrices() public view returns (uint256[] memory) {
