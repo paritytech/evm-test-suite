@@ -163,6 +163,10 @@ for (const env of envs) {
             )
 
             expect(res.calls[0].type).toEqual('CREATE')
+            const code = await env.serverWallet.getCode({
+                address: res.calls[0].to,
+            })
+            expect(code).toBeTruthy()
         })
 
         test('debug_create2', async () => {
@@ -176,6 +180,10 @@ for (const env of envs) {
                 }
             )
             expect(res.calls[0].type).toEqual('CREATE2')
+            const code = await env.serverWallet.getCode({
+                address: res.calls[0].to,
+            })
+            expect(code).toBeTruthy()
         })
 
         test('debug_traceBlock', async ({ task }) => {
