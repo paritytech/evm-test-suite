@@ -16,10 +16,11 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
+    const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
     const getDeployTracingCalleeReceipt = memoizedTx(env, async () =>
         env.accountWallet.deployContract({
             abi: TracingCalleeAbi,
-            bytecode: getByteCode('TracingCallee', env.evm),
+            bytecode: TRACING_CALLEE_BYTECODE,
         })
     )
 
@@ -180,6 +181,7 @@ for (const env of envs) {
                 }
             )
             expect(res.calls[0].type).toEqual('CREATE2')
+            expect(res.calls[0].input).toEqual(TRACING_CALLEE_BYTECODE)
             const code = await env.serverWallet.getCode({
                 address: res.calls[0].to,
             })
