@@ -1,0 +1,13 @@
+{
+  "post": {
+    "<caller_addr>": {
+      "nonce": "<nonce>",
+    },
+  },
+  "pre": {
+    "<caller_addr>": {
+      "balance": "<balance>",
+      "nonce": "<nonce>",
+    },
+  },
+}

@@ -5,21 +5,24 @@ import {
     hexToNumber,
     parseEther,
 } from 'viem'
-import { createEnv, deployFactory, getByteCode } from './util.ts'
+import { createEnv, getByteCode, memoizedTx } from './util.ts'
 import { describe, expect, inject, test } from 'vitest'
 import { TesterAbi } from '../abi/Tester.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const [getTesterAddr, getTesterReceipt] = deployFactory(env, async () =>
+    const getTesterReceipt = memoizedTx(env, async () =>
         env.serverWallet.deployContract({
             abi: TesterAbi,
             bytecode: getByteCode('Tester', env.evm),
             value: parseEther('2'),
         })
     )
-    describe(`${env.serverWallet.chain.name}`, () => {
+    const getTesterAddr = () =>
+        getTesterReceipt().then((r) => r.contractAddress!)
+
+    describe(env.serverWallet.chain.name, () => {
         test('eth_accounts works', async () => {
             const addresses = await env.debugClient.request({
                 method: 'eth_accounts',
@@ -133,15 +136,9 @@ for (const env of envs) {
             })
 
             // revive store value as little endian. When this change in the compiler, or the runtime API, we can amend this test
-            if (env.evm) {
-                expect(storage).toEqual(
-                    '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
-                )
-            } else {
-                expect(storage).toEqual(
-                    '0x160000000000000000000000000000000000000000646c726f77206f6c6c6548'
-                )
-            }
+            expect(storage).toEqual(
+                '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
+            )
         })
 
         test('get_transaction_by_block_hash_and_index, eth_getTransactionByBlockNumberAndIndex and eth_getTransactionByHash works', async () => {
@@ -236,6 +233,27 @@ for (const env of envs) {
                 method: 'web3_clientVersion' as any,
             })
             expect(res).toBeTruthy()
+        })
+
+        test('eth_feeHistory works', async () => {
+            // just to get some transactions
+            await getTesterAddr()
+
+            const feeHistory = await env.serverWallet.getFeeHistory({
+                blockCount: 4,
+                blockTag: 'latest',
+                rewardPercentiles: [25, 75],
+            })
+
+            expect(feeHistory.oldestBlock).toBeGreaterThanOrEqual(0)
+            expect(feeHistory.gasUsedRatio.length).toBeGreaterThanOrEqual(0)
+            expect(feeHistory.reward?.length).toEqual(
+                feeHistory.gasUsedRatio.length
+            )
+
+            expect(feeHistory.baseFeePerGas).toHaveLength(
+                feeHistory.gasUsedRatio.length + 1
+            )
         })
     })
 }

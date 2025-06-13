@@ -6,8 +6,7 @@ contract EventExample {
 
     function triggerEvent() public {
         uint256 value = 12345;
-        string memory message = "Hello world";
+        string memory message = 'Hello world';
         emit ExampleEvent(msg.sender, value, message);
     }
 }
-

@@ -18,6 +18,7 @@ abi/*
 evm/*
 pvm/*
 !.gitkeep
+src/samples
 
 # Editor directories and files
 .vscode/*

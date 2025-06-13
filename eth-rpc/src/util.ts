@@ -1,8 +1,9 @@
+import fs from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import {
-    CallParameters,
     createClient,
+    createPublicClient,
     createWalletClient,
     defineChain,
     formatTransactionRequest,
@@ -11,8 +12,10 @@ import {
     http,
     parseEther,
     publicActions,
-    TransactionReceipt,
+    TransactionRequest,
 } from 'viem'
+
+import { hexToBytes, concat, keccak256, pad } from 'viem/utils'
 import { privateKeyToAccount, nonceManager } from 'viem/accounts'
 
 export function getByteCode(name: string, evm: boolean = false): Hex {
@@ -136,42 +139,58 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         chain,
     }).extend(publicActions)
 
+    type TracerType = 'callTracer' | 'prestateTracer'
+    type TracerConfig = {
+        callTracer: { withLog?: boolean; onlyTopCall?: boolean }
+        prestateTracer: {
+            diffMode?: boolean
+            disableCode?: boolean
+            disableStorage?: boolean
+        }
+    }
+
+    const publicClient = createPublicClient({ chain, transport })
+
     const debugClient = createClient({
         chain,
         transport,
     }).extend((client) => ({
-        async traceTransaction(
+        async traceTransaction<Tracer extends TracerType>(
             txHash: Hex,
-            tracerConfig: { withLog: boolean }
-        ) {
+            tracer: Tracer,
+            tracerConfig?: TracerConfig[Tracer]
+        ): Promise<any> {
             return client.request({
                 method: 'debug_traceTransaction' as any,
-                params: [txHash, { tracer: 'callTracer', tracerConfig } as any],
+                params: [txHash, { tracer, tracerConfig } as any],
             })
         },
-        async traceBlock(
+        async traceBlock<Tracer extends TracerType>(
             blockNumber: bigint,
-            tracerConfig: { withLog: boolean }
-        ) {
+            tracer: Tracer,
+            tracerConfig?: TracerConfig[Tracer]
+        ): Promise<any> {
             return client.request({
                 method: 'debug_traceBlockByNumber' as any,
                 params: [
                     `0x${blockNumber.toString(16)}`,
-                    { tracer: 'callTracer', tracerConfig } as any,
+                    { tracer, tracerConfig } as any,
                 ],
             })
         },
 
-        async traceCall(
-            args: CallParameters,
-            tracerConfig: { withLog: boolean }
-        ) {
+        async traceCall<Tracer extends TracerType>(
+            args: TransactionRequest,
+            tracer: Tracer,
+            tracerConfig: TracerConfig[Tracer],
+            blockOrTag: 'latest' | Hex = 'latest'
+        ): Promise<any> {
             return client.request({
                 method: 'debug_traceCall' as any,
                 params: [
                     formatTransactionRequest(args),
-                    'latest',
-                    { tracer: 'callTracer', tracerConfig } as any,
+                    blockOrTag,
+                    { tracer, tracerConfig } as any,
                 ],
             })
         },
@@ -180,6 +199,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
     return {
         chain,
         debugClient,
+        publicClient,
         emptyWallet,
         serverWallet,
         accountWallet,
@@ -237,13 +257,17 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: any,
-    callback: (key: string, value: any) => any
+    callback: (key: string, value: any) => [string, any]
 ): any {
     if (Array.isArray(obj)) {
         return obj.map((item) => visit(item, callback))
     } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce((acc, key) => {
-            acc[key] = visit(callback(key, obj[key]), callback)
+            const [mappedKey, mappedValue] = callback(key, obj[key])
+            if (mappedKey in acc) {
+                throw new Error(`visit(): duplicate mapped key “${mappedKey}”`)
+            }
+            acc[mappedKey] = visit(mappedValue, callback)
             return acc
         }, {} as any)
     } else {
@@ -251,29 +275,47 @@ export function visit(
     }
 }
 
-export function deployFactory(env: ChainEnv, deploy: () => Promise<Hex>) {
+export type Visitor = Parameters<typeof visit>[1]
+
+export function memoized<T>(transact: () => Promise<T>) {
     return (() => {
-        let address: Hex | null = null
-        let receipt: TransactionReceipt | null = null
-        async function getAddress() {
-            if (address) {
-                return address
+        let result: T | null = null
+        async function getResult() {
+            if (result) {
+                return result
             }
-            const hash = await deploy()
-            receipt = await env.serverWallet.waitForTransactionReceipt({
-                hash,
-            })
-            address = receipt.contractAddress!
-            return address
-        }
-        async function getReceipt() {
-            if (receipt) {
-                return receipt
-            }
-            await getAddress()
-            return receipt!
+            result = await transact()
+            return result
         }
 
-        return [getAddress, getReceipt] as const
+        return getResult
     })()
+}
+
+export function memoizedTx(env: ChainEnv, transact: () => Promise<Hex>) {
+    return memoized(async () => {
+        const hash = await transact()
+        return await env.serverWallet.waitForTransactionReceipt({
+            hash,
+        })
+    })
+}
+
+export function memoizedDeploy(env: ChainEnv, transact: () => Promise<Hex>) {
+    const getReceipt = memoizedTx(env, transact)
+    return async () => {
+        const receipt = await getReceipt()
+        return receipt.contractAddress!
+    }
+}
+
+export async function computeMappingSlot(addressKey: Hex, slotIndex: number) {
+    const keyBytes = pad(hexToBytes(addressKey), { size: 32 })
+    const slotBytes = pad(hexToBytes(`0x${slotIndex.toString(16)}`), {
+        size: 32,
+    })
+
+    const unhashedKey = concat([keyBytes, slotBytes])
+    const storageSlot = keccak256(unhashedKey)
+    return storageSlot
 }

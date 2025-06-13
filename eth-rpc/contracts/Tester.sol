@@ -11,7 +11,7 @@ contract Tester {
     constructor() payable {
         emit TesterDeployed(msg.sender);
         value = 42;
-        name = "Hello world";
+        name = 'Hello world';
     }
 
     function setValue(uint256 v) external {
@@ -21,6 +21,4 @@ contract Tester {
     function setName(string memory v) external {
         name = v;
     }
-
 }
-

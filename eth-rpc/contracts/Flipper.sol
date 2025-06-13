@@ -36,4 +36,3 @@ contract FlipperCaller {
         return Flipper(flipperAddress).getValue();
     }
 }
-

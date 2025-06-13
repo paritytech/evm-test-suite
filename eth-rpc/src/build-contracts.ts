@@ -1,6 +1,6 @@
 /// <reference path="./solc.d.ts" />
 
-import { compile, SolcOutput, tryResolveImport } from '@parity/revive'
+import { compile, SolcOutput, tryResolveImport } from '@parity/resolc'
 import { format } from 'prettier'
 import { parseArgs } from 'node:util'
 import solc from 'solc'
@@ -81,11 +81,13 @@ for (const file of input) {
 
         for (const contracts of Object.values(reviveOut.contracts)) {
             for (const [name, contract] of Object.entries(contracts)) {
-                console.log(`📜 Add PVM contract ${name}`)
-                writeFileSync(
-                    join(pvmDir, `${name}.polkavm`),
-                    Buffer.from(contract.evm.bytecode.object, 'hex')
-                )
+                if (contract?.evm?.bytecode?.object) {
+                    console.log(`📜 Add PVM contract ${name}`)
+                    writeFileSync(
+                        join(pvmDir, `${name}.polkavm`),
+                        Buffer.from(contract.evm.bytecode.object, 'hex')
+                    )
+                }
             }
         }
     }
