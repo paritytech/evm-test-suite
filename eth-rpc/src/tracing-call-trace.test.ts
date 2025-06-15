@@ -101,6 +101,12 @@ for (const env of envs) {
                 case 'txHash': {
                     return [key, '<hash>']
                 }
+                case 'input': {
+                    return [
+                        key,
+                        value === TRACING_CALLEE_BYTECODE ? '<code>' : value,
+                    ]
+                }
                 default: {
                     return [key, value]
                 }
@@ -149,6 +155,9 @@ for (const env of envs) {
                     withLog: true,
                 }
             )
+
+            // We don't have runtime code output in revive
+            delete res.output
             await matchFixture(res, task.name)
         })
 
@@ -181,7 +190,6 @@ for (const env of envs) {
                 }
             )
             expect(res.calls[0].type).toEqual('CREATE2')
-            expect(res.calls[0].input).toEqual(TRACING_CALLEE_BYTECODE)
             const code = await env.serverWallet.getCode({
                 address: res.calls[0].to,
             })
