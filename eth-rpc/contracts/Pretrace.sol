@@ -6,14 +6,17 @@ pragma solidity ^0.8.0;
 contract PretraceFixture {
     uint256 public value;
     mapping(address => uint256) public balances;
+    string public str;
 
     constructor() payable {
         balances[msg.sender] = msg.value;
         value = 42;
+        str = "init";
     }
 
-    function writeStorage(uint256 _value) external {
+    function writeStorage(uint256 _value, string calldata _str) external {
         value = _value;
+        str = _str;
     }
 
     function readStorage() external view returns (uint256) {

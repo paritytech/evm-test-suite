@@ -109,7 +109,7 @@ for (const env of envs) {
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'writeStorage',
-                                args: [2n],
+                                args: [2025n, task.name],
                             }),
                         },
                         'prestateTracer',
@@ -127,7 +127,7 @@ for (const env of envs) {
                             data: encodeFunctionData({
                                 abi: PretraceFixtureAbi,
                                 functionName: 'writeStorage',
-                                args: [2n],
+                                args: [2n, task.name],
                             }),
                         },
                         'prestateTracer',
@@ -305,7 +305,7 @@ for (const env of envs) {
                                     address: addr,
                                     abi: PretraceFixtureAbi,
                                     functionName: 'writeStorage',
-                                    args: [value + BigInt(1 + i)],
+                                    args: [value + BigInt(1 + i), task.name],
                                     nonce,
                                 })
                             return request
