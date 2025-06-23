@@ -5,6 +5,7 @@ import {
     visit,
     Visitor,
     computeMappingSlot,
+    memoizedTx,
 } from './util.ts'
 import { describe, expect, inject, test } from 'vitest'
 import { encodeFunctionData, parseEther } from 'viem'
@@ -16,13 +17,15 @@ import path from 'node:path'
 const envs = await Promise.all(inject('envs').map(createEnv))
 
 for (const env of envs) {
-    const addr = await memoizedDeploy(env, async () => {
-        return env.accountWallet.deployContract({
+    const deployReceipt = await memoizedTx(env, async () =>
+        env.accountWallet.deployContract({
             abi: PretraceFixtureAbi,
             bytecode: getByteCode('PretraceFixture', env.evm),
             value: parseEther('10'),
         })
-    })()
+    )()
+
+    const addr = deployReceipt.contractAddress!
 
     const addr2 = await memoizedDeploy(env, async () =>
         env.accountWallet.deployContract({
@@ -76,10 +79,7 @@ for (const env of envs) {
             }
         }
     }
-    for (const config of [
-        { diffMode: true },
-        { diffMode: false },
-    ]) {
+    for (const config of [{ diffMode: true }, { diffMode: false }]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 
         describe(env.serverWallet.chain.name, () => {
@@ -100,6 +100,15 @@ for (const env of envs) {
                         `snapshots/prestate_tracer//${fixtureName}.${diffMode}.snap`
                     )
                 }
+
+                test('deploy_contract', async ({ task }) => {
+                    const res = await env.debugClient.traceTransaction(
+                        deployReceipt.transactionHash,
+                        'prestateTracer',
+                        config
+                    )
+                    await matchFixture(res, task.name)
+                })
 
                 test('write_storage', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
@@ -231,7 +240,7 @@ for (const env of envs) {
                     await matchFixture(res, task.name)
                 })
 
-                test('deploy_contract', async ({ task }) => {
+                test('instantiate_child', async ({ task }) => {
                     const res = await env.debugClient.traceCall(
                         {
                             from: env.accountWallet.account.address,
