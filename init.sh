@@ -85,7 +85,6 @@ run_eth_rpc_tests() {
 		npm install &&
 		echo "y" | npm run build &&
 		START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test:ci
-	parse_eth_rpc_test_results "../test-logs/eth-rpc-tests.log"
 }
 
 run_all_tests() {
@@ -125,13 +124,6 @@ run_all_tests() {
 
 	# cd ..
 
-	echo "Running eth-rpc tests" &&
-		cd ./eth-rpc &&
-		npm install &&
-		echo "y" | npm run build &&
-		START_GETH=true START_SUBSTRATE_NODE=true START_ETH_RPC=true npm run test-init >".$LOG_DIR/eth-rpc-tests.log" 2>&1
-	parse_eth_rpc_test_results "../test-logs/eth-rpc-tests.log"
-
 	echo "Test Run Complete"
 }
 
@@ -139,24 +131,6 @@ parse_hardhat_test_results() {
 	log_file=$1
 	passed=$(grep -o '[0-9]\+ passing' "$log_file" | awk '{print $1}')
 	failed=$(grep -o '[0-9]\+ failing' "$log_file" | awk '{print $1}')
-
-	passed=${passed:-0}
-	failed=${failed:-0}
-
-	total=$((passed + failed))
-
-	total_passed=$((total_passed + passed))
-	total_failed=$((total_failed + failed))
-	total_tests=$((total_tests + total))
-
-	echo "Hardhat Test Summary from $log_file:"
-	echo "Total: $total | Passed: $passed | Failed: $failed"
-}
-
-parse_eth_rpc_test_results() {
-	log_file=$1
-	passed=$(grep -o 'Tests  [0-9]\+ passed' "$log_file" | awk '{print $2}')
-	failed=$(grep -o 'Tests  [0-9]\+ failed' "$log_file" | awk '{print $2}')
 
 	passed=${passed:-0}
 	failed=${failed:-0}
