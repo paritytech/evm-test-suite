@@ -107,15 +107,47 @@ for (const env of envs) {
         })
 
         test('eth_getCode works', async () => {
-            const address = await getTesterAddr()
-            const code = await env.serverWallet.getCode({
-                address,
-            })
+            // Existing contract
+            {
+                const contractAddr = await getTesterAddr()
+                const code = await env.serverWallet.getCode({
+                    address: contractAddr,
+                })
 
-            if (env.evm) {
-                expect(code).toBeTruthy()
-            } else {
-                expect(code).toEqual(getByteCode('Tester', env.evm))
+                // Runtime code on EVM
+                if (env.evm) {
+                    expect(code).toBeTruthy()
+                    // Contract code on revive
+                } else {
+                    expect(code).toEqual(getByteCode('Tester', env.evm))
+                }
+            }
+
+            // EOA
+            {
+                const code = await env.serverWallet.getCode(
+                    env.serverWallet.account
+                )
+
+                expect(code).toBeUndefined()
+            }
+
+            // basic precompiles
+            for (let i = 1; i <= 10; i++) {
+                const hex = i.toString(16).padStart(40, '0')
+                const address: Hex = `0x${hex}`
+                const code = await env.serverWallet.getCode({ address })
+                expect(code).toBeUndefined()
+            }
+
+            // ERC20 precompile on kitchensink
+            if (!env.evm) {
+                const assetPrecompile =
+                    '0x0000000000000000000000000000000000010000'
+                const code = await env.serverWallet.getCode({
+                    address: assetPrecompile,
+                })
+                expect(code).toEqual('0x60006000fd')
             }
         })
 
