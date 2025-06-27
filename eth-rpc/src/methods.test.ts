@@ -133,7 +133,7 @@ for (const env of envs) {
             }
 
             // basic precompiles
-            for (let i = 1; i <= 9; i++) {
+            for (let i = 1; i <= 10; i++) {
                 const hex = i.toString(16).padStart(40, '0')
                 const address: Hex = `0x${hex}`
                 const code = await env.serverWallet.getCode({ address })
