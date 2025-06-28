@@ -1,14 +1,12 @@
 {
-  "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
+"compilerOptions": {
+    "target": "es2020",
+    "module": "es2022",
+    "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "outDir": "dist",
-    "typeRoots": ["./typechain", "./node_modules/@types"],
-    "types": ["@nomiclabs/hardhat-ethers"]
+    "skipLibCheck": true
   },
-  "include": ["./test"],
-  "files": ["./hardhat.config.ts"]
+  "include": ["differentialTests.ts", "compileContracts.ts", "./solc.d.ts"],
+  "exclude": ["node_modules"]
 }

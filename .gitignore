@@ -27,6 +27,6 @@ networks/ethereum/node1/*
 test-logs
 output-logs
 /matter-labs-tests/matter-test-output.log
-
+dev-chain-*
 # DS_Store
 .DS_Store

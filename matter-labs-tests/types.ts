@@ -45,19 +45,19 @@ export type Prerelease = {
 
 /// A pair of comparison operator and partial version, such as `>=1.2`. Forms
 /// one piece of a VersionReq.
-export type Comparator = {
-    op: Op;
-    major: number;
-    minor: number | undefined;
-    /// Patch is only allowed if minor is Some.
-    patch: number | undefined;
-    /// Non-empty pre-release is only allowed if patch is Some.
-    pre: Prerelease;
-}
+// export type Comparator = {
+//     op: Op;
+//     major: number;
+//     minor: number | undefined;
+//     /// Patch is only allowed if minor is Some.
+//     patch: number | undefined;
+//     /// Non-empty pre-release is only allowed if patch is Some.
+//     pre: Prerelease;
+// }
 
-export type VersionReq = {
-    comparators: Comparator[];
-}
+// export type VersionReq = {
+//     comparators: Comparator[];
+// }
 
 export type Extended = {
     /// The return data values.
@@ -67,7 +67,7 @@ export type Extended = {
     /// Whether an exception is expected,
    exception: boolean;
     /// The compiler version filter.
-   compilerVersion: VersionReq | undefined;
+   compiler_version: string | undefined;
 }
 
 export type SingleVariant =  string[];
@@ -90,7 +90,7 @@ export type Input = {
     /// `#fallback` for the fallback
     method: string;
     /// The passed calldata.
-    calldata: Calldata;
+    calldata: any[];
     /// The passed value.
     value: string | undefined;
     /// The initial contracts storage.
@@ -121,14 +121,14 @@ export type EVMContract = {
     runtimeCode: string;
 }
 
-export enum Target {
-    /// The EraVM target.
-    EraVM,
-    /// The native EVM target.
-    EVM,
-    /// The EVM interpreter running on top of EraVM.
-    EVMInterpreter,
-}
+// export enum Target {
+//     /// The EraVM target.
+//     EraVM,
+//     /// The native EVM target.
+//     EVM,
+//     /// The EVM interpreter running on top of EraVM.
+//     EVMInterpreter,
+// }
 
 export type Metadata = {
     /// The test cases.
@@ -146,7 +146,7 @@ export type Metadata = {
     /// Enable the EraVM extensions.
     enableEravmExtensions: boolean;
     /// The target to run the test on.
-    target: Target | undefined;
+    targets: string[] | undefined;
     /// If the entire test file must be ignored.
     ignore: boolean;
     /// The test group.
@@ -170,3 +170,21 @@ export type Libraries = {
 }
 
 export type ContractData =  { metadata: Metadata, contractPath: string, filePath: string }[];
+
+export interface IContractErrorInfo {
+    cause: {
+        shortMessage: string,
+        name: string,
+        version: string,
+        data: {
+            abiItem: {
+                inputs: {name: string, type: string}[],
+                name: string, 
+                type: string,
+            },
+            args: string[],
+            errorName: string,
+        }
+        raw: string,
+        reason: string,
+    }};
