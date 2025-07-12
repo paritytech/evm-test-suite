@@ -277,6 +277,26 @@ export function visit(
 
 export type Visitor = Parameters<typeof visit>[1]
 
+export function stripValues(obj: any): any {
+    const visitor: Visitor = (key, value) => {
+        if (!Array.isArray(value) && (value || value == 0)) {
+            return [key, '<stripped>']
+        }
+
+        if (Array.isArray(value)) {
+            const filtered = value.filter(
+                v => (typeof v === 'object' && v !== null) || Array.isArray(v)
+            );
+            return [key, filtered]
+        }
+
+
+        return [key, value]
+    }
+    return visit(obj, visitor)
+
+}
+
 export function memoized<T>(transact: () => Promise<T>) {
     return (() => {
         let result: T | null = null

@@ -7,6 +7,7 @@ contract Tester {
     string public name;
 
     event TesterDeployed(address indexed creator);
+    event TesterDeployedNoIndex();
 
     constructor() payable {
         emit TesterDeployed(msg.sender);

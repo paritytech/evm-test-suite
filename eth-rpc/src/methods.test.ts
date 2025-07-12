@@ -5,11 +5,12 @@ import {
     hexToNumber,
     parseEther,
 } from 'viem'
-import { createEnv, getByteCode, memoizedTx } from './util.ts'
+import { createEnv, getByteCode, memoizedTx, stripValues } from './util.ts'
 import { describe, expect, inject, test } from 'vitest'
 import { TesterAbi } from '../abi/Tester.ts'
 
 const envs = await Promise.all(inject('envs').map(createEnv))
+
 
 for (const env of envs) {
     const getTesterReceipt = memoizedTx(env, async () =>
@@ -79,7 +80,7 @@ for (const env of envs) {
             expect(balance).toEqual(parseEther('2'))
         })
 
-        test('eth_getBlockByHash and eth_getBlockByNumber works', async () => {
+        test('eth_getBlockBy* works', async ({ task }) => {
             const { blockNumber, blockHash } = await getTesterReceipt()
             const by_number = await env.serverWallet.getBlock({
                 blockNumber,
@@ -90,9 +91,13 @@ for (const env of envs) {
                 blockHash,
             })
             expect(by_hash).toEqual(by_number)
+            await expect(stripValues(by_hash)).toMatchFileSnapshot(
+                `snapshots/methods/${task.name}.snap`
+            )
+
         })
 
-        test('eth_getBlockTransactionCountByHash and eth_getBlockTransactionCountByNumber works', async () => {
+        test('eth_getBlockTransactionCountBy* works', async () => {
             const { blockNumber, blockHash } = await getTesterReceipt()
             const byNumber = await env.serverWallet.getBlockTransactionCount({
                 blockNumber,
@@ -119,13 +124,16 @@ for (const env of envs) {
             }
         })
 
-        test('eth_getLogs works', async () => {
+        test('eth_getLogs works', async ({ task }) => {
             const { blockHash } = await getTesterReceipt()
             const logs = await env.serverWallet.getLogs({
                 blockHash,
             })
 
             expect(logs).toHaveLength(1)
+            await expect(stripValues(logs)).toMatchFileSnapshot(
+                `snapshots/methods/${task.name}.snap`
+            )
         })
 
         test('eth_getStorageAt works', async () => {
@@ -141,7 +149,7 @@ for (const env of envs) {
             )
         })
 
-        test('get_transaction_by_block_hash_and_index, eth_getTransactionByBlockNumberAndIndex and eth_getTransactionByHash works', async () => {
+        test('eth_getTransactionBy* works', async () => {
             const {
                 transactionHash: hash,
                 blockHash,
@@ -184,7 +192,7 @@ for (const env of envs) {
             expect(hexToBigInt(res)).toBeTruthy()
         })
 
-        test('eth_sendRawTransaction works', async () => {
+        test('eth_sendRawTransaction works', async ({ task }) => {
             const { request } = await env.accountWallet.simulateContract({
                 address: await getTesterAddr(),
                 abi: TesterAbi,
@@ -196,6 +204,10 @@ for (const env of envs) {
                 hash,
             })
             expect(receipt.status).toEqual('success')
+
+            await expect(stripValues(receipt)).toMatchFileSnapshot(
+                `snapshots/methods/${task.name}.snap`
+            )
         })
 
         test('eth_sendTransaction works', async () => {
@@ -210,6 +222,7 @@ for (const env of envs) {
             let receipt = await env.serverWallet.waitForTransactionReceipt({
                 hash,
             })
+
             expect(receipt.status).toEqual('success')
         })
 

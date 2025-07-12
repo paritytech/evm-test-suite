@@ -1,0 +1,16 @@
+{
+  "blockHash": "<stripped>",
+  "blockNumber": "<stripped>",
+  "contractAddress": null,
+  "cumulativeGasUsed": "<stripped>",
+  "effectiveGasPrice": "<stripped>",
+  "from": "<stripped>",
+  "gasUsed": "<stripped>",
+  "logs": [],
+  "logsBloom": "<stripped>",
+  "status": "<stripped>",
+  "to": "<stripped>",
+  "transactionHash": "<stripped>",
+  "transactionIndex": "<stripped>",
+  "type": "<stripped>",
+}

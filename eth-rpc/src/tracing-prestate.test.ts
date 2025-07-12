@@ -97,7 +97,7 @@ for (const env of envs) {
                     }
 
                     await expect(visit(res, visitor)).toMatchFileSnapshot(
-                        `snapshots/prestate_tracer//${fixtureName}.${diffMode}.snap`
+                        `snapshots/prestate_tracer/${fixtureName}.${diffMode}.snap`
                     )
                 }
 

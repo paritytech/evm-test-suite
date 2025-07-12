@@ -1,0 +1,13 @@
+[
+  {
+    "address": "<stripped>",
+    "blockHash": "<stripped>",
+    "blockNumber": "<stripped>",
+    "data": "<stripped>",
+    "logIndex": "<stripped>",
+    "removed": "<stripped>",
+    "topics": [],
+    "transactionHash": "<stripped>",
+    "transactionIndex": "<stripped>",
+  },
+]
