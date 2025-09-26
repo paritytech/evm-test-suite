@@ -257,13 +257,17 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: any,
-    callback: (key: string, value: any) => [string, any]
+    callback: (key: string, value: any) => [string, any] | null
 ): any {
     if (Array.isArray(obj)) {
         return obj.map((item) => visit(item, callback))
     } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce((acc, key) => {
-            const [mappedKey, mappedValue] = callback(key, obj[key])
+            const mapped = callback(key, obj[key])
+            if (!mapped) {
+                return acc
+            }
+            const [mappedKey, mappedValue] = mapped
             if (mappedKey in acc) {
                 throw new Error(`visit(): duplicate mapped key “${mappedKey}”`)
             }

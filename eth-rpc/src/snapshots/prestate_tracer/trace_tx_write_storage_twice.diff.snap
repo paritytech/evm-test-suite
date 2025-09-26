@@ -4,9 +4,6 @@
       "balance": "<balance>",
       "nonce": "<nonce>",
     },
-    "<coinbase_addr>": {
-      "balance": "<balance>",
-    },
     "<contract_addr>": {
       "storage": {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
@@ -17,9 +14,6 @@
     "<caller_addr>": {
       "balance": "<balance>",
       "nonce": "<nonce>",
-    },
-    "<coinbase_addr>": {
-      "balance": "<balance>",
     },
     "<contract_addr>": {
       "balance": "<balance>",

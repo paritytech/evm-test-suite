@@ -67,11 +67,13 @@ for (const env of envs) {
                 case 'txHash': {
                     return [key, '<tx_hash>']
                 }
+                case 'codeHash': {
+                    // Geth now returns the codeHash, skip it for now
+                    // See https://github.com/ethereum/go-ethereum/pull/32391
+                    return null
+                }
                 case '<coinbase_addr>': {
-                    // Nonce on substrate will start at 0 and thus be stripped from the output
-                    // So we remove it for the coinbase address
-                    delete value?.nonce
-                    return [key, value]
+                    return null
                 }
                 default: {
                     return [key, value]

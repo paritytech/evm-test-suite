@@ -4,9 +4,6 @@
       "balance": "<balance>",
       "nonce": "<nonce>",
     },
-    "<coinbase_addr>": {
-      "balance": "<balance>",
-    },
     "<contract_addr>": {
       "balance": "<balance>",
       "code": "<code>",
@@ -20,9 +17,6 @@
   },
   "pre": {
     "<caller_addr>": {
-      "balance": "<balance>",
-    },
-    "<coinbase_addr>": {
       "balance": "<balance>",
     },
   },
