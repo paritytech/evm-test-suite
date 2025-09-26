@@ -3,9 +3,6 @@
     "balance": "<balance>",
     "nonce": "<nonce>",
   },
-  "<coinbase_addr>": {
-    "balance": "<balance>",
-  },
   "<contract_addr>": {
     "balance": "<balance>",
     "code": "<code>",
