@@ -146,7 +146,7 @@ for (const env of envs) {
             expect(balance).toBe(0n)
         })
 
-        test.only('eth_estimate (not enough funds to cover gas specified)', async () => {
+        test('eth_estimate (not enough funds to cover gas specified)', async () => {
             let balance = await env.serverWallet.getBalance(
                 env.emptyWallet.account
             )
