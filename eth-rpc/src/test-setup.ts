@@ -39,6 +39,8 @@ export default async function setup(project: TestProject) {
     if (process.env.START_SUBSTRATE_NODE) {
         const substrateNodeArgs = [
             '--dev',
+            '--consensus', 
+            'manual-seal-200',
             '-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
         ]
 
