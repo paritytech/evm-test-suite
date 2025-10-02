@@ -140,15 +140,16 @@ for (const env of envs) {
                 expect(code).toBeUndefined()
             }
 
-            // ERC20 precompile on kitchensink
-            if (!env.evm) {
-                const assetPrecompile =
-                    '0x0000000000000000000000000000000000010000'
-                const code = await env.serverWallet.getCode({
-                    address: assetPrecompile,
-                })
-                expect(code).toEqual('0x60006000fd')
-            }
+            // TODO restore when we hit a chain with precompile
+            // // ERC20 precompile
+            // if (!env.evm) {
+            //     const assetPrecompile =
+            //         '0x0000000000000000000000000000000000010000'
+            //     const code = await env.serverWallet.getCode({
+            //         address: assetPrecompile,
+            //     })
+            //     expect(code).toEqual('0x60006000fd')
+            // }
         })
 
         test('eth_getLogs works', async () => {
