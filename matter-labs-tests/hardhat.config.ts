@@ -117,6 +117,7 @@ const config: HardhatUserConfig = {
       },
     },
     timeout: 40000,
+    reporter: "list",
   },
   solidity: {
     compilers: [DEFAULT_COMPILER_SETTINGS],
