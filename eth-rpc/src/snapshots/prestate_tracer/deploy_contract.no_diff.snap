@@ -1,6 +1,0 @@
-{
-  "<caller_addr>": {
-    "balance": "<balance>",
-    "nonce": "<nonce>",
-  },
-}

@@ -1,9 +1,0 @@
-{
-  "from": "<caller>",
-  "gas": "0x42",
-  "gasUsed": "0x42",
-  "input": "<code>",
-  "to": "<contract_callee_addr>",
-  "type": "CREATE",
-  "value": "0x0",
-}
