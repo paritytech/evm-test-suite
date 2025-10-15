@@ -34,7 +34,7 @@ for (const env of envs) {
             }),
     )
 
-    describe(env.serverWallet.chain.name, () => {
+    describe(env.serverWallet.chain.name, { sanitizeResources: false }, () => {
         it('eth_call with insufficient funds', async () => {
             try {
                 await env.emptyWallet.simulateContract({

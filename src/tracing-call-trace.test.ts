@@ -143,7 +143,7 @@ for (const env of envs) {
         })
     }
 
-    describe(env.accountWallet.chain.name, () => {
+    describe(env.accountWallet.chain.name, { sanitizeResources: false }, () => {
         it('debug_traceTransaction', async (t) => {
             const receipt = await getStartReceipt()
             const res = await env.debugClient.traceTransaction(

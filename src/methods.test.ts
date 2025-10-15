@@ -25,7 +25,6 @@ for (const env of envs) {
     const getTesterAddr = () =>
         getTesterReceipt().then((r) => r.contractAddress!)
 
-    // TODO: Viem is leaking some calls, using sanitizeResources: false for now
     describe(env.serverWallet.chain.name, { sanitizeResources: false }, () => {
         it('eth_accounts', async () => {
             const addresses = await env.debugClient.request({
