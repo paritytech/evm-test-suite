@@ -2,7 +2,7 @@
     "tasks": {
         "build": "deno run --allow-all src/build-contracts.ts",
         "test": "deno test --allow-all --no-check src/all-tests.ts",
-        "test:full": "START_GETH=1 START_SUBSTRATE_NODE=1 START_ETH_RPC=1 deno test --allow-all --no-check src/all-tests.ts",
+        "test:full": "START_GETH=1 START_REVIVE_DEV_NODE=1 START_ETH_RPC=1 deno test --allow-all --no-check --permit-no-files src/all-tests.ts",
         "lint": "deno fmt --check && deno lint"
     },
     "test": {
