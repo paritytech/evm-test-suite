@@ -21,7 +21,7 @@ for (const env of envs) {
             }),
     )
 
-    describe(env.serverWallet.chain.name, () => {
+    describe(env.serverWallet.chain.name, { sanitizeResources: false }, () => {
         it('triggerAssertError', async () => {
             try {
                 await env.accountWallet.readContract({
