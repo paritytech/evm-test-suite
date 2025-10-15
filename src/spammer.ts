@@ -9,7 +9,8 @@ import { FlipperAbi } from '../abi/Flipper.ts'
 import { assert } from '@std/assert'
 
 if (Deno.env.get('START_REVIVE_DEV_NODE')) {
-    const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
+    const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ??
+        `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
     console.log(`🚀 Start node ${nodePath}...`)
     killProcessOnPort(9944)
     new Deno.Command(nodePath, {
@@ -24,7 +25,8 @@ if (Deno.env.get('START_REVIVE_DEV_NODE')) {
 
 // Run eth-rpc on 8545
 if (Deno.env.get('START_ETH_RPC')) {
-    const adapterPath = Deno.env.get('ETH_RPC_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
+    const adapterPath = Deno.env.get('ETH_RPC_PATH') ??
+        `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
     console.log(`🚀 Start eth-rpc ${adapterPath} ...`)
     killProcessOnPort(8545)
     new Deno.Command(adapterPath, {
@@ -95,7 +97,7 @@ try {
             console.log('-----------------------------------')
             console.log(`status: ${receipt.status ? '✅' : '❌'}`)
             console.log(
-                `block: ${receipt.blockNumber} - hash: ${receipt.blockHash}`
+                `block: ${receipt.blockNumber} - hash: ${receipt.blockHash}`,
             )
             console.log(`tx: ${hash}`)
             console.log('-----------------------------------')

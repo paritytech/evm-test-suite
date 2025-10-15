@@ -15,12 +15,14 @@ import { TesterAbi } from '../abi/Tester.ts'
 const envs = await Promise.all(getEnvs().map(createEnv))
 
 for (const env of envs) {
-    const getTesterReceipt = memoizedTx(env, () =>
-        env.serverWallet.deployContract({
-            abi: TesterAbi,
-            bytecode: getByteCode('Tester', env.evm),
-            value: parseEther('2'),
-        })
+    const getTesterReceipt = memoizedTx(
+        env,
+        () =>
+            env.serverWallet.deployContract({
+                abi: TesterAbi,
+                bytecode: getByteCode('Tester', env.evm),
+                value: parseEther('2'),
+            }),
     )
     const getTesterAddr = () =>
         getTesterReceipt().then((r) => r.contractAddress!)
@@ -129,7 +131,7 @@ for (const env of envs) {
             // EOA
             {
                 const code = await env.serverWallet.getCode(
-                    env.serverWallet.account
+                    env.serverWallet.account,
                 )
 
                 expect(code).toBeUndefined()
@@ -173,7 +175,7 @@ for (const env of envs) {
 
             // revive store value as little endian. When this change in the compiler, or the runtime API, we can amend this test
             expect(storage).toEqual(
-                '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
+                '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016',
             )
         })
 
@@ -200,7 +202,7 @@ for (const env of envs) {
 
         it('eth_getTransactionCount', async () => {
             const count = await env.serverWallet.getTransactionCount(
-                env.serverWallet.account
+                env.serverWallet.account,
             )
             expect(count).toBeGreaterThanOrEqual(1)
         })
@@ -208,7 +210,7 @@ for (const env of envs) {
         it('eth_getTransactionReceipt', async () => {
             const { transactionHash: hash } = await getTesterReceipt()
             const receipt = await env.serverWallet.waitForTransactionReceipt(
-                hash
+                hash,
             )
             expect(receipt).toBeTruthy()
         })
@@ -230,7 +232,7 @@ for (const env of envs) {
             })
             const hash = await env.accountWallet.writeContract(request)
             const receipt = await env.serverWallet.waitForTransactionReceipt(
-                hash
+                hash,
             )
             expect(receipt.status).toEqual('success')
         })
@@ -245,7 +247,7 @@ for (const env of envs) {
                 }),
             })
             const receipt = await env.serverWallet.waitForTransactionReceipt(
-                hash
+                hash,
             )
             expect(receipt.status).toEqual('success')
         })
@@ -287,11 +289,11 @@ for (const env of envs) {
             expect(feeHistory.oldestBlock).toBeGreaterThanOrEqual(0)
             expect(feeHistory.gasUsedRatio.length).toBeGreaterThanOrEqual(0)
             expect(feeHistory.reward?.length).toEqual(
-                feeHistory.gasUsedRatio.length
+                feeHistory.gasUsedRatio.length,
             )
 
             expect(feeHistory.baseFeePerGas).toHaveLength(
-                feeHistory.gasUsedRatio.length + 1
+                feeHistory.gasUsedRatio.length + 1,
             )
         })
     })

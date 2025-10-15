@@ -91,7 +91,9 @@ for (const env of envs) {
     for (const config of [{ diffMode: true }, { diffMode: false }]) {
         const diffMode = config.diffMode ? 'diff' : 'no_diff'
 
-        describe(`${env.serverWallet.chain.name} - ${diffMode}`, { sanitizeResources: false }, () => {
+        describe(`${env.serverWallet.chain.name} - ${diffMode}`, {
+            sanitizeResources: false,
+        }, () => {
             const matchFixture = async (
                 t: Deno.TestContext,
                 res: unknown,

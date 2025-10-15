@@ -1,3 +1,4 @@
+/// <reference lib="deno.ns" />
 import {
     createClient,
     createPublicClient,
@@ -9,6 +10,7 @@ import {
     http,
     parseEther,
     publicActions,
+    type TransactionReceipt,
     TransactionRequest,
 } from 'viem'
 
@@ -20,9 +22,10 @@ export function getByteCode(name: string, evm = false): Hex {
         ? Deno.readFileSync(`evm/${name}.bin`)
         : Deno.readFileSync(`pvm/${name}.polkavm`)
     return `0x${
-        Array.from(bytecode).map((b) => b.toString(16).padStart(2, '0')).join(
-            '',
-        )
+        Array.from(bytecode).map((b: number) => b.toString(16).padStart(2, '0'))
+            .join(
+                '',
+            )
     }` as Hex
 }
 
@@ -113,13 +116,15 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
     })
 
     const waitForTransactionReceiptExtension = (client: {
-        getTransactionReceipt: (args: { hash: Hex }) => Promise<unknown>
+        getTransactionReceipt: (
+            args: { hash: Hex },
+        ) => Promise<TransactionReceipt>
     }) => ({
         async waitForTransactionReceipt(
             hash: Hex,
             pollingInterval = 100,
             timeout = 30000,
-        ) {
+        ): Promise<TransactionReceipt> {
             const startTime = Date.now()
             while (true) {
                 try {
