@@ -78,7 +78,8 @@ for (const env of envs) {
                     // See https://github.com/ethereum/go-ethereum/pull/32391
                     return null
                 }
-                case '<coinbase_addr>': {
+                case '<coinbase_addr>':
+                case '0x0000000000000000000000000000000000000000': {
                     return null
                 }
                 default: {

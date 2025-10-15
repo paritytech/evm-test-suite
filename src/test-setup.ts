@@ -34,24 +34,21 @@ export async function setupTests(): Promise<Env[]> {
         await waitForHealth('http://localhost:8546').catch(() => {})
     }
 
-    if (Deno.env.get('START_SUBSTRATE_NODE')) {
-        const substrateNodeArgs = [
+    if (Deno.env.get('START_REVIVE_DEV_NODE')) {
+        const devNodeArgs = [
             '--dev',
             '-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
         ]
 
         await killProcessOnPort(9944)
-        const nodePath = Deno.env.get('NODE_PATH')
-        if (!nodePath) {
-            throw new Error('NODE_PATH should be set')
-        }
-        console.log('🚀 Start substrate-node ...')
-        const substrateProcess = new Deno.Command(nodePath, {
-            args: substrateNodeArgs,
+        const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
+        console.log('🚀 Start dev-node ...')
+        const devNodeProcess = new Deno.Command(nodePath, {
+            args: devNodeArgs,
             stdout: 'null',
             stderr: 'null',
         }).spawn()
-        processes.push(substrateProcess)
+        processes.push(devNodeProcess)
     }
 
     if (Deno.env.get('START_ETH_RPC')) {
@@ -65,10 +62,7 @@ export async function setupTests(): Promise<Env[]> {
         ]
 
         await killProcessOnPort(8545)
-        const adapterPath = Deno.env.get('ADAPTER_PATH')
-        if (!adapterPath) {
-            throw new Error('ADAPTER_PATH should be set')
-        }
+        const adapterPath = Deno.env.get('ETH_RPC_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
         console.log('🚀 Start eth-rpc ...')
         const ethRpcProcess = new Deno.Command(adapterPath, {
             args: ethRpcArgs,
