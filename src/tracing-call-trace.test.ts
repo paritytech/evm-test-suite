@@ -9,10 +9,7 @@ import {
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
-import {
-    encodeFunctionData,
-    parseEther,
-} from 'viem'
+import { encodeFunctionData, parseEther } from 'viem'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
 import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
 

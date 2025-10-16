@@ -18,12 +18,14 @@ import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
 // Initialize test environment
 const env = await getEnv()
 
-const getPretraceFixture = memoizedTx(env, () =>
-    env.accountWallet.deployContract({
-        abi: PretraceFixtureAbi,
-        bytecode: getByteCode('PretraceFixture', env.evm),
-        value: parseEther('10'),
-    })
+const getPretraceFixture = memoizedTx(
+    env,
+    () =>
+        env.accountWallet.deployContract({
+            abi: PretraceFixtureAbi,
+            bytecode: getByteCode('PretraceFixture', env.evm),
+            value: parseEther('10'),
+        }),
 )
 
 const getAddr = () => getPretraceFixture().then((r) => r.contractAddress!)
@@ -33,8 +35,7 @@ const getAddr2 = memoizedDeploy(env, () =>
     env.accountWallet.deployContract({
         abi: PretraceFixtureChildAbi,
         bytecode: getByteCode('PretraceFixtureChild', env.evm),
-    })
-)
+    }))
 
 const getBlock = memoized(async () => {
     await getPretraceFixture()
@@ -50,7 +51,7 @@ const getVisitor = async (): Promise<Visitor> => {
     const { miner: coinbaseAddr } = block
     const walletbalanceStorageSlot = computeMappingSlot(
         env.accountWallet.account.address,
-        1
+        1,
     )
     const mappedKeys = {
         [walletbalanceStorageSlot]: `<wallet_balance>`,
@@ -95,7 +96,7 @@ const matchFixture = async (
     t: Deno.TestContext,
     res: unknown,
     fixtureName: string,
-    diffMode: string
+    diffMode: string,
 ) => {
     const visitor = await getVisitor()
     if (Deno.env.get('DEBUG')) {
@@ -104,7 +105,7 @@ const matchFixture = async (
         await Deno.mkdir(dir, { recursive: true })
         await Deno.writeTextFile(
             `${dir}${fixtureName}.${env.chain.name}.${diffMode}.json`,
-            JSON.stringify(res, null, 2)
+            JSON.stringify(res, null, 2),
         )
     }
 
@@ -118,8 +119,8 @@ const withDiffModes = (
     testFn: (
         t: Deno.TestContext,
         config: { diffMode: boolean },
-        diffMode: string
-    ) => Promise<void>
+        diffMode: string,
+    ) => Promise<void>,
 ) => {
     return async (t: Deno.TestContext) => {
         for (const config of [{ diffMode: true }, { diffMode: false }]) {
@@ -140,10 +141,10 @@ Deno.test(
         const res = await env.debugClient.traceTransaction(
             receiptHash,
             'prestateTracer',
-            config
+            config,
         )
         await matchFixture(t, res, 'deploy_contract', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -164,11 +165,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'write_storage', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -188,11 +189,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'write_storage_from_0', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -212,11 +213,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'read_storage', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -237,11 +238,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'deposit', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -262,11 +263,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'withdraw', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -286,11 +287,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'get_balance', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -311,7 +312,7 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )) as Record<string, unknown>
 
         // Geth is missing addr2 just add it back to make test pass
@@ -322,7 +323,7 @@ Deno.test(
         }
 
         await matchFixture(t, res, 'get_external_balance', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -343,11 +344,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'instantiate_child', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -365,11 +366,11 @@ Deno.test(
                 }),
             },
             'prestateTracer',
-            config
+            config,
         )
 
         await matchFixture(t, res, 'call_contract', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -390,11 +391,11 @@ Deno.test(
             config,
             (
                 await getBlock()
-            ).hash!
+            ).hash!,
         )
 
         await matchFixture(t, res, 'delegate_call_contract', diffMode)
-    })
+    }),
 )
 
 Deno.test(
@@ -402,7 +403,7 @@ Deno.test(
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const nonce = await env.accountWallet.getTransactionCount(
-            env.accountWallet.account
+            env.accountWallet.account,
         )
 
         const value = await env.accountWallet.readContract({
@@ -429,7 +430,7 @@ Deno.test(
         const receipts = await Promise.all(
             hashes.map((hash) =>
                 env.accountWallet.waitForTransactionReceipt(hash)
-            )
+            ),
         )
 
         expect(receipts).toHaveLength(2)
@@ -441,14 +442,14 @@ Deno.test(
             const res = await env.debugClient.traceBlock(
                 receipts[0].blockNumber,
                 'prestateTracer',
-                config
+                config,
             )
 
             await matchFixture(
                 t,
                 res,
                 'trace_block_write_storage_twice',
-                diffMode
+                diffMode,
             )
         }
 
@@ -457,10 +458,10 @@ Deno.test(
             const res = await env.debugClient.traceTransaction(
                 receipts[1].transactionHash,
                 'prestateTracer',
-                config
+                config,
             )
 
             await matchFixture(t, res, 'trace_tx_write_storage_twice', diffMode)
         }
-    })
+    }),
 )

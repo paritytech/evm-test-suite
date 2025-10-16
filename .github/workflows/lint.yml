@@ -1,47 +1,47 @@
 name: Lint
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+    lint:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
+            - name: Setup Deno
+              uses: denoland/setup-deno@v2
+              with:
+                  deno-version: v2.x
 
-      - name: Run linter
-        run: deno task lint
+            - name: Run linter
+              run: deno task lint
 
-      - name: Check contracts
-        run: |
-          echo "Download the resolc binary"
-          wget -O resolc https://github.com/paritytech/revive/releases/download/v0.3.0/resolc-x86_64-unknown-linux-musl -q
-          chmod +x resolc
-          sudo mv resolc /usr/local/bin
-          resolc --version
+            - name: Check contracts
+              run: |
+                  echo "Download the resolc binary"
+                  wget -O resolc https://github.com/paritytech/revive/releases/download/v0.3.0/resolc-x86_64-unknown-linux-musl -q
+                  chmod +x resolc
+                  sudo mv resolc /usr/local/bin
+                  resolc --version
 
-          echo "Installing solc"
-          wget https://github.com/ethereum/solidity/releases/download/v0.8.30/solc-static-linux -q
-          chmod +x solc-static-linux
-          sudo mv solc-static-linux /usr/local/bin/solc
+                  echo "Installing solc"
+                  wget https://github.com/ethereum/solidity/releases/download/v0.8.30/solc-static-linux -q
+                  chmod +x solc-static-linux
+                  sudo mv solc-static-linux /usr/local/bin/solc
 
-          echo "Building fixture contracts"
-          deno task build
+                  echo "Building fixture contracts"
+                  deno task build
 
-          echo "Verifying no new files were created (bytecode should be committed)"
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "Error: Build created new or modified files. All bytecode should be committed."
-            git status
-            exit 1
-          fi
-          echo "Success: All contract bytecode is up to date"
+                  echo "Verifying no new files were created (bytecode should be committed)"
+                  if [ -n "$(git status --porcelain)" ]; then
+                    echo "Error: Build created new or modified files. All bytecode should be committed."
+                    git status
+                    exit 1
+                  fi
+                  echo "Success: All contract bytecode is up to date"

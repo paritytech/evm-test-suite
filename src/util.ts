@@ -27,9 +27,11 @@ export function getByteCode(name: string, evm: boolean): Hex {
     const bytecode = evm
         ? Deno.readFileSync(`evm/${name}.bin`)
         : Deno.readFileSync(`pvm/${name}.polkavm`)
-    return `0x${Array.from(bytecode)
-        .map((b: number) => b.toString(16).padStart(2, '0'))
-        .join('')}` as Hex
+    return `0x${
+        Array.from(bytecode)
+            .map((b: number) => b.toString(16).padStart(2, '0'))
+            .join('')
+    }` as Hex
 }
 
 export type JsonRpcError = {
@@ -86,7 +88,7 @@ function getEnvName(): EnvName {
         return 'revive-evm'
     } else {
         throw new Error(
-            'No environment specified. Set USE_GETH or USE_REVIVE (pvm|evm)'
+            'No environment specified. Set USE_GETH or USE_REVIVE (pvm|evm)',
         )
     }
 }
@@ -148,7 +150,7 @@ export async function getEnv() {
         async waitForTransactionReceipt(
             hash: Hex,
             pollingInterval = 100,
-            timeout = 30000
+            timeout = 30000,
         ): Promise<TransactionReceipt> {
             const startTime = Date.now()
             while (true) {
@@ -159,7 +161,7 @@ export async function getEnv() {
                     const errorStr = String(error)
                     if (
                         !errorStr.includes(
-                            'transaction indexing is in progress'
+                            'transaction indexing is in progress',
                         ) &&
                         !errorStr.includes('transaction not found') &&
                         !errorStr.includes('TransactionReceiptNotFoundError')
@@ -170,7 +172,7 @@ export async function getEnv() {
                 }
                 if (Date.now() - startTime > timeout) {
                     throw new Error(
-                        `Transaction receipt timeout after ${timeout}ms for hash ${hash}`
+                        `Transaction receipt timeout after ${timeout}ms for hash ${hash}`,
                     )
                 }
                 await new Promise((resolve) =>
@@ -197,7 +199,7 @@ export async function getEnv() {
     const accountWallet = createWalletClient({
         account: privateKeyToAccount(
             '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133',
-            { nonceManager }
+            { nonceManager },
         ),
         transport,
         chain,
@@ -222,7 +224,7 @@ export async function getEnv() {
     const emptyWallet = createWalletClient({
         account: privateKeyToAccount(
             '0x4450c571bae82da0528ecf76fcf7079e12ecc46dc873c9cacb6db8b75ed22f41',
-            { nonceManager }
+            { nonceManager },
         ),
         transport,
         chain,
@@ -249,7 +251,7 @@ export async function getEnv() {
         traceTransaction<Tracer extends TracerType>(
             txHash: Hex,
             tracer: Tracer,
-            tracerConfig?: TracerConfig[Tracer]
+            tracerConfig?: TracerConfig[Tracer],
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceTransaction' as 'eth_chainId',
@@ -259,7 +261,7 @@ export async function getEnv() {
         traceBlock<Tracer extends TracerType>(
             blockNumber: bigint,
             tracer: Tracer,
-            tracerConfig?: TracerConfig[Tracer]
+            tracerConfig?: TracerConfig[Tracer],
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceBlockByNumber' as 'eth_chainId',
@@ -274,7 +276,7 @@ export async function getEnv() {
             args: TransactionRequest,
             tracer: Tracer,
             tracerConfig: TracerConfig[Tracer],
-            blockOrTag: 'latest' | Hex = 'latest'
+            blockOrTag: 'latest' | Hex = 'latest',
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceCall' as 'eth_chainId',
@@ -349,7 +351,7 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: unknown,
-    callback: (key: string, value: unknown) => [string, unknown] | null
+    callback: (key: string, value: unknown) => [string, unknown] | null,
 ): unknown {
     if (Array.isArray(obj)) {
         return obj.map((item) => visit(item, callback))
