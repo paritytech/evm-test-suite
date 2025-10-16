@@ -9,6 +9,7 @@ import { expect } from '@std/expect'
 import { decodeEventLog, encodeFunctionData, parseEther } from 'viem'
 import { ErrorsAbi } from '../abi/Errors.ts'
 import { EventExampleAbi } from '../abi/EventExample.ts'
+import { ReturnDataTesterAbi } from '../abi/ReturnDataTester.ts'
 
 // Initialize test environment
 const env = await getEnv()
@@ -28,6 +29,15 @@ const getEventExampleAddr = memoizedDeploy(
         env.serverWallet.deployContract({
             abi: EventExampleAbi,
             bytecode: getByteCode('EventExample', env.evm),
+        }),
+)
+
+const getReturnDataTesterAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: ReturnDataTesterAbi,
+            bytecode: getByteCode('ReturnDataTester', env.evm),
         }),
 )
 
@@ -238,4 +248,54 @@ Deno.test('logs', opts, async () => {
             message: 'Hello world',
         },
     })
+})
+
+// execute the tx that create a child contract and record the return data size ->
+// when we read the recoreded data size it should be 0
+// traces should look the same as geth -> TODO:
+Deno.test('returndata works after create', opts, async () => {
+    const address = await getReturnDataTesterAddr()
+    const { request } = await env.serverWallet.simulateContract({
+        address,
+        abi: ReturnDataTesterAbi,
+        functionName: 'createChildContract',
+    })
+
+    const hash = await env.serverWallet.writeContract(request)
+    const receipt = await env.serverWallet.waitForTransactionReceipt(
+        hash,
+    )
+    expect(receipt.status).toEqual('success')
+
+    const dataSize = await env.emptyWallet.readContract({
+        address: address,
+        abi: ReturnDataTesterAbi,
+        functionName: 'getCapturedReturnDataSize',
+        args: [],
+    })
+
+    expect(dataSize).toBe(0n)
+})
+
+// eth_call deployment -> should return the runtime code
+// deploy the contract
+Deno.test('eth_call (deployment) returns runtime bytecode', opts, async () => {
+    const callData =
+        '0x6080604052348015600e575f5ffd5b50606f80601a5f395ff3fe6080604052348015600e575f5ffd5b50600436106026575f3560e01c8063dffeadd014602a575b5f5ffd5b60306032565b005b5f620186a0f3fea26469706673582212200544d013174d2b813d5d067b0c93aa13be2d4b08db36a2c4337a1d825449ab3e64736f6c634300081e0033'
+
+    // Use another wallet's raw request to send a direct eth_call while keeping
+    // the `from` set to the server wallet's address (serverWallet.request blocks raw RPCs).
+    const from = env.serverWallet.account.address
+
+    // Type definitions for wallet.request don't include raw eth_call — cast to any to send the raw JSON-RPC.
+    const result = await (env.emptyWallet as any).request({
+        method: 'eth_call',
+        params: [{ data: callData, from }, 'latest'],
+    })
+
+    // Basic assertions: result is a hex string and non-empty
+    expect(typeof result).toBe('string')
+    expect((result as string).slice(0, 2)).toBe('0x')
+    expect((result as string).length).toBeGreaterThan(2)
+    expect(result).toBe("0x6080604052348015600e575f5ffd5b50600436106026575f3560e01c8063dffeadd014602a575b5f5ffd5b60306032565b005b5f620186a0f3fea26469706673582212200544d013174d2b813d5d067b0c93aa13be2d4b08db36a2c4337a1d825449ab3e64736f6c634300081e0033")
 })
