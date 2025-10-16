@@ -6,10 +6,9 @@ import {
     parseEther,
     type TransactionReceipt,
 } from 'viem'
-import { getByteCode, getEnv } from './util.ts'
+import { getByteCode, getEnv, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { TesterAbi } from '../abi/Tester.ts'
-import { sanitizeOpts as opts } from './test-setup.ts'
 
 // Initialize test environment
 const env = await getEnv()

@@ -2,6 +2,7 @@ import {
     computeMappingSlot,
     getByteCode,
     getEnv,
+    sanitizeOpts as opts,
     visit,
     Visitor,
 } from './util.ts'
@@ -10,7 +11,6 @@ import { expect } from '@std/expect'
 import { encodeFunctionData, type Hex, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../abi/PretraceFixture.ts'
 import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
-import { sanitizeOpts as opts } from './test-setup.ts'
 
 // Initialize test environment
 const env = await getEnv()

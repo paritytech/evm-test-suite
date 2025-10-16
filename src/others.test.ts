@@ -1,9 +1,13 @@
-import { getByteCode, getEnv, jsonRpcErrors } from './util.ts'
+import {
+    getByteCode,
+    getEnv,
+    jsonRpcErrors,
+    sanitizeOpts as opts,
+} from './util.ts'
 import { expect } from '@std/expect'
 import { decodeEventLog, encodeFunctionData, type Hex, parseEther } from 'viem'
 import { ErrorsAbi } from '../abi/Errors.ts'
 import { EventExampleAbi } from '../abi/EventExample.ts'
-import { sanitizeOpts as opts } from './test-setup.ts'
 
 // Initialize test environment
 const env = await getEnv()

@@ -17,6 +17,12 @@ import {
 import { concat, hexToBytes, keccak256, pad } from 'viem/utils'
 import { nonceManager, privateKeyToAccount } from 'viem/accounts'
 
+export const sanitizeOpts = {
+    sanitizeResources: false,
+    sanitizeOps: false,
+    sanitizeExit: false,
+}
+
 export function getByteCode(name: string, evm = false): Hex {
     const bytecode = evm
         ? Deno.readFileSync(`evm/${name}.bin`)

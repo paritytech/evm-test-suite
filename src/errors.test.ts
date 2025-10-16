@@ -1,7 +1,11 @@
-import { getByteCode, getEnv, jsonRpcErrors } from './util.ts'
+import {
+    getByteCode,
+    getEnv,
+    jsonRpcErrors,
+    sanitizeOpts as opts,
+} from './util.ts'
 import { expect } from '@std/expect'
 import { ErrorsAbi } from '../abi/Errors.ts'
-import { sanitizeOpts as opts } from './test-setup.ts'
 import type { Hex } from 'viem'
 
 // Initialize test environment

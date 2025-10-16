@@ -1,4 +1,10 @@
-import { getByteCode, getEnv, visit, Visitor } from './util.ts'
+import {
+    getByteCode,
+    getEnv,
+    sanitizeOpts as opts,
+    visit,
+    Visitor,
+} from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import {
@@ -9,7 +15,6 @@ import {
 } from 'viem'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
 import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
-import { sanitizeOpts as opts } from './test-setup.ts'
 
 // Initialize test environment
 const env = await getEnv()
