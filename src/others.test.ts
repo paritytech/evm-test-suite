@@ -9,26 +9,30 @@ import { expect } from '@std/expect'
 import { decodeEventLog, encodeFunctionData, parseEther } from 'viem'
 import { ErrorsAbi } from '../abi/Errors.ts'
 import { EventExampleAbi } from '../abi/EventExample.ts'
+import { ReturnDataTesterAbi } from '../abi/ReturnDataTester.ts'
 
 // Initialize test environment
 const env = await getEnv()
 
-const getErrorTesterAddr = memoizedDeploy(
-    env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: ErrorsAbi,
-            bytecode: getByteCode('Errors', env.evm),
-        }),
+const getErrorTesterAddr = memoizedDeploy(env, () =>
+    env.serverWallet.deployContract({
+        abi: ErrorsAbi,
+        bytecode: getByteCode('Errors', env.evm),
+    })
 )
 
-const getEventExampleAddr = memoizedDeploy(
-    env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: EventExampleAbi,
-            bytecode: getByteCode('EventExample', env.evm),
-        }),
+const getEventExampleAddr = memoizedDeploy(env, () =>
+    env.serverWallet.deployContract({
+        abi: EventExampleAbi,
+        bytecode: getByteCode('EventExample', env.evm),
+    })
+)
+
+const getReturnDataTesterAddr = memoizedDeploy(env, () =>
+    env.serverWallet.deployContract({
+        abi: ReturnDataTesterAbi,
+        bytecode: getByteCode('ReturnDataTester', env.evm),
+    })
 )
 
 Deno.test('eth_call with insufficient funds', opts, async () => {
@@ -44,18 +48,14 @@ Deno.test('eth_call with insufficient funds', opts, async () => {
     } catch (_) {
         const lastJsonRpcError = jsonRpcErrors.pop()
         expect(lastJsonRpcError?.code).toBe(-32000)
-        expect(lastJsonRpcError?.message).toContain(
-            'insufficient funds',
-        )
+        expect(lastJsonRpcError?.message).toContain('insufficient funds')
         expect(lastJsonRpcError?.data).toBeUndefined()
     }
 })
 
 Deno.test('eth_call transfer with insufficient funds', opts, async () => {
     const value = parseEther('10')
-    const balance = await env.emptyWallet.getBalance(
-        env.emptyWallet.account,
-    )
+    const balance = await env.emptyWallet.getBalance(env.emptyWallet.account)
     if (balance >= value) {
         throw new Error('Balance should be less than 10')
     }
@@ -68,9 +68,7 @@ Deno.test('eth_call transfer with insufficient funds', opts, async () => {
     } catch (_) {
         const lastJsonRpcError = jsonRpcErrors.pop()
         expect(lastJsonRpcError?.code).toBe(-32000)
-        expect(lastJsonRpcError?.message).toContain(
-            'insufficient funds',
-        )
+        expect(lastJsonRpcError?.message).toContain('insufficient funds')
         expect(lastJsonRpcError?.data).toBeUndefined()
     }
 })
@@ -88,9 +86,7 @@ Deno.test('eth_estimate with insufficient funds', opts, async () => {
     } catch (_err) {
         const lastJsonRpcError = jsonRpcErrors.pop()
         expect(lastJsonRpcError?.code).toBe(-32000)
-        expect(lastJsonRpcError?.message).toContain(
-            'insufficient funds',
-        )
+        expect(lastJsonRpcError?.message).toContain('insufficient funds')
         expect(lastJsonRpcError?.data).toBeUndefined()
     }
 })
@@ -111,12 +107,10 @@ Deno.test(
         } catch (_err) {
             const lastJsonRpcError = jsonRpcErrors.pop()
             expect(lastJsonRpcError?.code).toBe(-32000)
-            expect(lastJsonRpcError?.message).toContain(
-                'insufficient funds',
-            )
+            expect(lastJsonRpcError?.message).toContain('insufficient funds')
             expect(lastJsonRpcError?.data).toBeUndefined()
         }
-    },
+    }
 )
 
 Deno.test('eth_estimate with revert', opts, async () => {
@@ -137,7 +131,7 @@ Deno.test('eth_estimate with revert', opts, async () => {
             'execution reverted: revert: msg.value does not match value',
         ]).toContain(lastJsonRpcError?.message)
         expect(lastJsonRpcError?.data).toBe(
-            '0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001e6d73672e76616c756520646f6573206e6f74206d617463682076616c75650000',
+            '0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001e6d73672e76616c756520646f6573206e6f74206d617463682076616c75650000'
         )
     }
 })
@@ -154,7 +148,7 @@ Deno.test(
     opts,
     async () => {
         const balance = await env.serverWallet.getBalance(
-            env.emptyWallet.account,
+            env.emptyWallet.account
         )
         expect(balance).toBe(0n)
         try {
@@ -168,18 +162,14 @@ Deno.test(
         } catch (_err) {
             const lastJsonRpcError = jsonRpcErrors.pop()
             expect(lastJsonRpcError?.code).toBe(-32000)
-            expect(lastJsonRpcError?.message).toContain(
-                'insufficient funds',
-            )
+            expect(lastJsonRpcError?.message).toContain('insufficient funds')
             expect(lastJsonRpcError?.data).toBeUndefined()
         }
-    },
+    }
 )
 
 Deno.test('eth_estimate with no gas specified', opts, async () => {
-    const balance = await env.serverWallet.getBalance(
-        env.emptyWallet.account,
-    )
+    const balance = await env.serverWallet.getBalance(env.emptyWallet.account)
     expect(balance).toBe(0n)
 
     const data = encodeFunctionData({
@@ -209,9 +199,7 @@ Deno.test('logs', opts, async () => {
     })
 
     const hash = await env.serverWallet.writeContract(request)
-    const receipt = await env.serverWallet.waitForTransactionReceipt(
-        hash,
-    )
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     const logs = await env.serverWallet.getLogs({
         address,
         blockHash: receipt.blockHash,
@@ -219,8 +207,7 @@ Deno.test('logs', opts, async () => {
     expect(logs).toHaveLength(1)
     expect(logs[0]).toMatchObject({
         address,
-        data:
-            '0x00000000000000000000000000000000000000000000000000000000000030390000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000b48656c6c6f20776f726c64000000000000000000000000000000000000000000',
+        data: '0x00000000000000000000000000000000000000000000000000000000000030390000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000b48656c6c6f20776f726c64000000000000000000000000000000000000000000',
         transactionHash: hash,
     })
 
@@ -229,7 +216,7 @@ Deno.test('logs', opts, async () => {
             abi: EventExampleAbi,
             data: logs[0].data,
             topics: logs[0].topics,
-        }),
+        })
     ).toEqual({
         eventName: 'ExampleEvent',
         args: {
@@ -238,4 +225,58 @@ Deno.test('logs', opts, async () => {
             message: 'Hello world',
         },
     })
+})
+
+// execute the tx that create a child contract and record the return data size ->
+// when we read the recoreded data size it should be 0
+// traces should look the same as geth -> TODO:
+Deno.test('returndata_works', opts, async () => {
+    const address = await getReturnDataTesterAddr()
+    const { request } = await env.serverWallet.simulateContract({
+        address,
+        abi: ReturnDataTesterAbi,
+        functionName: 'createChildContract',
+    })
+
+    const hash = await env.serverWallet.writeContract(request)
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+    expect(receipt.status).toEqual('success')
+
+    const dataSize = await env.emptyWallet.readContract({
+        address: address,
+        abi: ReturnDataTesterAbi,
+        functionName: 'getCapturedReturnDataSize',
+        args: [],
+    })
+
+    expect(dataSize).toBe(0n)
+})
+
+Deno.test('eth_call returndata works', opts, async () => {
+    const address = await getReturnDataTesterAddr()
+    const result = await env.serverWallet.call({
+        to: address,
+        data: encodeFunctionData({
+            abi: ReturnDataTesterAbi,
+            functionName: 'createChildContract',
+            args: [],
+        }),
+    })
+
+    // TODO assert
+    console.log(result)
+})
+
+// eth_call deployment -> should return the runtime code
+// deploy the contract
+Deno.test('eth_call deployment should return the bytecode', opts, async () => {
+    const result = await env.serverWallet.call({
+        data: getByteCode('Errors', env.evm),
+    })
+
+    if (env.evm) {
+        expect(result.length).toBeGreaterThan(0)
+    } else {
+        expect(result).toBe('0x')
+    }
 })
