@@ -3,12 +3,6 @@ import { killProcessOnPort, waitForHealth } from './util.ts'
 let processes: Deno.ChildProcess[] = []
 let setupComplete = false
 
-export const sanitizeOpts = {
-    sanitizeResources: false,
-    sanitizeOps: false,
-    sanitizeExit: false,
-}
-
 export async function setupTests() {
     // Only run setup once, even if imported by multiple test files
     if (setupComplete) {

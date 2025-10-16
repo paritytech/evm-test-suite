@@ -498,6 +498,24 @@ snapshot[`write_storage.diff 1`] = `
 }
 `;
 
+snapshot[`write_storage.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
+      "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
+    },
+  },
+}
+`;
+
 snapshot[`write_storage_from_0.diff 1`] = `
 {
   post: {
@@ -522,6 +540,20 @@ snapshot[`write_storage_from_0.diff 1`] = `
 }
 `;
 
+snapshot[`write_storage_from_0.no_diff 1`] = `
+{
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
+      "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
+    },
+  },
+}
+`;
+
 snapshot[`read_storage.diff 1`] = `
 {
   post: {
@@ -533,6 +565,23 @@ snapshot[`read_storage.diff 1`] = `
     "<caller_addr>": {
       balance: "<balance>",
       nonce: "<nonce>",
+    },
+  },
+}
+`;
+
+snapshot[`read_storage.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
     },
   },
 }
@@ -569,6 +618,23 @@ snapshot[`deposit.diff 1`] = `
 }
 `;
 
+snapshot[`deposit.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
+    },
+  },
+}
+`;
+
 snapshot[`withdraw.diff 1`] = `
 {
   post: {
@@ -600,6 +666,23 @@ snapshot[`withdraw.diff 1`] = `
 }
 `;
 
+snapshot[`withdraw.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
+    },
+  },
+}
+`;
+
 snapshot[`get_balance.diff 1`] = `
 {
   post: {
@@ -612,6 +695,20 @@ snapshot[`get_balance.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
+  },
+}
+`;
+
+snapshot[`get_balance.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;
@@ -632,6 +729,20 @@ snapshot[`get_external_balance.diff 1`] = `
 }
 `;
 
+snapshot[`get_external_balance.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+  },
+}
+`;
+
 snapshot[`instantiate_child.diff 1`] = `
 {
   post: {
@@ -644,6 +755,20 @@ snapshot[`instantiate_child.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
+  },
+}
+`;
+
+snapshot[`instantiate_child.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;
@@ -677,16 +802,33 @@ snapshot[`call_contract.diff 1`] = `
 }
 `;
 
+snapshot[`call_contract.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr_2>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000001",
+    },
+  },
+}
+`;
+
 snapshot[`delegate_call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
       nonce: "<nonce>",
-    },
-    "<contract_addr_2>": {
-      storage: {
-        "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000002",
-      },
     },
   },
   pre: {
@@ -694,14 +836,20 @@ snapshot[`delegate_call_contract.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr_2>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
-      storage: {
-        "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000001",
-      },
-    },
+  },
+}
+`;
+
+snapshot[`delegate_call_contract.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
+  "<contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;
@@ -800,180 +948,6 @@ snapshot[`trace_tx_write_storage_twice.diff 1`] = `
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
       },
-    },
-  },
-}
-`;
-
-snapshot[`write_storage.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
-      "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
-    },
-  },
-}
-`;
-
-snapshot[`write_storage_from_0.no_diff 1`] = `
-{
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
-      "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
-    },
-  },
-}
-`;
-
-snapshot[`read_storage.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
-    },
-  },
-}
-`;
-
-snapshot[`deposit.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
-    },
-  },
-}
-`;
-
-snapshot[`withdraw.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
-    },
-  },
-}
-`;
-
-snapshot[`get_balance.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-  },
-}
-`;
-
-snapshot[`get_external_balance.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr_2>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-  },
-}
-`;
-
-snapshot[`instantiate_child.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-  },
-}
-`;
-
-snapshot[`call_contract.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr_2>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000001",
-    },
-  },
-}
-`;
-
-snapshot[`delegate_call_contract.no_diff 1`] = `
-{
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-  },
-  "<contract_addr_2>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
-    storage: {
-      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000001",
     },
   },
 }

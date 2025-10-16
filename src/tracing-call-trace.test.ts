@@ -1,6 +1,8 @@
 import {
     getByteCode,
     getEnv,
+    memoized,
+    memoizedTx,
     sanitizeOpts as opts,
     visit,
     Visitor,
@@ -20,69 +22,68 @@ import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
 const env = await getEnv()
 
 const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
-let deployTracingCalleeReceipt: TransactionReceipt
-let tracingCalleeAddr: Hex
-let tracingCallerAddr: Hex
-let startReceipt: TransactionReceipt
-let createReceipt: TransactionReceipt
-let create2Receipt: TransactionReceipt
 
-Deno.test.beforeAll(async () => {
-    const hash1 = await env.accountWallet.deployContract({
-        abi: TracingCalleeAbi,
-        bytecode: TRACING_CALLEE_BYTECODE,
-    })
-    deployTracingCalleeReceipt = await env.accountWallet
-        .waitForTransactionReceipt(
-            hash1,
-        )
-    tracingCalleeAddr = deployTracingCalleeReceipt.contractAddress!
+const getDeployTracingCalleeReceipt = memoizedTx(
+    env,
+    () =>
+        env.accountWallet.deployContract({
+            abi: TracingCalleeAbi,
+            bytecode: TRACING_CALLEE_BYTECODE,
+        }),
+)
 
-    const hash2 = await env.accountWallet.deployContract({
+const getTracingCalleeAddr = () =>
+    getDeployTracingCalleeReceipt().then((r) => r.contractAddress!)
+
+const getTracingCallerAddr = memoized(async () => {
+    const tracingCalleeAddr = await getTracingCalleeAddr()
+    const hash = await env.accountWallet.deployContract({
         abi: TracingCallerAbi,
         args: [tracingCalleeAddr],
         bytecode: getByteCode('TracingCaller', env.evm),
         value: parseEther('10'),
     })
-    const receipt2 = await env.accountWallet.waitForTransactionReceipt(hash2)
-    tracingCallerAddr = receipt2.contractAddress!
+    const receipt = await env.accountWallet.waitForTransactionReceipt(hash)
+    return receipt.contractAddress!
+})
 
-    const { request: startRequest } = await env.accountWallet.simulateContract({
+const getStartReceipt = memoized(async () => {
+    const tracingCallerAddr = await getTracingCallerAddr()
+    const { request } = await env.accountWallet.simulateContract({
         address: tracingCallerAddr,
         abi: TracingCallerAbi,
         functionName: 'start',
         args: [2n],
     })
-    const startHash = await env.accountWallet.writeContract(startRequest)
-    startReceipt = await env.accountWallet.waitForTransactionReceipt(startHash)
-
-    const { request: createRequest } = await env.accountWallet.simulateContract(
-        {
-            address: tracingCallerAddr,
-            abi: TracingCallerAbi,
-            functionName: 'create',
-        },
-    )
-    const createHash = await env.accountWallet.writeContract(createRequest)
-    createReceipt = await env.accountWallet.waitForTransactionReceipt(
-        createHash,
-    )
-
-    const { request: create2Request } = await env.accountWallet
-        .simulateContract(
-            {
-                address: tracingCallerAddr,
-                abi: TracingCallerAbi,
-                functionName: 'create2',
-            },
-        )
-    const create2Hash = await env.accountWallet.writeContract(create2Request)
-    create2Receipt = await env.accountWallet.waitForTransactionReceipt(
-        create2Hash,
-    )
+    const hash = await env.accountWallet.writeContract(request)
+    return await env.accountWallet.waitForTransactionReceipt(hash)
 })
 
-const getVisitor = (): Visitor => {
+const getCreateReceipt = memoized(async () => {
+    const tracingCallerAddr = await getTracingCallerAddr()
+    const { request } = await env.accountWallet.simulateContract({
+        address: tracingCallerAddr,
+        abi: TracingCallerAbi,
+        functionName: 'create',
+    })
+    const hash = await env.accountWallet.writeContract(request)
+    return await env.accountWallet.waitForTransactionReceipt(hash)
+})
+
+const getCreate2Receipt = memoized(async () => {
+    const tracingCallerAddr = await getTracingCallerAddr()
+    const { request } = await env.accountWallet.simulateContract({
+        address: tracingCallerAddr,
+        abi: TracingCallerAbi,
+        functionName: 'create2',
+    })
+    const hash = await env.accountWallet.writeContract(request)
+    return await env.accountWallet.waitForTransactionReceipt(hash)
+})
+
+const getVisitor = async (): Promise<Visitor> => {
+    const tracingCallerAddr = await getTracingCallerAddr()
+    const tracingCalleeAddr = await getTracingCalleeAddr()
     return (key, value) => {
         switch (key) {
             case 'address':
@@ -133,7 +134,7 @@ const matchFixture = async (
     res: unknown,
     fixtureName: string,
 ) => {
-    const visitor = getVisitor()
+    const visitor = await getVisitor()
 
     if (Deno.env.get('DEBUG')) {
         const currentDir = new URL('.', import.meta.url).pathname
@@ -151,6 +152,7 @@ const matchFixture = async (
 }
 
 Deno.test('debug_traceTransaction', opts, async (t) => {
+    const startReceipt = await getStartReceipt()
     const res = await env.debugClient.traceTransaction(
         startReceipt.transactionHash,
         'callTracer',
@@ -162,6 +164,7 @@ Deno.test('debug_traceTransaction', opts, async (t) => {
 })
 
 Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
+    const deployTracingCalleeReceipt = await getDeployTracingCalleeReceipt()
     const res = await env.debugClient.traceTransaction(
         deployTracingCalleeReceipt.transactionHash,
         'callTracer',
@@ -176,6 +179,7 @@ Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
 })
 
 Deno.test('debug_create', opts, async () => {
+    const createReceipt = await getCreateReceipt()
     const res = await env.debugClient.traceTransaction(
         createReceipt.transactionHash,
         'callTracer',
@@ -195,6 +199,7 @@ Deno.test('debug_create', opts, async () => {
 })
 
 Deno.test('debug_create2', opts, async () => {
+    const create2Receipt = await getCreate2Receipt()
     const res = await env.debugClient.traceTransaction(
         create2Receipt.transactionHash,
         'callTracer',
@@ -213,6 +218,7 @@ Deno.test('debug_create2', opts, async () => {
 })
 
 Deno.test('debug_traceBlock', opts, async (t) => {
+    const startReceipt = await getStartReceipt()
     const res = await env.debugClient.traceBlock(
         startReceipt.blockNumber,
         'callTracer',
@@ -224,6 +230,7 @@ Deno.test('debug_traceBlock', opts, async (t) => {
 })
 
 Deno.test('debug_traceCall', opts, async (t) => {
+    const tracingCallerAddr = await getTracingCallerAddr()
     const res = await env.debugClient.traceCall(
         {
             to: tracingCallerAddr,

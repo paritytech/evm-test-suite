@@ -6,25 +6,28 @@ import {
     parseEther,
     type TransactionReceipt,
 } from 'viem'
-import { getByteCode, getEnv, sanitizeOpts as opts } from './util.ts'
+import {
+    getByteCode,
+    getEnv,
+    memoizedTx,
+    sanitizeOpts as opts,
+} from './util.ts'
 import { expect } from '@std/expect'
 import { TesterAbi } from '../abi/Tester.ts'
 
 // Initialize test environment
 const env = await getEnv()
 
-let testerReceipt: TransactionReceipt
-let testerAddr: Hex
-
-Deno.test.beforeAll(async () => {
-    const hash = await env.serverWallet.deployContract({
-        abi: TesterAbi,
-        bytecode: getByteCode('Tester', env.evm),
-        value: parseEther('2'),
-    })
-    testerReceipt = await env.serverWallet.waitForTransactionReceipt(hash)
-    testerAddr = testerReceipt.contractAddress!
-})
+const getTesterReceipt = memoizedTx(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: TesterAbi,
+            bytecode: getByteCode('Tester', env.evm),
+            value: parseEther('2'),
+        }),
+)
+const getTesterAddr = () => getTesterReceipt().then((r) => r.contractAddress!)
 
 Deno.test('eth_accounts', opts, async () => {
     const addresses = await env.debugClient.request({
@@ -42,7 +45,7 @@ Deno.test('eth_blockNumber', opts, async () => {
 
 Deno.test('eth_call', opts, async () => {
     const value = await env.serverWallet.readContract({
-        address: testerAddr,
+        address: await getTesterAddr(),
         abi: TesterAbi,
         functionName: 'value',
     })
@@ -58,7 +61,7 @@ Deno.test('eth_chainId', opts, async () => {
 
 Deno.test('eth_estimateGas', opts, async () => {
     const res = await env.serverWallet.estimateContractGas({
-        address: testerAddr,
+        address: await getTesterAddr(),
         abi: TesterAbi,
         functionName: 'setValue',
         args: [43n],
@@ -76,13 +79,13 @@ Deno.test('eth_gasPrice', opts, async () => {
 
 Deno.test('eth_getBalance', opts, async () => {
     const balance = await env.serverWallet.getBalance({
-        address: testerAddr,
+        address: await getTesterAddr(),
     })
     expect(balance).toEqual(parseEther('2'))
 })
 
 Deno.test('eth_getBlockByHash and eth_getBlockByNumber', opts, async () => {
-    const { blockNumber, blockHash } = testerReceipt
+    const { blockNumber, blockHash } = await getTesterReceipt()
     const by_number = await env.serverWallet.getBlock({
         blockNumber,
     })
@@ -98,7 +101,7 @@ Deno.test(
     'eth_getBlockTransactionCountByHash and eth_getBlockTransactionCountByNumber',
     opts,
     async () => {
-        const { blockNumber, blockHash } = testerReceipt
+        const { blockNumber, blockHash } = await getTesterReceipt()
         const byNumber = await env.serverWallet.getBlockTransactionCount({
             blockNumber,
         })
@@ -116,7 +119,7 @@ Deno.test('eth_getCode', opts, async () => {
     // Existing contract
     {
         const code = await env.serverWallet.getCode({
-            address: testerAddr,
+            address: await getTesterAddr(),
         })
 
         // Runtime code on EVM
@@ -158,7 +161,7 @@ Deno.test('eth_getCode', opts, async () => {
 })
 
 Deno.test('eth_getLogs', opts, async () => {
-    const { blockHash } = testerReceipt
+    const { blockHash } = await getTesterReceipt()
     const logs = await env.serverWallet.getLogs({
         blockHash,
     })
@@ -167,7 +170,7 @@ Deno.test('eth_getLogs', opts, async () => {
 })
 
 Deno.test('eth_getStorageAt', opts, async () => {
-    const address = testerAddr
+    const address = await getTesterAddr()
     const storage = await env.serverWallet.getStorageAt({
         address,
         slot: '0x01',
@@ -188,7 +191,7 @@ Deno.test(
             blockHash,
             transactionIndex: index,
             blockNumber,
-        } = testerReceipt
+        } = await getTesterReceipt()
         const byTxHash = await env.serverWallet.getTransaction({ hash })
         expect(byTxHash).toBeTruthy()
         const byBlockHash = await env.serverWallet.getTransaction({
@@ -212,7 +215,7 @@ Deno.test('eth_getTransactionCount', opts, async () => {
 })
 
 Deno.test('eth_getTransactionReceipt', opts, async () => {
-    const { transactionHash: hash } = testerReceipt
+    const { transactionHash: hash } = await getTesterReceipt()
     const receipt = await env.serverWallet.waitForTransactionReceipt(
         hash,
     )
@@ -229,7 +232,7 @@ Deno.test('eth_maxPriorityFeePerGas', opts, async () => {
 
 Deno.test('eth_sendRawTransaction', opts, async () => {
     const { request } = await env.accountWallet.simulateContract({
-        address: testerAddr,
+        address: await getTesterAddr(),
         abi: TesterAbi,
         functionName: 'setValue',
         args: [42n],
@@ -243,7 +246,7 @@ Deno.test('eth_sendRawTransaction', opts, async () => {
 
 Deno.test('eth_sendTransaction', opts, async () => {
     const hash = await env.serverWallet.sendTransaction({
-        to: testerAddr,
+        to: await getTesterAddr(),
         data: encodeFunctionData({
             abi: TesterAbi,
             functionName: 'setValue',

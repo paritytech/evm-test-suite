@@ -2,29 +2,28 @@ import {
     getByteCode,
     getEnv,
     jsonRpcErrors,
+    memoizedDeploy,
     sanitizeOpts as opts,
 } from './util.ts'
 import { expect } from '@std/expect'
 import { ErrorsAbi } from '../abi/Errors.ts'
-import type { Hex } from 'viem'
 
 // Initialize test environment
 const env = await getEnv()
-let errorTesterAddr: Hex
 
-Deno.test.beforeAll(async () => {
-    const hash = await env.serverWallet.deployContract({
-        abi: ErrorsAbi,
-        bytecode: getByteCode('Errors', env.evm),
-    })
-    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
-    errorTesterAddr = receipt.contractAddress!
-})
+const getErrorTesterAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: ErrorsAbi,
+            bytecode: getByteCode('Errors', env.evm),
+        }),
+)
 
 Deno.test('triggerAssertError', opts, async () => {
     try {
         await env.accountWallet.readContract({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'triggerAssertError',
         })
@@ -45,7 +44,7 @@ Deno.test('triggerAssertError', opts, async () => {
 Deno.test('triggerRevertError', opts, async () => {
     try {
         await env.accountWallet.readContract({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'triggerRevertError',
         })
@@ -66,7 +65,7 @@ Deno.test('triggerRevertError', opts, async () => {
 Deno.test('triggerDivisionByZero', opts, async () => {
     try {
         await env.accountWallet.readContract({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'triggerDivisionByZero',
         })
@@ -87,7 +86,7 @@ Deno.test('triggerDivisionByZero', opts, async () => {
 Deno.test('triggerOutOfBoundsError', opts, async () => {
     try {
         await env.accountWallet.readContract({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'triggerOutOfBoundsError',
         })
@@ -108,7 +107,7 @@ Deno.test('triggerOutOfBoundsError', opts, async () => {
 Deno.test('triggerCustomError', opts, async () => {
     try {
         await env.accountWallet.readContract({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'triggerCustomError',
         })

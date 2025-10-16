@@ -2,6 +2,7 @@ import {
     getByteCode,
     getEnv,
     jsonRpcErrors,
+    memoizedDeploy,
     sanitizeOpts as opts,
 } from './util.ts'
 import { expect } from '@std/expect'
@@ -12,29 +13,28 @@ import { EventExampleAbi } from '../abi/EventExample.ts'
 // Initialize test environment
 const env = await getEnv()
 
-let errorTesterAddr: Hex
-let eventExampleAddr: Hex
+const getErrorTesterAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: ErrorsAbi,
+            bytecode: getByteCode('Errors', env.evm),
+        }),
+)
 
-Deno.test.beforeAll(async () => {
-    const hash1 = await env.serverWallet.deployContract({
-        abi: ErrorsAbi,
-        bytecode: getByteCode('Errors', env.evm),
-    })
-    const receipt1 = await env.serverWallet.waitForTransactionReceipt(hash1)
-    errorTesterAddr = receipt1.contractAddress!
-
-    const hash2 = await env.serverWallet.deployContract({
-        abi: EventExampleAbi,
-        bytecode: getByteCode('EventExample', env.evm),
-    })
-    const receipt2 = await env.serverWallet.waitForTransactionReceipt(hash2)
-    eventExampleAddr = receipt2.contractAddress!
-})
+const getEventExampleAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: EventExampleAbi,
+            bytecode: getByteCode('EventExample', env.evm),
+        }),
+)
 
 Deno.test('eth_call with insufficient funds', opts, async () => {
     try {
         await env.emptyWallet.simulateContract({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'valueMatch',
             value: parseEther('10'),
@@ -78,7 +78,7 @@ Deno.test('eth_call transfer with insufficient funds', opts, async () => {
 Deno.test('eth_estimate with insufficient funds', opts, async () => {
     try {
         await env.emptyWallet.estimateContractGas({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'valueMatch',
             value: parseEther('10'),
@@ -101,7 +101,7 @@ Deno.test(
     async () => {
         try {
             await env.emptyWallet.estimateContractGas({
-                address: errorTesterAddr,
+                address: await getErrorTesterAddr(),
                 abi: ErrorsAbi,
                 functionName: 'valueMatch',
                 value: parseEther('10'),
@@ -122,7 +122,7 @@ Deno.test(
 Deno.test('eth_estimate with revert', opts, async () => {
     try {
         await env.serverWallet.estimateContractGas({
-            address: errorTesterAddr,
+            address: await getErrorTesterAddr(),
             abi: ErrorsAbi,
             functionName: 'valueMatch',
             value: parseEther('11'),
@@ -159,7 +159,7 @@ Deno.test(
         expect(balance).toBe(0n)
         try {
             await env.emptyWallet.estimateContractGas({
-                address: errorTesterAddr,
+                address: await getErrorTesterAddr(),
                 abi: ErrorsAbi,
                 functionName: 'setState',
                 args: [true],
@@ -194,14 +194,14 @@ Deno.test('eth_estimate with no gas specified', opts, async () => {
             {
                 data,
                 from: env.emptyWallet.account.address,
-                to: errorTesterAddr,
+                to: await getErrorTesterAddr(),
             },
         ],
     })
 })
 
 Deno.test('logs', opts, async () => {
-    const address = eventExampleAddr
+    const address = await getEventExampleAddr()
     const { request } = await env.serverWallet.simulateContract({
         address,
         abi: EventExampleAbi,

@@ -373,6 +373,32 @@ export function visit(
 
 export type Visitor = Parameters<typeof visit>[1]
 
+export function memoized<T>(transact: () => Promise<T>): () => Promise<T> {
+    let result: T | null = null
+    return async function getResult(): Promise<T> {
+        if (result) {
+            return result
+        }
+        result = await transact()
+        return result
+    }
+}
+
+export function memoizedTx(env: Env, transact: () => Promise<Hex>) {
+    return memoized(async () => {
+        const hash = await transact()
+        return await env.serverWallet.waitForTransactionReceipt(hash)
+    })
+}
+
+export function memoizedDeploy(env: Env, transact: () => Promise<Hex>) {
+    const getReceipt = memoizedTx(env, transact)
+    return async () => {
+        const receipt = await getReceipt()
+        return receipt.contractAddress!
+    }
+}
+
 export function computeMappingSlot(addressKey: Hex, slotIndex: number) {
     const keyBytes = pad(hexToBytes(addressKey), { size: 32 })
     const slotBytes = pad(hexToBytes(`0x${slotIndex.toString(16)}`), {
