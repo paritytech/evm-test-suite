@@ -1,9 +1,6 @@
 # Logs
 logs
 *.log
-abi/*
-pvm/*
-evm/*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -14,9 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-abi/*
-evm/*
-pvm/*
 !.gitkeep
 src/samples
 

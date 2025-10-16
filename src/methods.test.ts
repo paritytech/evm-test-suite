@@ -22,8 +22,7 @@ const getTesterReceipt = memoizedTx(env, () =>
         abi: TesterAbi,
         bytecode: getByteCode('Tester', env.evm),
         value: parseEther('2'),
-    })
-)
+    }))
 const getTesterAddr = () => getTesterReceipt().then((r) => r.contractAddress!)
 
 Deno.test('eth_accounts', opts, async () => {
@@ -109,7 +108,7 @@ Deno.test(
 
         expect(byNumber).toEqual(byHash)
         expect(byNumber).toBeGreaterThanOrEqual(1)
-    }
+    },
 )
 
 Deno.test('eth_getCode', opts, async () => {
@@ -173,7 +172,7 @@ Deno.test('eth_getStorageAt', opts, async () => {
 
     // revive store value as little endian. When this change in the compiler, or the runtime API, we can amend this test
     expect(storage).toEqual(
-        '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
+        '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016',
     )
 })
 
@@ -199,12 +198,12 @@ Deno.test(
             index,
         })
         expect(byBlockNumber).toEqual(byTxHash)
-    }
+    },
 )
 
 Deno.test('eth_getTransactionCount', opts, async () => {
     const count = await env.serverWallet.getTransactionCount(
-        env.serverWallet.account
+        env.serverWallet.account,
     )
     expect(count).toBeGreaterThanOrEqual(1)
 })
@@ -284,6 +283,6 @@ Deno.test('eth_feeHistory', opts, async () => {
     expect(feeHistory.reward?.length).toEqual(feeHistory.gasUsedRatio.length)
 
     expect(feeHistory.baseFeePerGas).toHaveLength(
-        feeHistory.gasUsedRatio.length + 1
+        feeHistory.gasUsedRatio.length + 1,
     )
 })

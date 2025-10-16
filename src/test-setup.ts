@@ -41,8 +41,7 @@ export async function setupTests() {
         ]
 
         await killProcessOnPort(9944)
-        const nodePath =
-            Deno.env.get('REVIVE_DEV_NODE_PATH') ??
+        const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ??
             `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
         console.log('🚀 Start dev-node ...')
         const devNodeProcess = new Deno.Command(nodePath, {
@@ -62,8 +61,7 @@ export async function setupTests() {
         ]
 
         await killProcessOnPort(8545)
-        const ethRpcPath =
-            Deno.env.get('ETH_RPC_PATH') ??
+        const ethRpcPath = Deno.env.get('ETH_RPC_PATH') ??
             `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
         console.log('🚀 Start eth-rpc ...')
         const ethRpcProcess = new Deno.Command(ethRpcPath, {
