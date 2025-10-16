@@ -4,7 +4,6 @@ import {
     hexToBigInt,
     hexToNumber,
     parseEther,
-    type TransactionReceipt,
 } from 'viem'
 import {
     getByteCode,

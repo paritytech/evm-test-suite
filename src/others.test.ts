@@ -6,7 +6,7 @@ import {
     sanitizeOpts as opts,
 } from './util.ts'
 import { expect } from '@std/expect'
-import { decodeEventLog, encodeFunctionData, type Hex, parseEther } from 'viem'
+import { decodeEventLog, encodeFunctionData, parseEther } from 'viem'
 import { ErrorsAbi } from '../abi/Errors.ts'
 import { EventExampleAbi } from '../abi/EventExample.ts'
 

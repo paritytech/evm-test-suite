@@ -11,9 +11,7 @@ import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import {
     encodeFunctionData,
-    type Hex,
     parseEther,
-    type TransactionReceipt,
 } from 'viem'
 import { TracingCallerAbi } from '../abi/TracingCaller.ts'
 import { TracingCalleeAbi } from '../abi/TracingCallee.ts'

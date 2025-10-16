@@ -23,7 +23,7 @@ export const sanitizeOpts = {
     sanitizeExit: false,
 }
 
-export function getByteCode(name: string, evm = false): Hex {
+export function getByteCode(name: string, evm: boolean): Hex {
     const bytecode = evm
         ? Deno.readFileSync(`evm/${name}.bin`)
         : Deno.readFileSync(`pvm/${name}.polkavm`)
