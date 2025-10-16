@@ -1,15 +1,15 @@
 import {
-    createEnv,
     getByteCode,
+    getEnv,
     killProcessOnPort,
     wait,
     waitForHealth,
 } from './util.ts'
 import { FlipperAbi } from '../abi/Flipper.ts'
-import { assert } from '@std/assert'
 
 if (Deno.env.get('START_REVIVE_DEV_NODE')) {
-    const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
+    const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ??
+        `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
     console.log(`🚀 Start node ${nodePath}...`)
     killProcessOnPort(9944)
     new Deno.Command(nodePath, {
@@ -24,7 +24,8 @@ if (Deno.env.get('START_REVIVE_DEV_NODE')) {
 
 // Run eth-rpc on 8545
 if (Deno.env.get('START_ETH_RPC')) {
-    const adapterPath = Deno.env.get('ETH_RPC_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
+    const adapterPath = Deno.env.get('ETH_RPC_PATH') ??
+        `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
     console.log(`🚀 Start eth-rpc ${adapterPath} ...`)
     killProcessOnPort(8545)
     new Deno.Command(adapterPath, {
@@ -39,13 +40,13 @@ if (Deno.env.get('START_ETH_RPC')) {
 }
 
 await waitForHealth('http://localhost:8545').catch()
-const env = await createEnv('eth-rpc')
+const env = await getEnv()
 const wallet = env.accountWallet
 
 console.log('🚀 Deploy flipper...')
 const hash = await wallet.deployContract({
     abi: FlipperAbi,
-    bytecode: getByteCode('Flipper'),
+    bytecode: getByteCode('Flipper', env.evm),
 })
 
 const deployReceipt = await wallet.waitForTransactionReceipt({ hash })
@@ -95,7 +96,7 @@ try {
             console.log('-----------------------------------')
             console.log(`status: ${receipt.status ? '✅' : '❌'}`)
             console.log(
-                `block: ${receipt.blockNumber} - hash: ${receipt.blockHash}`
+                `block: ${receipt.blockNumber} - hash: ${receipt.blockHash}`,
             )
             console.log(`tx: ${hash}`)
             console.log('-----------------------------------')

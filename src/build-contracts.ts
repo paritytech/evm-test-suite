@@ -74,9 +74,9 @@ for (const file of input) {
                 if (contract?.evm?.bytecode?.object) {
                     console.log(`📜 Add PVM contract ${name}`)
                     const bytecode = new Uint8Array(
-                        contract.evm.bytecode.object.match(/.{1,2}/g)!.map((
-                            byte,
-                        ) => parseInt(byte, 16)),
+                        contract.evm.bytecode.object
+                            .match(/.{1,2}/g)!
+                            .map((byte) => parseInt(byte, 16)),
                     )
                     Deno.writeFileSync(
                         join(pvmDir, `${name}.polkavm`),
@@ -106,14 +106,11 @@ for (const file of input) {
                 const bytecodeHex = contract.evm.bytecode.object
                 if (bytecodeHex.length > 0) {
                     const bytecode = new Uint8Array(
-                        bytecodeHex.match(/.{1,2}/g)!.map((byte) =>
-                            parseInt(byte, 16)
-                        ),
+                        bytecodeHex
+                            .match(/.{1,2}/g)!
+                            .map((byte) => parseInt(byte, 16)),
                     )
-                    Deno.writeFileSync(
-                        join(evmDir, `${name}.bin`),
-                        bytecode,
-                    )
+                    Deno.writeFileSync(join(evmDir, `${name}.bin`), bytecode)
                 }
             }
 
@@ -126,12 +123,13 @@ for (const file of input) {
 
             // Format TypeScript file manually (simple formatting)
             const tsContent = `export const ${abiName} = ${
-                JSON.stringify(abi, null, 2)
+                JSON.stringify(
+                    abi,
+                    null,
+                    2,
+                )
             } as const\n`
-            Deno.writeTextFileSync(
-                join(abiDir, `${name}.ts`),
-                tsContent,
-            )
+            Deno.writeTextFileSync(join(abiDir, `${name}.ts`), tsContent)
         }
     }
 }

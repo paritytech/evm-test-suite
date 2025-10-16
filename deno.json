@@ -1,8 +1,18 @@
 {
+    "permissions": {
+        "default": {
+            "read": true,
+            "write": true,
+            "net": true,
+            "env": true,
+            "run": true
+        }
+    },
     "tasks": {
-        "build": "deno run --allow-all src/build-contracts.ts",
-        "test": "deno test --allow-all --no-check src/all-tests.ts",
-        "test:full": "START_GETH=1 START_REVIVE_DEV_NODE=1 START_ETH_RPC=1 deno test --allow-all --no-check --permit-no-files src/all-tests.ts",
+        "build": "deno run -P src/build-contracts.ts",
+        "test:evm": "USE_REVIVE=evm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
+        "test:pvm": "USE_REVIVE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
+        "test:geth": "START_GETH=true deno test -P",
         "lint": "deno fmt --check && deno lint"
     },
     "test": {

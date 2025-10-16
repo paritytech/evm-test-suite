@@ -1,29 +1,28 @@
 import { killProcessOnPort, waitForHealth } from './util.ts'
 
-export type Env = 'geth' | 'eth-rpc'
-
 let processes: Deno.ChildProcess[] = []
-let envs: Env[] = []
+let setupComplete = false
 
-export async function setupTests(): Promise<Env[]> {
-    let useGeth = !!Deno.env.get('USE_GETH')
-    let useEthRpc = !!Deno.env.get('USE_ETH_RPC')
-
+export async function setupTests() {
+    // Only run setup once, even if imported by multiple test files
+    if (setupComplete) {
+        return
+    }
+    setupComplete = true
     if (Deno.env.get('START_GETH')) {
-        useGeth = true
         const geth = Deno.env.get('GETH_BIN') ?? 'geth'
         const gethArgs = [
             '--http',
             '--http.api',
             'web3,eth,debug,personal,net',
             '--http.port',
-            '8546',
+            '8545',
             '--dev',
             '--verbosity',
             '0',
         ]
 
-        await killProcessOnPort(8546)
+        await killProcessOnPort(8545)
         console.log('🚀 Start geth...')
         const gethProcess = new Deno.Command(geth, {
             args: gethArgs,
@@ -31,7 +30,8 @@ export async function setupTests(): Promise<Env[]> {
             stderr: 'null',
         }).spawn()
         processes.push(gethProcess)
-        await waitForHealth('http://localhost:8546').catch(() => {})
+        await waitForHealth('http://localhost:8545').catch(() => {})
+        Deno.env.set('USE_GETH', 'true')
     }
 
     if (Deno.env.get('START_REVIVE_DEV_NODE')) {
@@ -41,7 +41,9 @@ export async function setupTests(): Promise<Env[]> {
         ]
 
         await killProcessOnPort(9944)
-        const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
+        const nodePath =
+            Deno.env.get('REVIVE_DEV_NODE_PATH') ??
+            `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
         console.log('🚀 Start dev-node ...')
         const devNodeProcess = new Deno.Command(nodePath, {
             args: devNodeArgs,
@@ -52,8 +54,6 @@ export async function setupTests(): Promise<Env[]> {
     }
 
     if (Deno.env.get('START_ETH_RPC')) {
-        useEthRpc = true
-
         // Run eth-rpc on 8545
         const ethRpcArgs = [
             '--dev',
@@ -62,27 +62,22 @@ export async function setupTests(): Promise<Env[]> {
         ]
 
         await killProcessOnPort(8545)
-        const adapterPath = Deno.env.get('ETH_RPC_PATH') ?? `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
+        const ethRpcPath =
+            Deno.env.get('ETH_RPC_PATH') ??
+            `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
         console.log('🚀 Start eth-rpc ...')
-        const ethRpcProcess = new Deno.Command(adapterPath, {
+        const ethRpcProcess = new Deno.Command(ethRpcPath, {
             args: ethRpcArgs,
             stdout: 'null',
             stderr: 'null',
         }).spawn()
         processes.push(ethRpcProcess)
         await waitForHealth('http://localhost:8545').catch(() => {})
+
+        if (!Deno.env.has('USE_REVIVE')) {
+            Deno.env.set('USE_REVIVE', 'evm')
+        }
     }
-
-    envs = [
-        ...(useGeth ? ['geth' as const] : []),
-        ...(useEthRpc ? ['eth-rpc' as const] : []),
-    ]
-
-    if (envs.length === 0) {
-        throw new Error('No environment started. Set USE_GETH or USE_ETH_RPC')
-    }
-
-    return envs
 }
 
 export function cleanupTests() {
@@ -98,8 +93,4 @@ export function cleanupTests() {
         }
     }
     processes = []
-}
-
-export function getEnvs(): Env[] {
-    return envs
 }
