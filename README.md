@@ -63,3 +63,5 @@ Tests are configured via environment variables:
 - `START_GETH=1` - Automatically start Geth
 - `START_REVIVE_DEV_NODE=1` - Automatically start Revive dev node
 - `START_ETH_RPC=1` - Automatically start ETH RPC server
+- `USE_GETH=1` - Run tests against Geth (uses EVM bytecode)
+- `USE_ETH_RPC=1` - Run tests against ETH RPC with both PVM and EVM bytecode

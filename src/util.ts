@@ -21,12 +21,9 @@ export function getByteCode(name: string, evm = false): Hex {
     const bytecode = evm
         ? Deno.readFileSync(`evm/${name}.bin`)
         : Deno.readFileSync(`pvm/${name}.polkavm`)
-    return `0x${
-        Array.from(bytecode).map((b: number) => b.toString(16).padStart(2, '0'))
-            .join(
-                '',
-            )
-    }` as Hex
+    return `0x${Array.from(bytecode)
+        .map((b: number) => b.toString(16).padStart(2, '0'))
+        .join('')}` as Hex
 }
 
 export type JsonRpcError = {
@@ -45,9 +42,11 @@ export async function killProcessOnPort(port: number) {
 
     try {
         const { stdout } = await command.output()
-        const pids = new TextDecoder().decode(stdout).trim().split('\n').filter(
-            Boolean,
-        )
+        const pids = new TextDecoder()
+            .decode(stdout)
+            .trim()
+            .split('\n')
+            .filter(Boolean)
 
         if (pids.length) {
             console.log(` Port ${port} is in use. Killing process...`)
@@ -67,12 +66,32 @@ export async function killProcessOnPort(port: number) {
     }
 }
 
+export type EnvName = 'geth' | 'revive-pvm' | 'revive-evm'
+
+function getEnvName(): EnvName {
+    const useGeth = !!Deno.env.get('USE_GETH')
+    const useRevive = Deno.env.get('USE_REVIVE') // 'pvm' or 'evm'
+
+    if (useGeth) {
+        return 'geth'
+    } else if (useRevive === 'pvm') {
+        return 'revive-pvm'
+    } else if (useRevive === 'evm') {
+        return 'revive-evm'
+    } else {
+        throw new Error(
+            'No environment specified. Set USE_GETH or USE_REVIVE (pvm|evm)'
+        )
+    }
+}
+
 export const jsonRpcErrors: JsonRpcError[] = []
-export type ChainEnv = Awaited<ReturnType<typeof createEnv>>
-export async function createEnv(name: 'geth' | 'eth-rpc') {
-    const gethPort = Deno.env.get('GETH_PORT') ?? '8546'
-    const ethRpcPort = Deno.env.get('ETH_RPC_PORT') ?? '8545'
-    const url = `http://localhost:${name === 'geth' ? gethPort : ethRpcPort}`
+
+export type Env = Awaited<ReturnType<typeof getEnv>>
+export async function getEnv() {
+    const name = getEnvName()
+    const port = Deno.env.get('RPC_PORT') ?? '8545'
+    const url = `http://localhost:${port}`
 
     const id = await (async (): Promise<number> => {
         const resp = await fetch(url, {
@@ -86,7 +105,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
                 id: 1,
             }),
         })
-        const { result } = await resp.json() as { result: Hex }
+        const { result } = (await resp.json()) as { result: Hex }
         return hexToNumber(result)
     })()
 
@@ -116,14 +135,14 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
     })
 
     const waitForTransactionReceiptExtension = (client: {
-        getTransactionReceipt: (
-            args: { hash: Hex },
-        ) => Promise<TransactionReceipt>
+        getTransactionReceipt: (args: {
+            hash: Hex
+        }) => Promise<TransactionReceipt>
     }) => ({
         async waitForTransactionReceipt(
             hash: Hex,
             pollingInterval = 100,
-            timeout = 30000,
+            timeout = 30000
         ): Promise<TransactionReceipt> {
             const startTime = Date.now()
             while (true) {
@@ -131,11 +150,10 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
                     const receipt = await client.getTransactionReceipt({ hash })
                     if (receipt) return receipt
                 } catch (error) {
-                    // Only ignore expected errors during transaction indexing/polling
                     const errorStr = String(error)
                     if (
                         !errorStr.includes(
-                            'transaction indexing is in progress',
+                            'transaction indexing is in progress'
                         ) &&
                         !errorStr.includes('transaction not found') &&
                         !errorStr.includes('TransactionReceiptNotFoundError')
@@ -146,7 +164,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
                 }
                 if (Date.now() - startTime > timeout) {
                     throw new Error(
-                        `Transaction receipt timeout after ${timeout}ms for hash ${hash}`,
+                        `Transaction receipt timeout after ${timeout}ms for hash ${hash}`
                     )
                 }
                 await new Promise((resolve) =>
@@ -166,16 +184,20 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         account,
         transport,
         chain,
-    }).extend(publicActions).extend(waitForTransactionReceiptExtension)
+    })
+        .extend(publicActions)
+        .extend(waitForTransactionReceiptExtension)
 
     const accountWallet = createWalletClient({
         account: privateKeyToAccount(
             '0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133',
-            { nonceManager },
+            { nonceManager }
         ),
         transport,
         chain,
-    }).extend(publicActions).extend(waitForTransactionReceiptExtension)
+    })
+        .extend(publicActions)
+        .extend(waitForTransactionReceiptExtension)
 
     // On geth let's endow the account wallet with some funds, to match the eth-rpc setup
     if (name === 'geth') {
@@ -194,11 +216,13 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
     const emptyWallet = createWalletClient({
         account: privateKeyToAccount(
             '0x4450c571bae82da0528ecf76fcf7079e12ecc46dc873c9cacb6db8b75ed22f41',
-            { nonceManager },
+            { nonceManager }
         ),
         transport,
         chain,
-    }).extend(publicActions).extend(waitForTransactionReceiptExtension)
+    })
+        .extend(publicActions)
+        .extend(waitForTransactionReceiptExtension)
 
     type TracerType = 'callTracer' | 'prestateTracer'
     type TracerConfig = {
@@ -219,7 +243,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         traceTransaction<Tracer extends TracerType>(
             txHash: Hex,
             tracer: Tracer,
-            tracerConfig?: TracerConfig[Tracer],
+            tracerConfig?: TracerConfig[Tracer]
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceTransaction' as 'eth_chainId',
@@ -229,7 +253,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         traceBlock<Tracer extends TracerType>(
             blockNumber: bigint,
             tracer: Tracer,
-            tracerConfig?: TracerConfig[Tracer],
+            tracerConfig?: TracerConfig[Tracer]
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceBlockByNumber' as 'eth_chainId',
@@ -244,7 +268,7 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
             args: TransactionRequest,
             tracer: Tracer,
             tracerConfig: TracerConfig[Tracer],
-            blockOrTag: 'latest' | Hex = 'latest',
+            blockOrTag: 'latest' | Hex = 'latest'
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceCall' as 'eth_chainId',
@@ -266,11 +290,10 @@ export async function createEnv(name: 'geth' | 'eth-rpc') {
         emptyWallet,
         serverWallet,
         accountWallet,
-        evm: name === 'geth',
+        evm: name === 'geth' || name === 'revive-evm',
+        name,
     }
 }
-
-export type Env = Awaited<ReturnType<typeof createEnv>>
 
 export function wait(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
@@ -320,7 +343,7 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: unknown,
-    callback: (key: string, value: unknown) => [string, unknown] | null,
+    callback: (key: string, value: unknown) => [string, unknown] | null
 ): unknown {
     if (Array.isArray(obj)) {
         return obj.map((item) => visit(item, callback))
@@ -343,32 +366,6 @@ export function visit(
 }
 
 export type Visitor = Parameters<typeof visit>[1]
-
-export function memoized<T>(transact: () => Promise<T>): () => Promise<T> {
-    let result: T | null = null
-    return async function getResult(): Promise<T> {
-        if (result) {
-            return result
-        }
-        result = await transact()
-        return result
-    }
-}
-
-export function memoizedTx(env: ChainEnv, transact: () => Promise<Hex>) {
-    return memoized(async () => {
-        const hash = await transact()
-        return await env.serverWallet.waitForTransactionReceipt(hash)
-    })
-}
-
-export function memoizedDeploy(env: ChainEnv, transact: () => Promise<Hex>) {
-    const getReceipt = memoizedTx(env, transact)
-    return async () => {
-        const receipt = await getReceipt()
-        return receipt.contractAddress!
-    }
-}
 
 export function computeMappingSlot(addressKey: Hex, slotIndex: number) {
     const keyBytes = pad(hexToBytes(addressKey), { size: 32 })

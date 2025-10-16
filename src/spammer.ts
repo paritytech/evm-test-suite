@@ -1,12 +1,11 @@
 import {
-    createEnv,
     getByteCode,
+    getEnv,
     killProcessOnPort,
     wait,
     waitForHealth,
 } from './util.ts'
 import { FlipperAbi } from '../abi/Flipper.ts'
-import { assert } from '@std/assert'
 
 if (Deno.env.get('START_REVIVE_DEV_NODE')) {
     const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ??
@@ -41,13 +40,13 @@ if (Deno.env.get('START_ETH_RPC')) {
 }
 
 await waitForHealth('http://localhost:8545').catch()
-const env = await createEnv('eth-rpc')
+const env = await getEnv()
 const wallet = env.accountWallet
 
 console.log('🚀 Deploy flipper...')
 const hash = await wallet.deployContract({
     abi: FlipperAbi,
-    bytecode: getByteCode('Flipper'),
+    bytecode: getByteCode('Flipper', env.evm),
 })
 
 const deployReceipt = await wallet.waitForTransactionReceipt({ hash })
