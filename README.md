@@ -9,15 +9,20 @@ This repository contains a test suite for Ethereum rpc methods.
 ## Running Tests
 
 ```bash
-# build the contracts
-deno task build
-
 # start revive and eth rpc, then run tests with pvm bytecode
 deno task test:pvm
 # start revive and eth rpc, then run tests with evm bytecode
 deno task test:evm
 # start geth, then run tests with evm bytecode
 deno task test:geth
+```
+
+## Building contracts
+
+Contracts bytecode and abi is checked in into this repository, if you need to add new contracts, you can simply run the build command:
+
+```bash
+deno task build
 ```
 
 ### Linting
