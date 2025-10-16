@@ -18,14 +18,12 @@ import { TesterAbi } from '../abi/Tester.ts'
 // Initialize test environment
 const env = await getEnv()
 
-const getTesterReceipt = memoizedTx(
-    env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: TesterAbi,
-            bytecode: getByteCode('Tester', env.evm),
-            value: parseEther('2'),
-        }),
+const getTesterReceipt = memoizedTx(env, () =>
+    env.serverWallet.deployContract({
+        abi: TesterAbi,
+        bytecode: getByteCode('Tester', env.evm),
+        value: parseEther('2'),
+    })
 )
 const getTesterAddr = () => getTesterReceipt().then((r) => r.contractAddress!)
 
@@ -40,7 +38,7 @@ Deno.test('eth_blockNumber', opts, async () => {
     const res = await env.debugClient.request({
         method: 'eth_blockNumber',
     })
-    expect(hexToBigInt(res)).toBeTruthy()
+    expect(hexToBigInt(res) >= 0n).toBeTruthy()
 })
 
 Deno.test('eth_call', opts, async () => {
@@ -112,7 +110,7 @@ Deno.test(
 
         expect(byNumber).toEqual(byHash)
         expect(byNumber).toBeGreaterThanOrEqual(1)
-    },
+    }
 )
 
 Deno.test('eth_getCode', opts, async () => {
@@ -133,9 +131,7 @@ Deno.test('eth_getCode', opts, async () => {
 
     // EOA
     {
-        const code = await env.serverWallet.getCode(
-            env.serverWallet.account,
-        )
+        const code = await env.serverWallet.getCode(env.serverWallet.account)
 
         expect(code).toBeUndefined()
     }
@@ -178,7 +174,7 @@ Deno.test('eth_getStorageAt', opts, async () => {
 
     // revive store value as little endian. When this change in the compiler, or the runtime API, we can amend this test
     expect(storage).toEqual(
-        '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016',
+        '0x48656c6c6f20776f726c64000000000000000000000000000000000000000016'
     )
 })
 
@@ -204,21 +200,19 @@ Deno.test(
             index,
         })
         expect(byBlockNumber).toEqual(byTxHash)
-    },
+    }
 )
 
 Deno.test('eth_getTransactionCount', opts, async () => {
     const count = await env.serverWallet.getTransactionCount(
-        env.serverWallet.account,
+        env.serverWallet.account
     )
     expect(count).toBeGreaterThanOrEqual(1)
 })
 
 Deno.test('eth_getTransactionReceipt', opts, async () => {
     const { transactionHash: hash } = await getTesterReceipt()
-    const receipt = await env.serverWallet.waitForTransactionReceipt(
-        hash,
-    )
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     expect(receipt).toBeTruthy()
 })
 
@@ -238,9 +232,7 @@ Deno.test('eth_sendRawTransaction', opts, async () => {
         args: [42n],
     })
     const hash = await env.accountWallet.writeContract(request)
-    const receipt = await env.serverWallet.waitForTransactionReceipt(
-        hash,
-    )
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     expect(receipt.status).toEqual('success')
 })
 
@@ -253,9 +245,7 @@ Deno.test('eth_sendTransaction', opts, async () => {
             args: [42n],
         }),
     })
-    const receipt = await env.serverWallet.waitForTransactionReceipt(
-        hash,
-    )
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     expect(receipt.status).toEqual('success')
 })
 
@@ -292,11 +282,9 @@ Deno.test('eth_feeHistory', opts, async () => {
 
     expect(feeHistory.oldestBlock).toBeGreaterThanOrEqual(0)
     expect(feeHistory.gasUsedRatio.length).toBeGreaterThanOrEqual(0)
-    expect(feeHistory.reward?.length).toEqual(
-        feeHistory.gasUsedRatio.length,
-    )
+    expect(feeHistory.reward?.length).toEqual(feeHistory.gasUsedRatio.length)
 
     expect(feeHistory.baseFeePerGas).toHaveLength(
-        feeHistory.gasUsedRatio.length + 1,
+        feeHistory.gasUsedRatio.length + 1
     )
 })

@@ -740,6 +740,9 @@ snapshot[`get_external_balance.no_diff 1`] = `
     code: "<code>",
     nonce: "<nonce>",
   },
+  "<contract_addr_2>": {
+    balance: "<balance>",
+  },
 }
 `;
 

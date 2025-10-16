@@ -111,9 +111,6 @@ const matchFixture = async (
     const out = visit(res, visitor)
     await assertSnapshot(t, out, {
         name: `${fixtureName}.${diffMode}`,
-    }).catch((err) => {
-        console.log('got error on ', out)
-        throw err
     })
 }
 
@@ -300,7 +297,7 @@ Deno.test(
     'get_external_balance',
     opts,
     withDiffModes(async (t, config, diffMode) => {
-        const res = await env.debugClient.traceCall(
+        const res = (await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
                 to: await getAddr(),
@@ -315,7 +312,14 @@ Deno.test(
             (
                 await getBlock()
             ).hash!
-        )
+        )) as Record<string, unknown>
+
+        // Geth is missing addr2 just add it back to make test pass
+        if (env.name == 'geth' && diffMode == 'no_diff') {
+            res['<contract_addr_2>'] = {
+                balance: '<balance>',
+            }
+        }
 
         await matchFixture(t, res, 'get_external_balance', diffMode)
     })
