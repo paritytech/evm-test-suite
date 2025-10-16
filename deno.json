@@ -9,7 +9,7 @@
         }
     },
     "tasks": {
-        "build": "deno run -P src/build-contracts.ts",
+        "build": "deno run -P src/build-contracts.ts && deno fmt",
         "test:evm": "USE_REVIVE=evm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
         "test:pvm": "USE_REVIVE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
         "test:geth": "START_GETH=true deno test -P",

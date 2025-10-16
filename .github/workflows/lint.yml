@@ -37,7 +37,6 @@ jobs:
 
                   echo "Building fixture contracts"
                   deno task build
-                  deno fmt
 
                   echo "Verifying no new files were created (bytecode should be committed)"
                   if [ -n "$(git status --porcelain)" ]; then
