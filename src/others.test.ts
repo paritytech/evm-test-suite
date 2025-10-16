@@ -297,5 +297,7 @@ Deno.test('eth_call (deployment) returns runtime bytecode', opts, async () => {
     expect(typeof result).toBe('string')
     expect((result as string).slice(0, 2)).toBe('0x')
     expect((result as string).length).toBeGreaterThan(2)
-    expect(result).toBe("0x6080604052348015600e575f5ffd5b50600436106026575f3560e01c8063dffeadd014602a575b5f5ffd5b60306032565b005b5f620186a0f3fea26469706673582212200544d013174d2b813d5d067b0c93aa13be2d4b08db36a2c4337a1d825449ab3e64736f6c634300081e0033")
+    expect(result).toBe(
+        '0x6080604052348015600e575f5ffd5b50600436106026575f3560e01c8063dffeadd014602a575b5f5ffd5b60306032565b005b5f620186a0f3fea26469706673582212200544d013174d2b813d5d067b0c93aa13be2d4b08db36a2c4337a1d825449ab3e64736f6c634300081e0033',
+    )
 })
