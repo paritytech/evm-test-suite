@@ -29,7 +29,7 @@ Deno.test('eth_accounts', opts, async () => {
     const addresses = await env.debugClient.request({
         method: 'eth_accounts',
     })
-    expect(addresses).toBeGreaterThan(0)
+    expect(addresses.length).toBeGreaterThanOrEqual(1)
 })
 
 Deno.test('eth_blockNumber', opts, async () => {
