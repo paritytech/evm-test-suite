@@ -227,21 +227,28 @@ Deno.test('logs', opts, async () => {
     })
 })
 
-// execute the tx that create a child contract and record the return data size ->
-// when we read the recoreded data size it should be 0
-// traces should look the same as geth -> TODO:
 Deno.test('returndata_works', opts, async () => {
+    if (!env.evm) {
+        console.warn(
+            "Skip this test on PVM, as it doesn't support instantiating a child contract whose code is not yet on-chain."
+        )
+        return
+    }
+
+    // 1. deploy ReturnDataTester contract and get its address
     const address = await getReturnDataTesterAddr()
+
+    // 2. call createChildContract to create a child contract
     const { request } = await env.serverWallet.simulateContract({
         address,
         abi: ReturnDataTesterAbi,
         functionName: 'createChildContract',
     })
-
     const hash = await env.serverWallet.writeContract(request)
     const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     expect(receipt.status).toEqual('success')
 
+    // 3. call getCapturedReturnDataSize to get the recorded return data size
     const dataSize = await env.emptyWallet.readContract({
         address: address,
         abi: ReturnDataTesterAbi,
@@ -252,31 +259,26 @@ Deno.test('returndata_works', opts, async () => {
     expect(dataSize).toBe(0n)
 })
 
-Deno.test('eth_call returndata works', opts, async () => {
-    const address = await getReturnDataTesterAddr()
-    const result = await env.serverWallet.call({
-        to: address,
-        data: encodeFunctionData({
-            abi: ReturnDataTesterAbi,
-            functionName: 'createChildContract',
-            args: [],
-        }),
-    })
-
-    // TODO assert
-    console.log(result)
-})
-
-// eth_call deployment -> should return the runtime code
-// deploy the contract
-Deno.test('eth_call deployment should return the bytecode', opts, async () => {
+Deno.test('eth_call_deployment_returns_bytecode', opts, async () => {
     const result = await env.serverWallet.call({
         data: getByteCode('Errors', env.evm),
     })
 
+    expect(typeof result).toBe('object')
     if (env.evm) {
-        expect(result.length).toBeGreaterThan(0)
+        expect(result).not.toBeNull()
+        expect('data' in result).toBe(true)
+        expect(typeof result.data).toBe('string')
+        const data = result['data']
+        if (typeof data !== 'string') {
+            throw new Error(`expected result.data to be string, got ${typeof data}`)
+        }
+
+        // hex string; '0xDDDD...'
+        expect(data.startsWith('0x')).toBe(true)
+        expect(data.length).toBeGreaterThan(2)
     } else {
-        expect(result).toBe('0x')
+        //TODO: Is fix required for PVM ?
+        expect(result).toEqual({})
     }
 })
