@@ -235,17 +235,13 @@ Deno.test('logs', opts, async () => {
 })
 
 Deno.test('returndata_works', opts, async () => {
-    if (!env.evm) {
-        console.warn(
-            "Skip this test on PVM, as it doesn't support instantiating a child contract whose code is not yet on-chain.",
-        )
-        return
-    }
-
     // 1. deploy ReturnDataTester contract and get its address
     const address = await getReturnDataTesterAddr()
 
-    // 2. call createChildContract to create a child contract
+    // 2. Make child contract code available
+    await getErrorTesterAddr()
+
+    // 3. call createChildContract to create a child contract
     const { request } = await env.serverWallet.simulateContract({
         address,
         abi: ReturnDataTesterAbi,
@@ -255,7 +251,7 @@ Deno.test('returndata_works', opts, async () => {
     const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     expect(receipt.status).toEqual('success')
 
-    // 3. call getCapturedReturnDataSize to get the recorded return data size
+    // 4. call getCapturedReturnDataSize to get the recorded return data size
     const dataSize = await env.emptyWallet.readContract({
         address: address,
         abi: ReturnDataTesterAbi,

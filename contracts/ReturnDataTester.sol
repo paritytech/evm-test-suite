@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
-// Child contract with dummy state passed through constructor
-contract Child {
-}
+import "./contracts/Errors.sol";
 
 // Parent contract that creates a child and captures return data
 contract ReturnDataTester {
     uint public returndatasize;
 
     function createChildContract() external {
-        new Child();
+        new Errors();
         uint size;
         assembly {
             size := returndatasize()
