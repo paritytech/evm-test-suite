@@ -27,6 +27,13 @@ export const TracingCalleeAbi = [
     },
     {
         'inputs': [],
+        'name': 'destruct',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+    },
+    {
+        'inputs': [],
         'name': 'failingFunction',
         'outputs': [],
         'stateMutability': 'payable',

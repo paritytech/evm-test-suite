@@ -69,6 +69,20 @@ export const TracingCallerAbi = [
         'type': 'function',
     },
     {
+        'inputs': [],
+        'name': 'create_and_destruct',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+    },
+    {
+        'inputs': [],
+        'name': 'destruct',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+    },
+    {
         'inputs': [
             {
                 'internalType': 'uint256',

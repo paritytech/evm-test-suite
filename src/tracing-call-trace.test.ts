@@ -18,13 +18,11 @@ const env = await getEnv()
 
 const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
 
-const getDeployTracingCalleeReceipt = memoizedTx(
-    env,
-    () =>
-        env.accountWallet.deployContract({
-            abi: TracingCalleeAbi,
-            bytecode: TRACING_CALLEE_BYTECODE,
-        }),
+const getDeployTracingCalleeReceipt = memoizedTx(env, () =>
+    env.accountWallet.deployContract({
+        abi: TracingCalleeAbi,
+        bytecode: TRACING_CALLEE_BYTECODE,
+    })
 )
 
 const getTracingCalleeAddr = () =>
@@ -124,11 +122,7 @@ const getVisitor = async (): Promise<Visitor> => {
     }
 }
 
-const matchFixture = async (
-    t: Deno.TestContext,
-    res: unknown,
-    fixtureName: string,
-) => {
+const matchFixture = async (t: Deno.TestContext, res: unknown) => {
     const visitor = await getVisitor()
 
     if (Deno.env.get('DEBUG')) {
@@ -136,13 +130,13 @@ const matchFixture = async (
         const dir = `${currentDir}samples/call_tracer/`
         await Deno.mkdir(dir, { recursive: true })
         await Deno.writeTextFile(
-            `${dir}${fixtureName}.${env.chain.name}.json`,
-            JSON.stringify(res, null, 2),
+            `${dir}${t.name}.${env.chain.name}.json`,
+            JSON.stringify(res, null, 2)
         )
     }
 
     await assertSnapshot(t, visit(res, visitor), {
-        name: fixtureName,
+        name: t.name,
     })
 }
 
@@ -153,9 +147,9 @@ Deno.test('debug_traceTransaction', opts, async (t) => {
         'callTracer',
         {
             withLog: true,
-        },
+        }
     )
-    await matchFixture(t, res, 'debug_traceTransaction')
+    await matchFixture(t, res)
 })
 
 Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
@@ -165,12 +159,12 @@ Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
         'callTracer',
         {
             withLog: true,
-        },
+        }
     )
 
     // We don't have runtime code output in revive
     delete (res as Record<string, unknown>).output
-    await matchFixture(t, res, 'debug_deploy_traceTransaction')
+    await matchFixture(t, res)
 })
 
 Deno.test('debug_create', opts, async () => {
@@ -180,7 +174,7 @@ Deno.test('debug_create', opts, async () => {
         'callTracer',
         {
             withLog: true,
-        },
+        }
     )
 
     const resData = res as {
@@ -200,7 +194,7 @@ Deno.test('debug_create2', opts, async () => {
         'callTracer',
         {
             withLog: true,
-        },
+        }
     )
     const resData = res as {
         calls: Array<{ type: string; to: `0x${string}` }>
@@ -219,9 +213,9 @@ Deno.test('debug_traceBlock', opts, async (t) => {
         'callTracer',
         {
             withLog: true,
-        },
+        }
     )
-    await matchFixture(t, res, 'debug_traceBlock')
+    await matchFixture(t, res)
 })
 
 Deno.test('debug_traceCall', opts, async (t) => {
@@ -236,8 +230,44 @@ Deno.test('debug_traceCall', opts, async (t) => {
             }),
         },
         'callTracer',
-        { withLog: true },
+        { withLog: true }
     )
 
-    await matchFixture(t, res, 'debug_traceCall')
+    await matchFixture(t, res)
+})
+
+Deno.test('debug_selfdestruct', opts, async (t) => {
+    const tracingCallerAddr = await getTracingCallerAddr()
+    const res = await env.debugClient.traceCall(
+        {
+            to: tracingCallerAddr,
+            data: encodeFunctionData({
+                abi: TracingCallerAbi,
+                functionName: 'destruct',
+                args: [],
+            }),
+        },
+        'callTracer',
+        { withLog: true }
+    )
+
+    await matchFixture(t, res)
+})
+
+Deno.test('debug_create_and_destruct', opts, async (t) => {
+    const tracingCallerAddr = await getTracingCallerAddr()
+    const res = await env.debugClient.traceCall(
+        {
+            to: tracingCallerAddr,
+            data: encodeFunctionData({
+                abi: TracingCallerAbi,
+                functionName: 'create_and_destruct',
+                args: [],
+            }),
+        },
+        'callTracer',
+        { withLog: true }
+    )
+
+    await matchFixture(t, res)
 })

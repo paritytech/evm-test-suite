@@ -94,7 +94,10 @@ for (const file of input) {
         for (const error of evmOut.errors) {
             console.error(error.formattedMessage)
         }
-        Deno.exit(1)
+
+        if (evmOut.errors.some((err) => err.severity !== 'warning')) {
+            Deno.exit(1)
+        }
     }
 
     for (const contracts of Object.values(evmOut.contracts)) {
