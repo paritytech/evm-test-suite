@@ -18,11 +18,13 @@ const env = await getEnv()
 
 const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
 
-const getDeployTracingCalleeReceipt = memoizedTx(env, () =>
-    env.accountWallet.deployContract({
-        abi: TracingCalleeAbi,
-        bytecode: TRACING_CALLEE_BYTECODE,
-    })
+const getDeployTracingCalleeReceipt = memoizedTx(
+    env,
+    () =>
+        env.accountWallet.deployContract({
+            abi: TracingCalleeAbi,
+            bytecode: TRACING_CALLEE_BYTECODE,
+        }),
 )
 
 const getTracingCalleeAddr = () =>
@@ -131,7 +133,7 @@ const matchFixture = async (t: Deno.TestContext, res: unknown) => {
         await Deno.mkdir(dir, { recursive: true })
         await Deno.writeTextFile(
             `${dir}${t.name}.${env.chain.name}.json`,
-            JSON.stringify(res, null, 2)
+            JSON.stringify(res, null, 2),
         )
     }
 
@@ -147,7 +149,7 @@ Deno.test('debug_traceTransaction', opts, async (t) => {
         'callTracer',
         {
             withLog: true,
-        }
+        },
     )
     await matchFixture(t, res)
 })
@@ -159,7 +161,7 @@ Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
         'callTracer',
         {
             withLog: true,
-        }
+        },
     )
 
     // We don't have runtime code output in revive
@@ -174,7 +176,7 @@ Deno.test('debug_create', opts, async () => {
         'callTracer',
         {
             withLog: true,
-        }
+        },
     )
 
     const resData = res as {
@@ -194,7 +196,7 @@ Deno.test('debug_create2', opts, async () => {
         'callTracer',
         {
             withLog: true,
-        }
+        },
     )
     const resData = res as {
         calls: Array<{ type: string; to: `0x${string}` }>
@@ -213,7 +215,7 @@ Deno.test('debug_traceBlock', opts, async (t) => {
         'callTracer',
         {
             withLog: true,
-        }
+        },
     )
     await matchFixture(t, res)
 })
@@ -230,7 +232,7 @@ Deno.test('debug_traceCall', opts, async (t) => {
             }),
         },
         'callTracer',
-        { withLog: true }
+        { withLog: true },
     )
 
     await matchFixture(t, res)
@@ -248,7 +250,7 @@ Deno.test('debug_selfdestruct', opts, async (t) => {
             }),
         },
         'callTracer',
-        { withLog: true }
+        { withLog: true },
     )
 
     await matchFixture(t, res)
@@ -266,7 +268,7 @@ Deno.test('debug_create_and_destruct', opts, async (t) => {
             }),
         },
         'callTracer',
-        { withLog: true }
+        { withLog: true },
     )
 
     await matchFixture(t, res)
