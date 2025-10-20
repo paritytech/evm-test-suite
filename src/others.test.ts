@@ -14,25 +14,31 @@ import { ReturnDataTesterAbi } from '../abi/ReturnDataTester.ts'
 // Initialize test environment
 const env = await getEnv()
 
-const getErrorTesterAddr = memoizedDeploy(env, () =>
-    env.serverWallet.deployContract({
-        abi: ErrorsAbi,
-        bytecode: getByteCode('Errors', env.evm),
-    })
+const getErrorTesterAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: ErrorsAbi,
+            bytecode: getByteCode('Errors', env.evm),
+        }),
 )
 
-const getEventExampleAddr = memoizedDeploy(env, () =>
-    env.serverWallet.deployContract({
-        abi: EventExampleAbi,
-        bytecode: getByteCode('EventExample', env.evm),
-    })
+const getEventExampleAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: EventExampleAbi,
+            bytecode: getByteCode('EventExample', env.evm),
+        }),
 )
 
-const getReturnDataTesterAddr = memoizedDeploy(env, () =>
-    env.serverWallet.deployContract({
-        abi: ReturnDataTesterAbi,
-        bytecode: getByteCode('ReturnDataTester', env.evm),
-    })
+const getReturnDataTesterAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: ReturnDataTesterAbi,
+            bytecode: getByteCode('ReturnDataTester', env.evm),
+        }),
 )
 
 Deno.test('eth_call with insufficient funds', opts, async () => {
@@ -110,7 +116,7 @@ Deno.test(
             expect(lastJsonRpcError?.message).toContain('insufficient funds')
             expect(lastJsonRpcError?.data).toBeUndefined()
         }
-    }
+    },
 )
 
 Deno.test('eth_estimate with revert', opts, async () => {
@@ -131,7 +137,7 @@ Deno.test('eth_estimate with revert', opts, async () => {
             'execution reverted: revert: msg.value does not match value',
         ]).toContain(lastJsonRpcError?.message)
         expect(lastJsonRpcError?.data).toBe(
-            '0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001e6d73672e76616c756520646f6573206e6f74206d617463682076616c75650000'
+            '0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001e6d73672e76616c756520646f6573206e6f74206d617463682076616c75650000',
         )
     }
 })
@@ -148,7 +154,7 @@ Deno.test(
     opts,
     async () => {
         const balance = await env.serverWallet.getBalance(
-            env.emptyWallet.account
+            env.emptyWallet.account,
         )
         expect(balance).toBe(0n)
         try {
@@ -165,7 +171,7 @@ Deno.test(
             expect(lastJsonRpcError?.message).toContain('insufficient funds')
             expect(lastJsonRpcError?.data).toBeUndefined()
         }
-    }
+    },
 )
 
 Deno.test('eth_estimate with no gas specified', opts, async () => {
@@ -207,7 +213,8 @@ Deno.test('logs', opts, async () => {
     expect(logs).toHaveLength(1)
     expect(logs[0]).toMatchObject({
         address,
-        data: '0x00000000000000000000000000000000000000000000000000000000000030390000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000b48656c6c6f20776f726c64000000000000000000000000000000000000000000',
+        data:
+            '0x00000000000000000000000000000000000000000000000000000000000030390000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000b48656c6c6f20776f726c64000000000000000000000000000000000000000000',
         transactionHash: hash,
     })
 
@@ -216,7 +223,7 @@ Deno.test('logs', opts, async () => {
             abi: EventExampleAbi,
             data: logs[0].data,
             topics: logs[0].topics,
-        })
+        }),
     ).toEqual({
         eventName: 'ExampleEvent',
         args: {
@@ -230,7 +237,7 @@ Deno.test('logs', opts, async () => {
 Deno.test('returndata_works', opts, async () => {
     if (!env.evm) {
         console.warn(
-            "Skip this test on PVM, as it doesn't support instantiating a child contract whose code is not yet on-chain."
+            "Skip this test on PVM, as it doesn't support instantiating a child contract whose code is not yet on-chain.",
         )
         return
     }
@@ -271,7 +278,9 @@ Deno.test('eth_call_deployment_returns_bytecode', opts, async () => {
         expect(typeof result.data).toBe('string')
         const data = result['data']
         if (typeof data !== 'string') {
-            throw new Error(`expected result.data to be string, got ${typeof data}`)
+            throw new Error(
+                `expected result.data to be string, got ${typeof data}`,
+            )
         }
 
         // hex string; '0xDDDD...'
