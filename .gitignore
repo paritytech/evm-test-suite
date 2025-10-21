@@ -7,6 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+codegen/abi/*
+codegen/pvm/*
+codegen/evm/*
+*.sha256.txt
+
 node_modules
 dist
 dist-ssr
@@ -24,3 +29,4 @@ src/samples
 *.njsproj
 *.sln
 *.sw?
+
