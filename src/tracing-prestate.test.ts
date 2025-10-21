@@ -12,8 +12,8 @@ import {
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import { encodeFunctionData, type Hex, parseEther } from 'viem'
-import { PretraceFixtureAbi } from '../abi/PretraceFixture.ts'
-import { PretraceFixtureChildAbi } from '../abi/PretraceFixtureChild.ts'
+import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
+import { PretraceFixtureChildAbi } from '../codegen/abi/PretraceFixtureChild.ts'
 
 // Initialize test environment
 const env = await getEnv()

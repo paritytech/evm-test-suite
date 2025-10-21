@@ -7,9 +7,9 @@ import {
 } from './util.ts'
 import { expect } from '@std/expect'
 import { decodeEventLog, encodeFunctionData, parseEther } from 'viem'
-import { ErrorsAbi } from '../abi/Errors.ts'
-import { EventExampleAbi } from '../abi/EventExample.ts'
-import { ReturnDataTesterAbi } from '../abi/ReturnDataTester.ts'
+import { ErrorsAbi } from '../codegen/abi/Errors.ts'
+import { EventExampleAbi } from '../codegen/abi/EventExample.ts'
+import { ReturnDataTesterAbi } from '../codegen/abi/ReturnDataTester.ts'
 
 // Initialize test environment
 const env = await getEnv()
