@@ -45,8 +45,7 @@ Tests are configured via environment variables:
 
 - `START_ETH_RPC=1` - Automatically start revive eth-rpc server
 - `ETH_RPC_PATH` - Path to the eth-rpc binary (default: to ~/polkadot-sdk/target/debug/eth-rpc)
-- `USE_REVIVE=evm|pvm` - Whether to run tests against revive with evm or pvm bytecode, default to `evm` if not specified 
+- `USE_REVIVE=evm|pvm` - Whether to run tests against revive with evm or pvm bytecode, default to `evm` if not specified
 
 - `START_REVIVE_DEV_NODE=1` - Start Revive dev node
 - `REVIVE_DEV_NODE_PATH` - Path to the Revive dev node binary (default: to ~/polkadot-sdk/target/debug/revive-dev-node)
-
