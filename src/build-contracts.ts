@@ -12,9 +12,10 @@ import { basename, join } from '@std/path'
 type CompileInput = Parameters<typeof compile>[0]
 
 const args = Deno.args
-const filter = args.includes('-f') || args.includes('--filter')
-    ? args[args.indexOf('-f') + 1] || args[args.indexOf('--filter') + 1]
-    : undefined
+const filter =
+    args.includes('-f') || args.includes('--filter')
+        ? args[args.indexOf('-f') + 1] || args[args.indexOf('--filter') + 1]
+        : undefined
 const solcOnly = args.includes('-s') || args.includes('--solcOnly')
 
 function evmCompile(sources: CompileInput) {
@@ -72,12 +73,12 @@ for (const file of input) {
                         args: ['--version'],
                         stdout: 'piped',
                     }).output()
-                ).stdout,
+                ).stdout
             )
             console.log(
-                `Compiling with revive (using ${
-                    Deno.env.get('REVIVE_BIN')
-                } - ${output})...`,
+                `Compiling with revive (using ${Deno.env.get(
+                    'REVIVE_BIN'
+                )} - ${output})...`
             )
         }
         const reviveOut = await compile(inputSources, {
@@ -91,11 +92,11 @@ for (const file of input) {
                     const bytecode = new Uint8Array(
                         contract.evm.bytecode.object
                             .match(/.{1,2}/g)!
-                            .map((byte) => parseInt(byte, 16)),
+                            .map((byte) => parseInt(byte, 16))
                     )
                     Deno.writeFileSync(
                         join(pvmDir, `${name}.polkavm`),
-                        bytecode,
+                        bytecode
                     )
                 }
             }
@@ -126,7 +127,7 @@ for (const file of input) {
                     const bytecode = new Uint8Array(
                         bytecodeHex
                             .match(/.{1,2}/g)!
-                            .map((byte) => parseInt(byte, 16)),
+                            .map((byte) => parseInt(byte, 16))
                     )
                     Deno.writeFileSync(join(evmDir, `${name}.bin`), bytecode)
                 }
@@ -134,19 +135,11 @@ for (const file of input) {
 
             const abi = contract.abi
             const abiName = `${name}Abi`
-            Deno.writeTextFileSync(
-                join(abiDir, `${name}.json`),
-                JSON.stringify(abi, null, 2),
-            )
-
-            // Format TypeScript file manually (simple formatting)
-            const tsContent = `export const ${abiName} = ${
-                JSON.stringify(
-                    abi,
-                    null,
-                    2,
-                )
-            } as const\n`
+            const tsContent = `export const ${abiName} = ${JSON.stringify(
+                abi,
+                null,
+                2
+            )} as const\n`
             Deno.writeTextFileSync(join(abiDir, `${name}.ts`), tsContent)
         }
     }
