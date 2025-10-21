@@ -1,21 +1,20 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@std/assert@1": "1.0.15",
     "jsr:@std/assert@^1.0.14": "1.0.15",
     "jsr:@std/assert@^1.0.15": "1.0.15",
-    "jsr:@std/expect@1": "1.0.17",
+    "jsr:@std/data-structures@^1.0.9": "1.0.9",
+    "jsr:@std/expect@^1.0.17": "1.0.17",
     "jsr:@std/fs@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
-    "jsr:@std/path@1": "1.1.2",
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/path@^1.1.2": "1.1.2",
-    "jsr:@std/testing@1": "1.0.16",
-    "npm:@parity/resolc@0.2": "0.2.0",
+    "jsr:@std/testing@^1.0.16": "1.0.16",
+    "npm:@parity/resolc@~0.4.1": "0.4.1",
     "npm:@types/node@*": "24.2.0",
-    "npm:solc@~0.8.28": "0.8.30",
-    "npm:viem@^2.38.0": "2.38.0_ws@8.18.3"
+    "npm:solc@~0.8.30": "0.8.30",
+    "npm:viem@^2.38.3": "2.38.3_ws@8.18.3"
   },
   "jsr": {
     "@std/assert@1.0.15": {
@@ -23,6 +22,9 @@
       "dependencies": [
         "jsr:@std/internal@^1.0.12"
       ]
+    },
+    "@std/data-structures@1.0.9": {
+      "integrity": "033d6e17e64bf1f84a614e647c1b015fa2576ae3312305821e1a4cb20674bb4d"
     },
     "@std/expect@1.0.17": {
       "integrity": "316b47dd65c33e3151344eb3267bf42efba17d1415425f07ed96185d67fc04d9",
@@ -50,6 +52,7 @@
       "integrity": "a917ffdeb5924c9be436dc78bc32e511760e14d3a96e49c607fc5ecca86d0092",
       "dependencies": [
         "jsr:@std/assert@^1.0.15",
+        "jsr:@std/data-structures",
         "jsr:@std/fs",
         "jsr:@std/internal@^1.0.12",
         "jsr:@std/path@^1.1.2"
@@ -72,10 +75,10 @@
     "@noble/hashes@1.8.0": {
       "integrity": "sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A=="
     },
-    "@parity/resolc@0.2.0": {
-      "integrity": "sha512-5IGnWNzLNj/5unM61aIFKUXbvveqMmhiz/tPX0W3w434flDDOwfU5ER8hls1F9o9I79l0N00D83ZTkcWjyJhUQ==",
+    "@parity/resolc@0.4.1": {
+      "integrity": "sha512-GdeJnCVlnRrrHjQk0vr+8mmkiJ2LiLwe7CEQBSKslHqK3t7dhjJORR1kfxoksTM4LSyftHUYmPszeIY0r1pv3w==",
       "dependencies": [
-        "@types/node@22.18.10",
+        "@types/node@22.18.11",
         "commander@13.1.0",
         "package-json",
         "resolve-pkg",
@@ -118,8 +121,8 @@
         "@scure/base"
       ]
     },
-    "@types/node@22.18.10": {
-      "integrity": "sha512-anNG/V/Efn/YZY4pRzbACnKxNKoBng2VTFydVu8RRs5hQjikP8CQfaeAV59VFSCzKNp90mXiVXW2QzV56rwMrg==",
+    "@types/node@22.18.11": {
+      "integrity": "sha512-Gd33J2XIrXurb+eT2ktze3rJAfAp9ZNjlBdh4SVgyrKEOADwCbdUDaK7QgJno8Ue4kcajscsKqu6n8OBG3hhCQ==",
       "dependencies": [
         "undici-types@6.21.0"
       ]
@@ -173,8 +176,8 @@
     "js-sha3@0.8.0": {
       "integrity": "sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q=="
     },
-    "ky@1.11.0": {
-      "integrity": "sha512-NEyo0ICpS0cqSuyoJFMCnHOZJILqXsKhIZlHJGDYaH8OB5IFrGzuBpEwyoMZG6gUKMPrazH30Ax5XKaujvD8ag=="
+    "ky@1.12.0": {
+      "integrity": "sha512-YRLmSUHCwOJRBMArtqMRLOmO7fewn3yOoui6aB8ERkRVXupa0UiaQaKbIXteMt4jUElhbdqTMsLFHs8APxxUoQ=="
     },
     "memorystream@0.3.1": {
       "integrity": "sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw=="
@@ -277,8 +280,8 @@
     "undici-types@7.10.0": {
       "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
     },
-    "viem@2.38.0_ws@8.18.3": {
-      "integrity": "sha512-YU5TG8dgBNeYPrCMww0u9/JVeq2ZCk9fzk6QybrPkBooFysamHXL1zC3ua10aLPt9iWoA/gSVf1D9w7nc5B1aA==",
+    "viem@2.38.3_ws@8.18.3": {
+      "integrity": "sha512-By2TutLv07iNHHtWqHHzjGipevYsfGqT7KQbGEmqLco1qTJxKnvBbSviqiu6/v/9REV6Q/FpmIxf2Z7/l5AbcQ==",
       "dependencies": [
         "@noble/curves",
         "@noble/hashes",
@@ -296,13 +299,13 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1",
-      "jsr:@std/expect@1",
-      "jsr:@std/path@1",
-      "jsr:@std/testing@1",
-      "npm:@parity/resolc@0.2",
-      "npm:solc@~0.8.28",
-      "npm:viem@^2.38.0"
+      "jsr:@std/assert@^1.0.15",
+      "jsr:@std/expect@^1.0.17",
+      "jsr:@std/path@^1.1.2",
+      "jsr:@std/testing@^1.0.16",
+      "npm:@parity/resolc@~0.4.1",
+      "npm:solc@~0.8.30",
+      "npm:viem@^2.38.3"
     ]
   }
 }

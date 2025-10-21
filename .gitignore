@@ -7,6 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+abi/*
+pvm/*
+evm/*
+
 node_modules
 dist
 dist-ssr
@@ -24,3 +28,4 @@ src/samples
 *.njsproj
 *.sln
 *.sw?
+

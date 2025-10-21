@@ -37,11 +37,3 @@ jobs:
 
                   echo "Building fixture contracts"
                   deno task build
-
-                  echo "Verifying no new files were created (bytecode should be committed)"
-                  if [ -n "$(git status --porcelain)" ]; then
-                    echo "Error: Build created new or modified files. All bytecode should be committed."
-                    git status
-                    exit 1
-                  fi
-                  echo "Success: All contract bytecode is up to date"

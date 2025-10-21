@@ -1,6 +1,11 @@
 /// <reference path="./solc.d.ts" />
 
-import { compile, type SolcOutput, tryResolveImport } from '@parity/resolc'
+import {
+    compile,
+    type SolcOutput,
+    tryResolveImport,
+    version,
+} from '@parity/resolc'
 import solc from 'solc'
 import { basename, join } from '@std/path'
 
@@ -57,12 +62,22 @@ for (const file of input) {
 
     if (!solcOnly) {
         if (Deno.env.get('REVIVE_BIN') === undefined) {
-            console.log('Compiling with revive...')
+            console.log(`Compiling with revive @parity/resolc: ${version()}...`)
         } else {
+            // add the result of resolc --version
+
+            const output = new TextDecoder().decode(
+                (
+                    await new Deno.Command('resolc', {
+                        args: ['--version'],
+                        stdout: 'piped',
+                    }).output()
+                ).stdout,
+            )
             console.log(
                 `Compiling with revive (using ${
                     Deno.env.get('REVIVE_BIN')
-                })...`,
+                } - ${output})...`,
             )
         }
         const reviveOut = await compile(inputSources, {
@@ -94,7 +109,10 @@ for (const file of input) {
         for (const error of evmOut.errors) {
             console.error(error.formattedMessage)
         }
-        Deno.exit(1)
+
+        if (evmOut.errors.some((err) => err.severity !== 'warning')) {
+            Deno.exit(1)
+        }
     }
 
     for (const contracts of Object.values(evmOut.contracts)) {
