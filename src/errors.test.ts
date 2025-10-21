@@ -6,7 +6,7 @@ import {
     sanitizeOpts as opts,
 } from './util.ts'
 import { expect } from '@std/expect'
-import { ErrorsAbi } from '../abi/Errors.ts'
+import { ErrorsAbi } from '../codegen/abi/Errors.ts'
 
 // Initialize test environment
 const env = await getEnv()

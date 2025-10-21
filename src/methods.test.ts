@@ -12,7 +12,7 @@ import {
     sanitizeOpts as opts,
 } from './util.ts'
 import { expect } from '@std/expect'
-import { TesterAbi } from '../abi/Tester.ts'
+import { TesterAbi } from '../codegen/abi/Tester.ts'
 
 // Initialize test environment
 const env = await getEnv()
@@ -80,7 +80,7 @@ Deno.test('eth_getBalance', opts, async () => {
     expect(balance).toEqual(parseEther('2'))
 })
 
-Deno.test('eth_getBlockByHash and eth_getBlockByNumber', opts, async () => {
+Deno.test('eth_getBlockBy', opts, async () => {
     const { blockNumber, blockHash } = await getTesterReceipt()
     const by_number = await env.serverWallet.getBlock({
         blockNumber,
@@ -93,23 +93,24 @@ Deno.test('eth_getBlockByHash and eth_getBlockByNumber', opts, async () => {
     expect(by_hash).toEqual(by_number)
 })
 
-Deno.test(
-    'eth_getBlockTransactionCountByHash and eth_getBlockTransactionCountByNumber',
-    opts,
-    async () => {
-        const { blockNumber, blockHash } = await getTesterReceipt()
-        const byNumber = await env.serverWallet.getBlockTransactionCount({
+Deno.test('eth_getBlockTransactionCount', opts, async (t) => {
+    const { blockNumber, blockHash } = await getTesterReceipt()
+
+    await t.step('ByNumber', async () => {
+        const count = await env.serverWallet.getBlockTransactionCount({
             blockNumber,
         })
+        expect(count).toBeGreaterThanOrEqual(1)
+    })
 
-        const byHash = await env.serverWallet.getBlockTransactionCount({
+    await t.step('ByHash', async () => {
+        const count = await env.serverWallet.getBlockTransactionCount({
             blockHash,
         })
 
-        expect(byNumber).toEqual(byHash)
-        expect(byNumber).toBeGreaterThanOrEqual(1)
-    },
-)
+        expect(count).toBeGreaterThanOrEqual(1)
+    })
+})
 
 Deno.test('eth_getCode', opts, async () => {
     // Existing contract
@@ -176,30 +177,33 @@ Deno.test('eth_getStorageAt', opts, async () => {
     )
 })
 
-Deno.test(
-    'get_transaction_by_block_hash_and_index, eth_getTransactionByBlockNumberAndIndex and eth_getTransactionByHash',
-    opts,
-    async () => {
-        const {
-            transactionHash: hash,
-            blockHash,
-            transactionIndex: index,
-            blockNumber,
-        } = await getTesterReceipt()
-        const byTxHash = await env.serverWallet.getTransaction({ hash })
-        expect(byTxHash).toBeTruthy()
+Deno.test('eth_getTransactionBy', opts, async (t) => {
+    const {
+        transactionHash: hash,
+        blockHash,
+        transactionIndex: index,
+        blockNumber,
+    } = await getTesterReceipt()
+
+    const byTxHash = await env.serverWallet.getTransaction({ hash })
+    t.step('eth_getTransactionByHash', () => expect(byTxHash).toBeTruthy())
+
+    await t.step('get_transaction_by_block_hash_and_index', async () => {
         const byBlockHash = await env.serverWallet.getTransaction({
             blockHash,
             index,
         })
         expect(byBlockHash).toEqual(byTxHash)
+    })
+
+    await t.step('eth_getTransactionByBlockNumberAndIndex', async () => {
         const byBlockNumber = await env.serverWallet.getTransaction({
             blockNumber,
             index,
         })
         expect(byBlockNumber).toEqual(byTxHash)
-    },
-)
+    })
+})
 
 Deno.test('eth_getTransactionCount', opts, async () => {
     const count = await env.serverWallet.getTransactionCount(

@@ -25,8 +25,8 @@ export const sanitizeOpts = {
 
 export function getByteCode(name: string, evm: boolean): Hex {
     const bytecode = evm
-        ? Deno.readFileSync(`evm/${name}.bin`)
-        : Deno.readFileSync(`pvm/${name}.polkavm`)
+        ? Deno.readFileSync(`codegen/evm/${name}.bin`)
+        : Deno.readFileSync(`codegen/pvm/${name}.polkavm`)
     return `0x${
         Array.from(bytecode)
             .map((b: number) => b.toString(16).padStart(2, '0'))

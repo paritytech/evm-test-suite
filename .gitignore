@@ -7,9 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-abi/*
-pvm/*
-evm/*
+codegen/abi/*
+codegen/pvm/*
+codegen/evm/*
+*.sha256.txt
 
 node_modules
 dist

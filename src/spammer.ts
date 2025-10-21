@@ -5,7 +5,7 @@ import {
     wait,
     waitForHealth,
 } from './util.ts'
-import { FlipperAbi } from '../abi/Flipper.ts'
+import { FlipperAbi } from '../codegen/abi/Flipper.ts'
 
 if (Deno.env.get('START_REVIVE_DEV_NODE')) {
     const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ??
