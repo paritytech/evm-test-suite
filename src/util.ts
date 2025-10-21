@@ -25,8 +25,8 @@ export const sanitizeOpts = {
 
 export function getByteCode(name: string, evm: boolean): Hex {
     const bytecode = evm
-        ? Deno.readFileSync(`evm/${name}.bin`)
-        : Deno.readFileSync(`pvm/${name}.polkavm`)
+        ? Deno.readFileSync(`codegen/evm/${name}.bin`)
+        : Deno.readFileSync(`codegen/pvm/${name}.polkavm`)
     return `0x${
         Array.from(bytecode)
             .map((b: number) => b.toString(16).padStart(2, '0'))
@@ -340,7 +340,7 @@ export function waitForHealth(url: string) {
                 resolve()
             } catch (_err) {
                 const elapsed = Date.now() - start
-                if (elapsed > 30_000) {
+                if (elapsed > 60_000) {
                     clearInterval(interval)
                     reject(new Error('hit timeout'))
                 }

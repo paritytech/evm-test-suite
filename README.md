@@ -37,8 +37,15 @@ deno task lint
 
 Tests are configured via environment variables:
 
-- `START_GETH=1` - Automatically start Geth
-- `START_REVIVE_DEV_NODE=1` - Automatically start Revive dev node
-- `START_ETH_RPC=1` - Automatically start ETH RPC server
-- `USE_GETH=1` - Run tests against Geth (uses EVM bytecode)
-- `USE_ETH_RPC=1` - Run tests against ETH RPC with both PVM and EVM bytecode
+- `RPC_PORT` - Specify custom JSON-RPC port (default: 8545)
+
+- `START_GETH=1` - Start Geth
+- `USE_GETH=1` - Run tests against Geth.
+- `GETH_PATH` - Path to the Geth binary (default: to geth)
+
+- `START_ETH_RPC=1` - Automatically start revive eth-rpc server
+- `ETH_RPC_PATH` - Path to the eth-rpc binary (default: to ~/polkadot-sdk/target/debug/eth-rpc)
+- `USE_REVIVE=evm|pvm` - Whether to run tests against revive with evm or pvm bytecode, default to `evm` if not specified
+
+- `START_REVIVE_DEV_NODE=1` - Start Revive dev node
+- `REVIVE_DEV_NODE_PATH` - Path to the Revive dev node binary (default: to ~/polkadot-sdk/target/debug/revive-dev-node)

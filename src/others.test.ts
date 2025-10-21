@@ -7,8 +7,9 @@ import {
 } from './util.ts'
 import { expect } from '@std/expect'
 import { decodeEventLog, encodeFunctionData, parseEther } from 'viem'
-import { ErrorsAbi } from '../abi/Errors.ts'
-import { EventExampleAbi } from '../abi/EventExample.ts'
+import { ErrorsAbi } from '../codegen/abi/Errors.ts'
+import { EventExampleAbi } from '../codegen/abi/EventExample.ts'
+import { ReturnDataTesterAbi } from '../codegen/abi/ReturnDataTester.ts'
 
 // Initialize test environment
 const env = await getEnv()
@@ -31,6 +32,15 @@ const getEventExampleAddr = memoizedDeploy(
         }),
 )
 
+const getReturnDataTesterAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: ReturnDataTesterAbi,
+            bytecode: getByteCode('ReturnDataTester', env.evm),
+        }),
+)
+
 Deno.test('eth_call with insufficient funds', opts, async () => {
     try {
         await env.emptyWallet.simulateContract({
@@ -44,18 +54,14 @@ Deno.test('eth_call with insufficient funds', opts, async () => {
     } catch (_) {
         const lastJsonRpcError = jsonRpcErrors.pop()
         expect(lastJsonRpcError?.code).toBe(-32000)
-        expect(lastJsonRpcError?.message).toContain(
-            'insufficient funds',
-        )
+        expect(lastJsonRpcError?.message).toContain('insufficient funds')
         expect(lastJsonRpcError?.data).toBeUndefined()
     }
 })
 
 Deno.test('eth_call transfer with insufficient funds', opts, async () => {
     const value = parseEther('10')
-    const balance = await env.emptyWallet.getBalance(
-        env.emptyWallet.account,
-    )
+    const balance = await env.emptyWallet.getBalance(env.emptyWallet.account)
     if (balance >= value) {
         throw new Error('Balance should be less than 10')
     }
@@ -68,9 +74,7 @@ Deno.test('eth_call transfer with insufficient funds', opts, async () => {
     } catch (_) {
         const lastJsonRpcError = jsonRpcErrors.pop()
         expect(lastJsonRpcError?.code).toBe(-32000)
-        expect(lastJsonRpcError?.message).toContain(
-            'insufficient funds',
-        )
+        expect(lastJsonRpcError?.message).toContain('insufficient funds')
         expect(lastJsonRpcError?.data).toBeUndefined()
     }
 })
@@ -88,9 +92,7 @@ Deno.test('eth_estimate with insufficient funds', opts, async () => {
     } catch (_err) {
         const lastJsonRpcError = jsonRpcErrors.pop()
         expect(lastJsonRpcError?.code).toBe(-32000)
-        expect(lastJsonRpcError?.message).toContain(
-            'insufficient funds',
-        )
+        expect(lastJsonRpcError?.message).toContain('insufficient funds')
         expect(lastJsonRpcError?.data).toBeUndefined()
     }
 })
@@ -111,9 +113,7 @@ Deno.test(
         } catch (_err) {
             const lastJsonRpcError = jsonRpcErrors.pop()
             expect(lastJsonRpcError?.code).toBe(-32000)
-            expect(lastJsonRpcError?.message).toContain(
-                'insufficient funds',
-            )
+            expect(lastJsonRpcError?.message).toContain('insufficient funds')
             expect(lastJsonRpcError?.data).toBeUndefined()
         }
     },
@@ -168,18 +168,14 @@ Deno.test(
         } catch (_err) {
             const lastJsonRpcError = jsonRpcErrors.pop()
             expect(lastJsonRpcError?.code).toBe(-32000)
-            expect(lastJsonRpcError?.message).toContain(
-                'insufficient funds',
-            )
+            expect(lastJsonRpcError?.message).toContain('insufficient funds')
             expect(lastJsonRpcError?.data).toBeUndefined()
         }
     },
 )
 
 Deno.test('eth_estimate with no gas specified', opts, async () => {
-    const balance = await env.serverWallet.getBalance(
-        env.emptyWallet.account,
-    )
+    const balance = await env.serverWallet.getBalance(env.emptyWallet.account)
     expect(balance).toBe(0n)
 
     const data = encodeFunctionData({
@@ -209,9 +205,7 @@ Deno.test('logs', opts, async () => {
     })
 
     const hash = await env.serverWallet.writeContract(request)
-    const receipt = await env.serverWallet.waitForTransactionReceipt(
-        hash,
-    )
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     const logs = await env.serverWallet.getLogs({
         address,
         blockHash: receipt.blockHash,
@@ -238,4 +232,58 @@ Deno.test('logs', opts, async () => {
             message: 'Hello world',
         },
     })
+})
+
+Deno.test('returndata_works', opts, async () => {
+    // 1. deploy ReturnDataTester contract and get its address
+    const address = await getReturnDataTesterAddr()
+
+    // 2. Make child contract code available
+    await getErrorTesterAddr()
+
+    // 3. call createChildContract to create a child contract
+    const { request } = await env.serverWallet.simulateContract({
+        address,
+        abi: ReturnDataTesterAbi,
+        functionName: 'createChildContract',
+    })
+    const hash = await env.serverWallet.writeContract(request)
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+    expect(receipt.status).toEqual('success')
+
+    // 4. call getCapturedReturnDataSize to get the recorded return data size
+    const dataSize = await env.emptyWallet.readContract({
+        address: address,
+        abi: ReturnDataTesterAbi,
+        functionName: 'getCapturedReturnDataSize',
+        args: [],
+    })
+
+    expect(dataSize).toBe(0n)
+})
+
+Deno.test('eth_call_deployment_returns_bytecode', opts, async () => {
+    const result = await env.serverWallet.call({
+        data: getByteCode('Errors', env.evm),
+    })
+
+    expect(typeof result).toBe('object')
+    if (env.evm) {
+        expect(result).not.toBeNull()
+        expect('data' in result).toBe(true)
+        expect(typeof result.data).toBe('string')
+        const data = result['data']
+        if (typeof data !== 'string') {
+            throw new Error(
+                `expected result.data to be string, got ${typeof data}`,
+            )
+        }
+
+        // hex string; '0xDDDD...'
+        expect(data.startsWith('0x')).toBe(true)
+        expect(data.length).toBeGreaterThan(2)
+    } else {
+        // PVM does not return runtime bytecode for contract deployment calls
+        expect(result.data).toBeUndefined()
+    }
 })

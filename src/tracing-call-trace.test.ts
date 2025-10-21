@@ -10,8 +10,8 @@ import {
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import { encodeFunctionData, parseEther } from 'viem'
-import { TracingCallerAbi } from '../abi/TracingCaller.ts'
-import { TracingCalleeAbi } from '../abi/TracingCallee.ts'
+import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
+import { TracingCalleeAbi } from '../codegen/abi/TracingCallee.ts'
 
 // Initialize test environment
 const env = await getEnv()
