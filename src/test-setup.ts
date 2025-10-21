@@ -10,7 +10,7 @@ export async function setupTests() {
     }
     setupComplete = true
     if (Deno.env.get('START_GETH')) {
-        const geth = Deno.env.get('GETH_BIN') ?? 'geth'
+        const geth = Deno.env.get('GETH_PATH') ?? 'geth'
         const gethArgs = [
             '--http',
             '--http.api',
