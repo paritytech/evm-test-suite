@@ -171,7 +171,11 @@ for (const file of input) {
 
     if (evmOut.errors) {
         for (const error of evmOut.errors) {
-            logger.error(error.formattedMessage)
+            if (error.severity === 'warning') {
+                logger.warn(error.formattedMessage)
+            } else {
+                logger.error(error.formattedMessage)
+            }
         }
 
         if (evmOut.errors.some((err) => err.severity !== 'warning')) {
