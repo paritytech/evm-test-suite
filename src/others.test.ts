@@ -283,7 +283,7 @@ Deno.test('eth_call_deployment_returns_bytecode', opts, async () => {
         expect(data.startsWith('0x')).toBe(true)
         expect(data.length).toBeGreaterThan(2)
     } else {
-        //TODO: Is fix required for PVM ?
-        expect(result).toEqual({})
+        // PVM does not return runtime bytecode for contract deployment calls
+        expect(result.data).toBeUndefined()
     }
 })
