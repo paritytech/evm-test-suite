@@ -30,7 +30,7 @@ const getDeployTracingCalleeReceipt = memoizedTx(
 const getTracingCalleeAddr = () =>
     getDeployTracingCalleeReceipt().then((r) => r.contractAddress!)
 
-const getTracingCallerAddr = memoized(async () => {
+export const getTracingCallerAddr = memoized(async () => {
     const tracingCalleeAddr = await getTracingCalleeAddr()
     const hash = await env.accountWallet.deployContract({
         abi: TracingCallerAbi,
@@ -146,7 +146,7 @@ const matchFixture = async (t: Deno.TestContext, res: unknown) => {
     })
 }
 
-Deno.test('debug_traceTransaction', opts, async (t) => {
+Deno.test('call-trace debug_traceTransaction', opts, async (t) => {
     const startReceipt = await getStartReceipt()
     const res = await env.debugClient.traceTransaction(
         startReceipt.transactionHash,
@@ -158,7 +158,7 @@ Deno.test('debug_traceTransaction', opts, async (t) => {
     await matchFixture(t, res)
 })
 
-Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
+Deno.test('call-trace debug_deploy_traceTransaction', opts, async (t) => {
     const deployTracingCalleeReceipt = await getDeployTracingCalleeReceipt()
     const res = await env.debugClient.traceTransaction(
         deployTracingCalleeReceipt.transactionHash,
@@ -173,7 +173,7 @@ Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
     await matchFixture(t, res)
 })
 
-Deno.test('debug_create', opts, async () => {
+Deno.test('call-trace debug_create', opts, async () => {
     const createReceipt = await getCreateReceipt()
     const res = await env.debugClient.traceTransaction(
         createReceipt.transactionHash,
@@ -193,7 +193,7 @@ Deno.test('debug_create', opts, async () => {
     expect(code).toBeTruthy()
 })
 
-Deno.test('debug_create2', opts, async () => {
+Deno.test('call-trace debug_create2', opts, async () => {
     const create2Receipt = await getCreate2Receipt()
     const res = await env.debugClient.traceTransaction(
         create2Receipt.transactionHash,
@@ -212,7 +212,7 @@ Deno.test('debug_create2', opts, async () => {
     expect(code).toBeTruthy()
 })
 
-Deno.test('debug_traceBlock', opts, async (t) => {
+Deno.test('call-trace debug_traceBlock', opts, async (t) => {
     const startReceipt = await getStartReceipt()
     const res = await env.debugClient.traceBlock(
         startReceipt.blockNumber,
@@ -224,7 +224,7 @@ Deno.test('debug_traceBlock', opts, async (t) => {
     await matchFixture(t, res)
 })
 
-Deno.test('debug_traceCall', opts, async (t) => {
+Deno.test('call-trace debug_traceCall', opts, async (t) => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const res = await env.debugClient.traceCall(
         {
@@ -242,7 +242,7 @@ Deno.test('debug_traceCall', opts, async (t) => {
     await matchFixture(t, res)
 })
 
-Deno.test('debug_selfdestruct', opts, async (t) => {
+Deno.test('call-trace selfdestruct', opts, async (t) => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const res = await env.debugClient.traceCall(
         {
@@ -260,7 +260,7 @@ Deno.test('debug_selfdestruct', opts, async (t) => {
     await matchFixture(t, res)
 })
 
-Deno.test('debug_create_and_destruct', opts, async (t) => {
+Deno.test('call-trace create_and_destruct', opts, async (t) => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const res = await env.debugClient.traceCall(
         {

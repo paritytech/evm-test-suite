@@ -1,6 +1,6 @@
 export const snapshot = {};
 
-snapshot[`debug_traceTransaction 1`] = `
+snapshot[`call-trace debug_traceTransaction 1`] = `
 {
   calls: [
     {
@@ -150,7 +150,7 @@ snapshot[`debug_traceTransaction 1`] = `
 }
 `;
 
-snapshot[`debug_deploy_traceTransaction 1`] = `
+snapshot[`call-trace debug_deploy_traceTransaction 1`] = `
 {
   from: "<caller>",
   gas: "0x42",
@@ -162,7 +162,7 @@ snapshot[`debug_deploy_traceTransaction 1`] = `
 }
 `;
 
-snapshot[`debug_traceBlock 1`] = `
+snapshot[`call-trace debug_traceBlock 1`] = `
 [
   {
     result: {
@@ -317,7 +317,7 @@ snapshot[`debug_traceBlock 1`] = `
 ]
 `;
 
-snapshot[`debug_traceCall 1`] = `
+snapshot[`call-trace debug_traceCall 1`] = `
 {
   calls: [
     {
@@ -467,7 +467,7 @@ snapshot[`debug_traceCall 1`] = `
 }
 `;
 
-snapshot[`debug_selfdestruct 1`] = `
+snapshot[`call-trace selfdestruct 1`] = `
 {
   calls: [
     {
@@ -490,7 +490,7 @@ snapshot[`debug_selfdestruct 1`] = `
 }
 `;
 
-snapshot[`debug_create_and_destruct 1`] = `
+snapshot[`call-trace create_and_destruct 1`] = `
 {
   calls: [
     {
@@ -534,7 +534,7 @@ snapshot[`debug_create_and_destruct 1`] = `
 }
 `;
 
-snapshot[`write_storage.diff 1`] = `
+snapshot[`prestate write_storage.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -565,7 +565,7 @@ snapshot[`write_storage.diff 1`] = `
 }
 `;
 
-snapshot[`write_storage.no_diff 1`] = `
+snapshot[`prestate write_storage.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -583,7 +583,7 @@ snapshot[`write_storage.no_diff 1`] = `
 }
 `;
 
-snapshot[`write_storage_from_0.diff 1`] = `
+snapshot[`prestate write_storage_from_0.diff 1`] = `
 {
   post: {
     "<contract_addr>": {
@@ -607,7 +607,7 @@ snapshot[`write_storage_from_0.diff 1`] = `
 }
 `;
 
-snapshot[`write_storage_from_0.no_diff 1`] = `
+snapshot[`prestate write_storage_from_0.no_diff 1`] = `
 {
   "<contract_addr>": {
     balance: "<balance>",
@@ -621,7 +621,7 @@ snapshot[`write_storage_from_0.no_diff 1`] = `
 }
 `;
 
-snapshot[`read_storage.diff 1`] = `
+snapshot[`prestate read_storage.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -637,7 +637,7 @@ snapshot[`read_storage.diff 1`] = `
 }
 `;
 
-snapshot[`read_storage.no_diff 1`] = `
+snapshot[`prestate read_storage.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -654,7 +654,7 @@ snapshot[`read_storage.no_diff 1`] = `
 }
 `;
 
-snapshot[`deposit.diff 1`] = `
+snapshot[`prestate deposit.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -685,7 +685,7 @@ snapshot[`deposit.diff 1`] = `
 }
 `;
 
-snapshot[`deposit.no_diff 1`] = `
+snapshot[`prestate deposit.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -702,7 +702,7 @@ snapshot[`deposit.no_diff 1`] = `
 }
 `;
 
-snapshot[`withdraw.diff 1`] = `
+snapshot[`prestate withdraw.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -733,7 +733,7 @@ snapshot[`withdraw.diff 1`] = `
 }
 `;
 
-snapshot[`withdraw.no_diff 1`] = `
+snapshot[`prestate withdraw.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -750,7 +750,7 @@ snapshot[`withdraw.no_diff 1`] = `
 }
 `;
 
-snapshot[`get_balance.diff 1`] = `
+snapshot[`prestate get_balance.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -766,7 +766,7 @@ snapshot[`get_balance.diff 1`] = `
 }
 `;
 
-snapshot[`get_balance.no_diff 1`] = `
+snapshot[`prestate get_balance.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -780,7 +780,7 @@ snapshot[`get_balance.no_diff 1`] = `
 }
 `;
 
-snapshot[`get_external_balance.diff 1`] = `
+snapshot[`prestate get_external_balance.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -796,7 +796,7 @@ snapshot[`get_external_balance.diff 1`] = `
 }
 `;
 
-snapshot[`get_external_balance.no_diff 1`] = `
+snapshot[`prestate get_external_balance.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -813,7 +813,7 @@ snapshot[`get_external_balance.no_diff 1`] = `
 }
 `;
 
-snapshot[`instantiate_child.diff 1`] = `
+snapshot[`prestate instantiate_child.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -829,7 +829,7 @@ snapshot[`instantiate_child.diff 1`] = `
 }
 `;
 
-snapshot[`instantiate_child.no_diff 1`] = `
+snapshot[`prestate instantiate_child.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -843,7 +843,7 @@ snapshot[`instantiate_child.no_diff 1`] = `
 }
 `;
 
-snapshot[`call_contract.diff 1`] = `
+snapshot[`prestate call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -872,7 +872,7 @@ snapshot[`call_contract.diff 1`] = `
 }
 `;
 
-snapshot[`call_contract.no_diff 1`] = `
+snapshot[`prestate call_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -894,7 +894,7 @@ snapshot[`call_contract.no_diff 1`] = `
 }
 `;
 
-snapshot[`delegate_call_contract.diff 1`] = `
+snapshot[`prestate delegate_call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -910,7 +910,7 @@ snapshot[`delegate_call_contract.diff 1`] = `
 }
 `;
 
-snapshot[`delegate_call_contract.no_diff 1`] = `
+snapshot[`prestate delegate_call_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -924,7 +924,7 @@ snapshot[`delegate_call_contract.no_diff 1`] = `
 }
 `;
 
-snapshot[`trace_block_write_storage_twice.diff 1`] = `
+snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
 [
   {
     result: {
@@ -991,7 +991,7 @@ snapshot[`trace_block_write_storage_twice.diff 1`] = `
 ]
 `;
 
-snapshot[`trace_tx_write_storage_twice.diff 1`] = `
+snapshot[`prestate trace_tx_write_storage_twice.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -1023,7 +1023,7 @@ snapshot[`trace_tx_write_storage_twice.diff 1`] = `
 }
 `;
 
-snapshot[`trace_block_write_storage_twice.no_diff 1`] = `
+snapshot[`prestate trace_block_write_storage_twice.no_diff 1`] = `
 [
   {
     result: {
@@ -1064,7 +1064,7 @@ snapshot[`trace_block_write_storage_twice.no_diff 1`] = `
 ]
 `;
 
-snapshot[`trace_tx_write_storage_twice.no_diff 1`] = `
+snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
@@ -1078,6 +1078,56 @@ snapshot[`trace_tx_write_storage_twice.no_diff 1`] = `
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
       "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
     },
+  },
+}
+`;
+
+snapshot[`prestate selfdestruct.diff 1`] = `
+{
+  post: {},
+  pre: {
+    "0x55d96f18ef3d593c69edc7998acd0dc8adbd568d": {
+      balance: "<balance>",
+      code: "<code>",
+      nonce: "<nonce>",
+    },
+  },
+}
+`;
+
+snapshot[`prestate selfdestruct.no_diff 1`] = `
+{
+  "0x55d96f18ef3d593c69edc7998acd0dc8adbd568d": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+  },
+}
+`;
+
+snapshot[`prestate create_and_destruct.diff 1`] = `
+{
+  post: {
+    "0x55d96f18ef3d593c69edc7998acd0dc8adbd568d": {
+      nonce: "<nonce>",
+    },
+  },
+  pre: {
+    "0x55d96f18ef3d593c69edc7998acd0dc8adbd568d": {
+      balance: "<balance>",
+      code: "<code>",
+      nonce: "<nonce>",
+    },
+  },
+}
+`;
+
+snapshot[`prestate create_and_destruct.no_diff 1`] = `
+{
+  "0x55d96f18ef3d593c69edc7998acd0dc8adbd568d": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;
