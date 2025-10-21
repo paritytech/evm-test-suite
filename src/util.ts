@@ -340,7 +340,7 @@ export function waitForHealth(url: string) {
                 resolve()
             } catch (_err) {
                 const elapsed = Date.now() - start
-                if (elapsed > 30_000) {
+                if (elapsed > 60_000) {
                     clearInterval(interval)
                     reject(new Error('hit timeout'))
                 }
