@@ -92,9 +92,13 @@ const getVisitor = async (): Promise<Visitor> => {
                     value == env.accountWallet.account.address.toLowerCase()
                 ) {
                     return [key, '<caller>']
+                } else if (
+                    value == '0x0000000000000000000000000000000000000000'
+                ) {
+                    return [key, value]
                 }
 
-                return [key, value]
+                return [key, '<addr>']
             }
             case 'revertReason':
                 return [

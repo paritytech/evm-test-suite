@@ -95,7 +95,6 @@ const getVisitor = async (): Promise<Visitor> => {
 const matchFixture = async (
     t: Deno.TestContext,
     res: unknown,
-    fixtureName: string,
     diffMode: string,
 ) => {
     const visitor = await getVisitor()
@@ -104,14 +103,14 @@ const matchFixture = async (
         const dir = `${currentDir}samples/prestate_tracer/`
         await Deno.mkdir(dir, { recursive: true })
         await Deno.writeTextFile(
-            `${dir}${fixtureName}.${env.chain.name}.${diffMode}.json`,
+            `${dir}${t.name}.${env.chain.name}.${diffMode}.json`,
             JSON.stringify(res, null, 2),
         )
     }
 
     const out = visit(res, visitor)
     await assertSnapshot(t, out, {
-        name: `${fixtureName}.${diffMode}`,
+        name: `${t.name}.${diffMode}`,
     })
 }
 
@@ -143,7 +142,7 @@ Deno.test(
             'prestateTracer',
             config,
         )
-        await matchFixture(t, res, 'deploy_contract', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -168,7 +167,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'write_storage', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -192,7 +191,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'write_storage_from_0', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -216,7 +215,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'read_storage', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -241,7 +240,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'deposit', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -266,7 +265,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'withdraw', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -290,7 +289,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'get_balance', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -322,7 +321,7 @@ Deno.test(
             }
         }
 
-        await matchFixture(t, res, 'get_external_balance', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -347,7 +346,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'instantiate_child', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -369,7 +368,7 @@ Deno.test(
             config,
         )
 
-        await matchFixture(t, res, 'call_contract', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -394,7 +393,7 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'delegate_call_contract', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
@@ -402,10 +401,6 @@ Deno.test(
     'write_storage_twice',
     opts,
     withDiffModes(async (t, config, diffMode) => {
-        const nonce = await env.accountWallet.getTransactionCount(
-            env.accountWallet.account,
-        )
-
         const value = await env.accountWallet.readContract({
             address: await getAddr(),
             abi: PretraceFixtureAbi,
@@ -413,6 +408,10 @@ Deno.test(
         })
 
         const hashes: Hex[] = []
+
+        const nonce = await env.accountWallet.getTransactionCount(
+            env.accountWallet.account,
+        )
 
         // start with the higher nonce so both can be sealed in the same block
         for (const [i, txNonce] of [nonce + 1, nonce].entries()) {
@@ -437,31 +436,25 @@ Deno.test(
         expect(receipts.every((r) => r.status)).toBeTruthy()
         expect(receipts[0].blockNumber).toEqual(receipts[1].blockNumber)
 
-        // Test traceBlock
-        {
+        await t.step('trace_block_write_storage_twice', async (t) => {
             const res = await env.debugClient.traceBlock(
                 receipts[0].blockNumber,
                 'prestateTracer',
                 config,
             )
 
-            await matchFixture(
-                t,
-                res,
-                'trace_block_write_storage_twice',
-                diffMode,
-            )
-        }
+            await matchFixture(t, res, diffMode)
+        })
 
         // Test traceTransaction
-        {
+        await t.step('trace_tx_write_storage_twice', async (t) => {
             const res = await env.debugClient.traceTransaction(
                 receipts[1].transactionHash,
                 'prestateTracer',
                 config,
             )
 
-            await matchFixture(t, res, 'trace_tx_write_storage_twice', diffMode)
-        }
+            await matchFixture(t, res, diffMode)
+        })
     }),
 )
