@@ -21,4 +21,8 @@ contract Tester {
     function setName(string memory v) external {
         name = v;
     }
+
+    function revertme() external {
+        require(false, "failed!");
+    }
 }

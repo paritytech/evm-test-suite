@@ -212,10 +212,27 @@ Deno.test('eth_getTransactionCount', opts, async () => {
     expect(count).toBeGreaterThanOrEqual(1)
 })
 
-Deno.test('eth_getTransactionReceipt', opts, async () => {
-    const { transactionHash: hash } = await getTesterReceipt()
-    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
-    expect(receipt).toBeTruthy()
+Deno.test('eth_getTransactionReceipt', opts, async (t) => {
+    await t.step('eth_getTransactionReceipt status=success', async () => {
+        const { transactionHash: hash } = await getTesterReceipt()
+        const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+        expect(receipt).toBeTruthy()
+    })
+
+    await t.step('eth_getTransactionReceipt status=reverted', async () => {
+        const { gasLimit } = await env.accountWallet.getBlock()
+        const hash = await env.accountWallet.writeContract({
+            address: await getTesterAddr(),
+            abi: TesterAbi,
+            functionName: 'revertme',
+            gas: gasLimit / 2n,
+            args: [],
+        })
+
+        const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+        expect(receipt).toBeTruthy()
+        expect(receipt.status).toEqual('reverted')
+    })
 })
 
 Deno.test('eth_maxPriorityFeePerGas', opts, async () => {
