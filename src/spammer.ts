@@ -1,43 +1,7 @@
-import {
-    getByteCode,
-    getEnv,
-    killProcessOnPort,
-    wait,
-    waitForHealth,
-} from './util.ts'
+#!/usr/bin/env -S deno run --env-file --allow-all
+
+import { getByteCode, getEnv, wait, waitForHealth } from './util.ts'
 import { FlipperAbi } from '../codegen/abi/Flipper.ts'
-
-if (Deno.env.get('START_REVIVE_DEV_NODE')) {
-    const nodePath = Deno.env.get('REVIVE_DEV_NODE_PATH') ??
-        `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/revive-dev-node`
-    console.log(`🚀 Start node ${nodePath}...`)
-    killProcessOnPort(9944)
-    new Deno.Command(nodePath, {
-        args: [
-            '--dev',
-            '-l=error,evm=debug,sc_rpc_server=info,runtime::revive=debug',
-        ],
-        stdout: 'inherit',
-        stderr: 'inherit',
-    }).spawn()
-}
-
-// Run eth-rpc on 8545
-if (Deno.env.get('START_ETH_RPC')) {
-    const adapterPath = Deno.env.get('ETH_RPC_PATH') ??
-        `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
-    console.log(`🚀 Start eth-rpc ${adapterPath} ...`)
-    killProcessOnPort(8545)
-    new Deno.Command(adapterPath, {
-        args: [
-            '--dev',
-            '--node-rpc-url=ws://localhost:9944',
-            '-l=rpc-metrics=debug,eth-rpc=debug',
-        ],
-        stdout: 'inherit',
-        stderr: 'inherit',
-    }).spawn()
-}
 
 await waitForHealth('http://localhost:8545').catch()
 const env = await getEnv()
@@ -49,7 +13,7 @@ const hash = await wallet.deployContract({
     bytecode: getByteCode('Flipper', env.evm),
 })
 
-const deployReceipt = await wallet.waitForTransactionReceipt({ hash })
+const deployReceipt = await wallet.waitForTransactionReceipt(hash)
 if (!deployReceipt.contractAddress) {
     throw new Error('Contract address should be set')
 }
@@ -91,7 +55,7 @@ try {
 
         const hash = await wallet.writeContract(request)
         console.time(hash)
-        wallet.waitForTransactionReceipt({ hash }).then((receipt) => {
+        wallet.waitForTransactionReceipt(hash).then((receipt) => {
             console.timeEnd(hash)
             console.log('-----------------------------------')
             console.log(`status: ${receipt.status ? '✅' : '❌'}`)
