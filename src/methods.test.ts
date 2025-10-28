@@ -244,15 +244,31 @@ Deno.test('eth_maxPriorityFeePerGas', opts, async () => {
 })
 
 Deno.test('eth_sendRawTransaction', opts, async () => {
+    const balanceBefore = await env.accountWallet.getBalance(
+        env.accountWallet.account,
+    )
+
+    const value = parseEther('2')
     const { request } = await env.accountWallet.simulateContract({
         address: await getTesterAddr(),
         abi: TesterAbi,
         functionName: 'setValue',
         args: [42n],
+        value,
     })
     const hash = await env.accountWallet.writeContract(request)
     const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
     expect(receipt.status).toEqual('success')
+
+    const balanceAfter = await env.accountWallet.getBalance(
+        env.accountWallet.account,
+    )
+    const gasUsed = receipt.gasUsed
+    const gasPrice = receipt.effectiveGasPrice
+    const txCost = gasUsed * gasPrice + value
+    const expectedBalance = balanceBefore - txCost
+
+    expect(balanceAfter).toEqual(expectedBalance)
 })
 
 Deno.test('eth_sendTransaction', opts, async () => {

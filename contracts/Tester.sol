@@ -14,7 +14,7 @@ contract Tester {
         name = 'Hello world';
     }
 
-    function setValue(uint256 v) external {
+    function setValue(uint256 v) external payable {
         value = v;
     }
 
