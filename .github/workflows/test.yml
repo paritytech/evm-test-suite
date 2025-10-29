@@ -1,0 +1,30 @@
+name: Test
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Deno
+              uses: denoland/setup-deno@v2
+              with:
+                  deno-version: v2.x
+
+            - name: Install Geth
+              run: |
+                  sudo add-apt-repository -y ppa:ethereum/ethereum
+                  sudo apt-get update
+                  sudo apt-get install -y ethereum
+                  geth version
+
+            - name: Run tests
+              run: deno task test:geth
