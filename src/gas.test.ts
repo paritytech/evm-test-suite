@@ -31,8 +31,8 @@ async function verifyTxCost(
 Deno.test('gas cost calculation', opts, async (t) => {
     let contractAddress: Hex
 
-    const success = await t.step('deployment txCost', async () => {
-        const value = 0n //parseEther('2')
+    await t.step('deployment txCost', async () => {
+        const value = parseEther('2')
         const receipt = await verifyTxCost(
             value,
             () =>
@@ -44,10 +44,6 @@ Deno.test('gas cost calculation', opts, async (t) => {
         )
         contractAddress = receipt.contractAddress!
     })
-
-    if (!success) {
-        return
-    }
 
     await t.step('call txCost', async () => {
         const value = parseEther('10')
