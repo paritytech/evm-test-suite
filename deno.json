@@ -12,7 +12,7 @@
         "build": "deno run -P src/build-contracts.ts",
         "test:evm": "deno task build && USE_REVIVE=evm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
         "test:pvm": "deno task build && USE_REVIVE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
-        "test:geth": "START_GETH=true deno test -P",
+        "test:geth": "deno task build && START_GETH=true deno test -P",
         "lint": "deno fmt --check && deno lint"
     },
     "test": {
