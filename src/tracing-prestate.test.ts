@@ -14,11 +14,13 @@ import { expect } from '@std/expect'
 import { encodeFunctionData, type Hex, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import { PretraceFixtureChildAbi } from '../codegen/abi/PretraceFixtureChild.ts'
+import { getTracingCallerAddr } from './tracing-call-trace.test.ts'
+import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 // Initialize test environment
 const env = await getEnv()
 
-const getPretraceFixture = memoizedTx(
+const getPretraceFixtureReceipt = memoizedTx(
     env,
     () =>
         env.accountWallet.deployContract({
@@ -28,8 +30,16 @@ const getPretraceFixture = memoizedTx(
         }),
 )
 
-const getAddr = () => getPretraceFixture().then((r) => r.contractAddress!)
-const getReceiptHash = () => getPretraceFixture().then((r) => r.transactionHash)
+const getPretraceFixtureAddr = () =>
+    getPretraceFixtureReceipt().then((r) => r.contractAddress!)
+const getPretraceFixtureReceiptHash = () =>
+    getPretraceFixtureReceipt().then((r) => r.transactionHash)
+const getBlock = memoized(async () => {
+    const receipt = await getPretraceFixtureReceipt()
+    return await env.publicClient.getBlock({
+        blockHash: receipt.blockHash!,
+    })
+})
 
 const getAddr2 = memoizedDeploy(env, () =>
     env.accountWallet.deployContract({
@@ -37,16 +47,9 @@ const getAddr2 = memoizedDeploy(env, () =>
         bytecode: getByteCode('PretraceFixtureChild', env.evm),
     }))
 
-const getBlock = memoized(async () => {
-    await getPretraceFixture()
-    return await env.publicClient.getBlock({
-        blockTag: 'latest',
-    })
-})
-
 const getVisitor = async (): Promise<Visitor> => {
     const block = await getBlock()
-    const addr = await getAddr()
+    const addr = await getPretraceFixtureAddr()
     const addr2 = await getAddr2()
     const { miner: coinbaseAddr } = block
     const walletbalanceStorageSlot = computeMappingSlot(
@@ -95,7 +98,6 @@ const getVisitor = async (): Promise<Visitor> => {
 const matchFixture = async (
     t: Deno.TestContext,
     res: unknown,
-    fixtureName: string,
     diffMode: string,
 ) => {
     const visitor = await getVisitor()
@@ -104,14 +106,14 @@ const matchFixture = async (
         const dir = `${currentDir}samples/prestate_tracer/`
         await Deno.mkdir(dir, { recursive: true })
         await Deno.writeTextFile(
-            `${dir}${fixtureName}.${env.chain.name}.${diffMode}.json`,
+            `${dir}${t.name}.${env.chain.name}.${diffMode}.json`,
             JSON.stringify(res, null, 2),
         )
     }
 
     const out = visit(res, visitor)
     await assertSnapshot(t, out, {
-        name: `${fixtureName}.${diffMode}`,
+        name: `${t.name}.${diffMode}`,
     })
 }
 
@@ -134,27 +136,27 @@ const withDiffModes = (
 
 // skip for now until we resolve some traces diff on 0 nonce
 Deno.test(
-    'deploy_contract',
+    'prestate deploy_contract',
     { ignore: true, ...opts },
     withDiffModes(async (t, config, diffMode) => {
-        const receiptHash = await getReceiptHash()
+        const receiptHash = await getPretraceFixtureReceiptHash()
         const res = await env.debugClient.traceTransaction(
             receiptHash,
             'prestateTracer',
             config,
         )
-        await matchFixture(t, res, 'deploy_contract', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'write_storage',
+    'prestate write_storage',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'writeStorage',
@@ -168,17 +170,17 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'write_storage', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'write_storage_from_0',
+    'prestate write_storage_from_0',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'writeStorage',
@@ -192,18 +194,18 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'write_storage_from_0', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'read_storage',
+    'prestate read_storage',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'readStorage',
@@ -216,18 +218,18 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'read_storage', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'deposit',
+    'prestate deposit',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 value: parseEther('1'),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
@@ -241,18 +243,18 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'deposit', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'withdraw',
+    'prestate withdraw',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 value: parseEther('1'),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
@@ -266,18 +268,18 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'withdraw', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'get_balance',
+    'prestate get_balance',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'getContractBalance',
@@ -290,18 +292,18 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'get_balance', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'get_external_balance',
+    'prestate get_external_balance',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = (await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'getExternalBalance',
@@ -322,18 +324,18 @@ Deno.test(
             }
         }
 
-        await matchFixture(t, res, 'get_external_balance', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'instantiate_child',
+    'prestate instantiate_child',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 value: parseEther('1'),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
@@ -347,18 +349,18 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'instantiate_child', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'call_contract',
+    'prestate call_contract',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'callContract',
@@ -369,18 +371,18 @@ Deno.test(
             config,
         )
 
-        await matchFixture(t, res, 'call_contract', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'delegate_call_contract',
+    'prestate delegate_call_contract',
     opts,
     withDiffModes(async (t, config, diffMode) => {
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getAddr(),
+                to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'callContract',
@@ -394,30 +396,30 @@ Deno.test(
             ).hash!,
         )
 
-        await matchFixture(t, res, 'delegate_call_contract', diffMode)
+        await matchFixture(t, res, diffMode)
     }),
 )
 
 Deno.test(
-    'write_storage_twice',
+    'prestate write_storage_twice',
     opts,
     withDiffModes(async (t, config, diffMode) => {
-        const nonce = await env.accountWallet.getTransactionCount(
-            env.accountWallet.account,
-        )
-
         const value = await env.accountWallet.readContract({
-            address: await getAddr(),
+            address: await getPretraceFixtureAddr(),
             abi: PretraceFixtureAbi,
             functionName: 'readStorage',
         })
 
         const hashes: Hex[] = []
 
+        const nonce = await env.accountWallet.getTransactionCount(
+            env.accountWallet.account,
+        )
+
         // start with the higher nonce so both can be sealed in the same block
         for (const [i, txNonce] of [nonce + 1, nonce].entries()) {
             const { request } = await env.accountWallet.simulateContract({
-                address: await getAddr(),
+                address: await getPretraceFixtureAddr(),
                 abi: PretraceFixtureAbi,
                 functionName: 'writeStorage',
                 args: [value + BigInt(i + 1), 'write_storage_twice'],
@@ -437,31 +439,67 @@ Deno.test(
         expect(receipts.every((r) => r.status)).toBeTruthy()
         expect(receipts[0].blockNumber).toEqual(receipts[1].blockNumber)
 
-        // Test traceBlock
-        {
+        await t.step('prestate trace_block_write_storage_twice', async (t) => {
             const res = await env.debugClient.traceBlock(
                 receipts[0].blockNumber,
                 'prestateTracer',
                 config,
             )
 
-            await matchFixture(
-                t,
-                res,
-                'trace_block_write_storage_twice',
-                diffMode,
-            )
-        }
+            await matchFixture(t, res, diffMode)
+        })
 
         // Test traceTransaction
-        {
+        await t.step('prestate trace_tx_write_storage_twice', async (t) => {
             const res = await env.debugClient.traceTransaction(
                 receipts[1].transactionHash,
                 'prestateTracer',
                 config,
             )
 
-            await matchFixture(t, res, 'trace_tx_write_storage_twice', diffMode)
-        }
+            await matchFixture(t, res, diffMode)
+        })
+    }),
+)
+
+Deno.test(
+    'prestate selfdestruct',
+    opts,
+    withDiffModes(async (t, config, diffMode) => {
+        const tracingCallerAddr = await getTracingCallerAddr()
+        const res = await env.debugClient.traceCall(
+            {
+                to: tracingCallerAddr,
+                data: encodeFunctionData({
+                    abi: TracingCallerAbi,
+                    functionName: 'destruct',
+                    args: [],
+                }),
+            },
+            'prestateTracer',
+            config,
+        )
+        await matchFixture(t, res, diffMode)
+    }),
+)
+
+Deno.test(
+    'prestate create_and_destruct',
+    opts,
+    withDiffModes(async (t, config, diffMode) => {
+        const tracingCallerAddr = await getTracingCallerAddr()
+        const res = await env.debugClient.traceCall(
+            {
+                to: tracingCallerAddr,
+                data: encodeFunctionData({
+                    abi: TracingCallerAbi,
+                    functionName: 'create_and_destruct',
+                    args: [],
+                }),
+            },
+            'prestateTracer',
+            config,
+        )
+        await matchFixture(t, res, diffMode)
     }),
 )

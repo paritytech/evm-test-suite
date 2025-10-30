@@ -29,6 +29,19 @@ contract TracingCaller {
         this.start(counter - 1);
     }
 
+    function destruct() external {
+        address recipient = msg.sender;
+        assembly {
+            selfdestruct(recipient)
+        }
+    }
+
+    function create_and_destruct() public {
+        TracingCallee newCallee = new TracingCallee();
+        newCallee.destruct();
+    }
+
+
     function create() external returns (address) {
         TracingCallee newCallee = new TracingCallee();
         return address(newCallee);
@@ -51,6 +64,13 @@ contract TracingCallee {
         }
 
         emit CalleeCalled(counter);
+    }
+
+    function destruct() external {
+        address recipient = msg.sender;
+        assembly {
+            selfdestruct(recipient)
+        }
     }
 
     function failingFunction() external payable {
