@@ -149,7 +149,7 @@ export async function getEnv() {
     }) => ({
         async waitForTransactionReceipt(
             hash: Hex,
-            pollingInterval = 500,
+            pollingInterval = 10,
             timeout = 6000,
         ): Promise<TransactionReceipt> {
             const startTime = Date.now()
