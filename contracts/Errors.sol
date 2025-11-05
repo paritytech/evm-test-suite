@@ -6,7 +6,7 @@ contract Errors {
 
     // Payable function that can be used to test insufficient funds errors
     function valueMatch(uint256 value) public payable {
-        require(msg.value == value, 'msg.value does not match value');
+        require(msg.value == value, "msg.value does not match value");
     }
 
     function setState(bool newState) public {
@@ -15,7 +15,7 @@ contract Errors {
 
     // Trigger a require statement failure with a custom error message
     function triggerRequireError() public pure {
-        require(false, 'This is a require error');
+        require(false, "This is a require error");
     }
 
     // Trigger an assert statement failure
@@ -25,7 +25,7 @@ contract Errors {
 
     // Trigger a revert statement with a custom error message
     function triggerRevertError() public pure {
-        revert('This is a revert error');
+        revert("This is a revert error");
     }
 
     // Trigger a division by zero error
@@ -45,6 +45,6 @@ contract Errors {
     error CustomError(string message);
 
     function triggerCustomError() public pure {
-        revert CustomError('This is a custom error');
+        revert CustomError("This is a custom error");
     }
 }
