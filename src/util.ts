@@ -149,7 +149,7 @@ export async function getEnv() {
     }) => ({
         async waitForTransactionReceipt(
             hash: Hex,
-            pollingInterval = 500,
+            pollingInterval = 10,
             timeout = 6000,
         ): Promise<TransactionReceipt> {
             const startTime = Date.now()
@@ -185,6 +185,7 @@ export async function getEnv() {
     const wallet = createWalletClient({
         transport,
         chain,
+        cacheTime: 0,
     })
 
     const [account] = await wallet.getAddresses()
@@ -192,6 +193,7 @@ export async function getEnv() {
         account,
         transport,
         chain,
+        cacheTime: 0,
     })
         .extend(publicActions)
         .extend(waitForTransactionReceiptExtension)
@@ -203,6 +205,7 @@ export async function getEnv() {
         ),
         transport,
         chain,
+        cacheTime: 0,
     })
         .extend(publicActions)
         .extend(waitForTransactionReceiptExtension)
@@ -228,6 +231,7 @@ export async function getEnv() {
         ),
         transport,
         chain,
+        cacheTime: 0,
     })
         .extend(publicActions)
         .extend(waitForTransactionReceiptExtension)

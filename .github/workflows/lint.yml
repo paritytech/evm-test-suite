@@ -37,3 +37,9 @@ jobs:
 
                   echo "Building fixture contracts"
                   deno task build
+
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+
+            - name: Check Solidity formatting
+              run: forge fmt --check contracts/*.sol

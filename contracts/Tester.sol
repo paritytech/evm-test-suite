@@ -11,7 +11,7 @@ contract Tester {
     constructor() payable {
         emit TesterDeployed(msg.sender);
         value = 42;
-        name = 'Hello world';
+        name = "Hello world";
     }
 
     function setValue(uint256 v) external {
@@ -24,5 +24,9 @@ contract Tester {
 
     function revertme() external {
         require(false, "failed!");
+    }
+
+    function getBlockHash(uint256 blockNumber) external view returns (bytes32) {
+        return blockhash(blockNumber);
     }
 }

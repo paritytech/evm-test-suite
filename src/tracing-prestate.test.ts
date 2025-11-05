@@ -1,10 +1,6 @@
 import {
     computeMappingSlot,
-    getByteCode,
-    getEnv,
     memoized,
-    memoizedDeploy,
-    memoizedTx,
     sanitizeOpts as opts,
     visit,
     Visitor,
@@ -13,29 +9,16 @@ import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import { encodeFunctionData, type Hex, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
-import { PretraceFixtureChildAbi } from '../codegen/abi/PretraceFixtureChild.ts'
-
-// Initialize test environment
-const env = await getEnv()
-
-const getPretraceFixture = memoizedTx(
+import {
     env,
-    () =>
-        env.accountWallet.deployContract({
-            abi: PretraceFixtureAbi,
-            bytecode: getByteCode('PretraceFixture', env.evm),
-            value: parseEther('10'),
-        }),
-)
+    getPretraceFixture,
+    getPretraceFixtureAddr,
+    getPretraceFixtureChildAddr,
+} from './deploy_contracts.ts'
 
-const getAddr = () => getPretraceFixture().then((r) => r.contractAddress!)
+const getAddr = getPretraceFixtureAddr
 const getReceiptHash = () => getPretraceFixture().then((r) => r.transactionHash)
-
-const getAddr2 = memoizedDeploy(env, () =>
-    env.accountWallet.deployContract({
-        abi: PretraceFixtureChildAbi,
-        bytecode: getByteCode('PretraceFixtureChild', env.evm),
-    }))
+const getAddr2 = getPretraceFixtureChildAddr
 
 const getBlock = memoized(async () => {
     await getPretraceFixture()
