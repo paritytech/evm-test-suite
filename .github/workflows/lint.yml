@@ -38,12 +38,8 @@ jobs:
                   echo "Building fixture contracts"
                   deno task build
 
-            - name: Check Solidity formatting
-              run: |
-                  echo "Installing Foundry"
-                  curl -L https://foundry.paradigm.xyz | bash
-                  export PATH="$HOME/.foundry/bin:$PATH"
-                  foundryup
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
 
-                  echo "Checking Solidity formatting"
-                  forge fmt --check contracts/*.sol
+            - name: Check Solidity formatting
+              run: forge fmt --check contracts/*.sol
