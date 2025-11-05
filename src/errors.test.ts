@@ -1,7 +1,4 @@
-import {
-    jsonRpcErrors,
-    sanitizeOpts as opts,
-} from './util.ts'
+import { jsonRpcErrors, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { ErrorsAbi } from '../codegen/abi/Errors.ts'
 import { env, getErrorTesterAddr } from './deploy_contracts.ts'

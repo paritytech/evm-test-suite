@@ -5,13 +5,10 @@ import {
     hexToNumber,
     parseEther,
 } from 'viem'
-import {
-    getByteCode,
-    sanitizeOpts as opts,
-} from './util.ts'
+import { getByteCode, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { TesterAbi } from '../codegen/abi/Tester.ts'
-import { env, getTesterReceipt, getTesterAddr } from './deploy_contracts.ts'
+import { env, getTesterAddr, getTesterReceipt } from './deploy_contracts.ts'
 
 Deno.test('eth_accounts', opts, async () => {
     const addresses = await env.debugClient.request({
