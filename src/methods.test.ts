@@ -7,23 +7,11 @@ import {
 } from 'viem'
 import {
     getByteCode,
-    getEnv,
-    memoizedTx,
     sanitizeOpts as opts,
 } from './util.ts'
 import { expect } from '@std/expect'
 import { TesterAbi } from '../codegen/abi/Tester.ts'
-
-// Initialize test environment
-const env = await getEnv()
-
-const getTesterReceipt = memoizedTx(env, () =>
-    env.serverWallet.deployContract({
-        abi: TesterAbi,
-        bytecode: getByteCode('Tester', env.evm),
-        value: parseEther('2'),
-    }))
-const getTesterAddr = () => getTesterReceipt().then((r) => r.contractAddress!)
+import { env, getTesterReceipt, getTesterAddr } from './deploy_contracts.ts'
 
 Deno.test('eth_accounts', opts, async () => {
     const addresses = await env.debugClient.request({

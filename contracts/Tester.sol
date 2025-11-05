@@ -25,4 +25,8 @@ contract Tester {
     function revertme() external {
         require(false, "failed!");
     }
+
+    function getBlockHash(uint256 blockNumber) external view returns (bytes32) {
+        return blockhash(blockNumber);
+    }
 }
