@@ -9,6 +9,7 @@ await import('./others.test.ts')
 await import('./tracing-call-trace.test.ts')
 await import('./tracing-prestate.test.ts')
 await import('./block-info.test.ts')
+await import('./memory-ops.test.ts')
 
 globalThis.addEventListener('unload', () => {
     cleanupTests()
