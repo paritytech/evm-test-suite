@@ -7,27 +7,15 @@ import {
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
-import { encodeFunctionData, parseEther } from 'viem'
+import { encodeFunctionData } from 'viem'
 import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 import {
     env,
     getDeployTracingCalleeReceipt,
     getTracingCalleeAddr,
+    getTracingCallerAddr,
 } from './deploy_contracts.ts'
-
 const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
-
-const getTracingCallerAddr = memoized(async () => {
-    const tracingCalleeAddr = await getTracingCalleeAddr()
-    const hash = await env.accountWallet.deployContract({
-        abi: TracingCallerAbi,
-        args: [tracingCalleeAddr],
-        bytecode: getByteCode('TracingCaller', env.evm),
-        value: parseEther('10'),
-    })
-    const receipt = await env.accountWallet.waitForTransactionReceipt(hash)
-    return receipt.contractAddress!
-})
 
 const getStartReceipt = memoized(async () => {
     const tracingCallerAddr = await getTracingCallerAddr()
@@ -79,9 +67,13 @@ const getVisitor = async (): Promise<Visitor> => {
                     value == env.accountWallet.account.address.toLowerCase()
                 ) {
                     return [key, '<caller>']
+                } else if (
+                    value == '0x0000000000000000000000000000000000000000'
+                ) {
+                    return [key, value]
                 }
 
-                return [key, value]
+                return [key, '<addr>']
             }
             case 'revertReason':
                 return [
@@ -93,7 +85,7 @@ const getVisitor = async (): Promise<Visitor> => {
 
             case 'gas':
             case 'gasUsed': {
-                return [key, '0x42']
+                return [key, '<gas>']
             }
             case 'txHash': {
                 return [key, '<hash>']
@@ -111,11 +103,7 @@ const getVisitor = async (): Promise<Visitor> => {
     }
 }
 
-const matchFixture = async (
-    t: Deno.TestContext,
-    res: unknown,
-    fixtureName: string,
-) => {
+const matchFixture = async (t: Deno.TestContext, res: unknown) => {
     const visitor = await getVisitor()
 
     if (Deno.env.get('DEBUG')) {
@@ -123,17 +111,17 @@ const matchFixture = async (
         const dir = `${currentDir}samples/call_tracer/`
         await Deno.mkdir(dir, { recursive: true })
         await Deno.writeTextFile(
-            `${dir}${fixtureName}.${env.chain.name}.json`,
+            `${dir}${t.name}.${env.chain.name}.json`,
             JSON.stringify(res, null, 2),
         )
     }
 
     await assertSnapshot(t, visit(res, visitor), {
-        name: fixtureName,
+        name: t.name,
     })
 }
 
-Deno.test('debug_traceTransaction', opts, async (t) => {
+Deno.test('call-trace debug_traceTransaction', opts, async (t) => {
     const startReceipt = await getStartReceipt()
     const res = await env.debugClient.traceTransaction(
         startReceipt.transactionHash,
@@ -142,10 +130,10 @@ Deno.test('debug_traceTransaction', opts, async (t) => {
             withLog: true,
         },
     )
-    await matchFixture(t, res, 'debug_traceTransaction')
+    await matchFixture(t, res)
 })
 
-Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
+Deno.test('call-trace debug_deploy_traceTransaction', opts, async (t) => {
     const deployTracingCalleeReceipt = await getDeployTracingCalleeReceipt()
     const res = await env.debugClient.traceTransaction(
         deployTracingCalleeReceipt.transactionHash,
@@ -157,10 +145,10 @@ Deno.test('debug_deploy_traceTransaction', opts, async (t) => {
 
     // We don't have runtime code output in revive
     delete (res as Record<string, unknown>).output
-    await matchFixture(t, res, 'debug_deploy_traceTransaction')
+    await matchFixture(t, res)
 })
 
-Deno.test('debug_create', opts, async () => {
+Deno.test('call-trace debug_create', opts, async () => {
     const createReceipt = await getCreateReceipt()
     const res = await env.debugClient.traceTransaction(
         createReceipt.transactionHash,
@@ -180,7 +168,7 @@ Deno.test('debug_create', opts, async () => {
     expect(code).toBeTruthy()
 })
 
-Deno.test('debug_create2', opts, async () => {
+Deno.test('call-trace debug_create2', opts, async () => {
     const create2Receipt = await getCreate2Receipt()
     const res = await env.debugClient.traceTransaction(
         create2Receipt.transactionHash,
@@ -199,7 +187,7 @@ Deno.test('debug_create2', opts, async () => {
     expect(code).toBeTruthy()
 })
 
-Deno.test('debug_traceBlock', opts, async (t) => {
+Deno.test('call-trace debug_traceBlock', opts, async (t) => {
     const startReceipt = await getStartReceipt()
     const res = await env.debugClient.traceBlock(
         startReceipt.blockNumber,
@@ -208,10 +196,10 @@ Deno.test('debug_traceBlock', opts, async (t) => {
             withLog: true,
         },
     )
-    await matchFixture(t, res, 'debug_traceBlock')
+    await matchFixture(t, res)
 })
 
-Deno.test('debug_traceCall', opts, async (t) => {
+Deno.test('call-trace debug_traceCall', opts, async (t) => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const res = await env.debugClient.traceCall(
         {
@@ -226,5 +214,5 @@ Deno.test('debug_traceCall', opts, async (t) => {
         { withLog: true },
     )
 
-    await matchFixture(t, res, 'debug_traceCall')
+    await matchFixture(t, res)
 })

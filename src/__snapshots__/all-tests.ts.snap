@@ -1,12 +1,12 @@
 export const snapshot = {};
 
-snapshot[`debug_traceTransaction 1`] = `
+snapshot[`call-trace debug_traceTransaction 1`] = `
 {
   calls: [
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x",
       to: "<contract_callee_addr>",
       type: "CALL",
@@ -14,8 +14,8 @@ snapshot[`debug_traceTransaction 1`] = `
     },
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -34,8 +34,8 @@ snapshot[`debug_traceTransaction 1`] = `
     {
       error: "execution reverted",
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xd1b96663",
       output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
       revertReason: "This function always fails",
@@ -47,8 +47,8 @@ snapshot[`debug_traceTransaction 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -56,8 +56,8 @@ snapshot[`debug_traceTransaction 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -76,8 +76,8 @@ snapshot[`debug_traceTransaction 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -87,8 +87,8 @@ snapshot[`debug_traceTransaction 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
           to: "<contract_addr>",
           type: "CALL",
@@ -96,8 +96,8 @@ snapshot[`debug_traceTransaction 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
       logs: [
         {
@@ -123,8 +123,8 @@ snapshot[`debug_traceTransaction 1`] = `
     },
   ],
   from: "<caller>",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
   logs: [
     {
@@ -150,11 +150,11 @@ snapshot[`debug_traceTransaction 1`] = `
 }
 `;
 
-snapshot[`debug_deploy_traceTransaction 1`] = `
+snapshot[`call-trace debug_deploy_traceTransaction 1`] = `
 {
   from: "<caller>",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "<code>",
   to: "<contract_callee_addr>",
   type: "CREATE",
@@ -162,15 +162,15 @@ snapshot[`debug_deploy_traceTransaction 1`] = `
 }
 `;
 
-snapshot[`debug_traceBlock 1`] = `
+snapshot[`call-trace debug_traceBlock 1`] = `
 [
   {
     result: {
       calls: [
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -178,8 +178,8 @@ snapshot[`debug_traceBlock 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
           logs: [
             {
@@ -198,8 +198,8 @@ snapshot[`debug_traceBlock 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -211,8 +211,8 @@ snapshot[`debug_traceBlock 1`] = `
           calls: [
             {
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0x",
               to: "<contract_callee_addr>",
               type: "CALL",
@@ -220,8 +220,8 @@ snapshot[`debug_traceBlock 1`] = `
             },
             {
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
               logs: [
                 {
@@ -240,8 +240,8 @@ snapshot[`debug_traceBlock 1`] = `
             {
               error: "execution reverted",
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0xd1b96663",
               output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
               revertReason: "This function always fails",
@@ -251,8 +251,8 @@ snapshot[`debug_traceBlock 1`] = `
             },
             {
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
               to: "<contract_addr>",
               type: "CALL",
@@ -260,8 +260,8 @@ snapshot[`debug_traceBlock 1`] = `
             },
           ],
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -287,8 +287,8 @@ snapshot[`debug_traceBlock 1`] = `
         },
       ],
       from: "<caller>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -317,13 +317,13 @@ snapshot[`debug_traceBlock 1`] = `
 ]
 `;
 
-snapshot[`debug_traceCall 1`] = `
+snapshot[`call-trace debug_traceCall 1`] = `
 {
   calls: [
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x",
       to: "<contract_callee_addr>",
       type: "CALL",
@@ -331,8 +331,8 @@ snapshot[`debug_traceCall 1`] = `
     },
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -351,8 +351,8 @@ snapshot[`debug_traceCall 1`] = `
     {
       error: "execution reverted",
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xd1b96663",
       output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
       revertReason: "This function always fails",
@@ -364,8 +364,8 @@ snapshot[`debug_traceCall 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -373,8 +373,8 @@ snapshot[`debug_traceCall 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -393,8 +393,8 @@ snapshot[`debug_traceCall 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -404,8 +404,8 @@ snapshot[`debug_traceCall 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
           to: "<contract_addr>",
           type: "CALL",
@@ -413,8 +413,8 @@ snapshot[`debug_traceCall 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
       logs: [
         {
@@ -440,8 +440,8 @@ snapshot[`debug_traceCall 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
   logs: [
     {
@@ -467,13 +467,13 @@ snapshot[`debug_traceCall 1`] = `
 }
 `;
 
-snapshot[`write_storage.diff 1`] = `
+snapshot[`prestate write_storage.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x00000000000000000000000000000000000000000000000000000000000007e9",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167650000000000000000000000000000000000001a",
@@ -485,7 +485,7 @@ snapshot[`write_storage.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -498,13 +498,13 @@ snapshot[`write_storage.diff 1`] = `
 }
 `;
 
-snapshot[`write_storage.no_diff 1`] = `
+snapshot[`prestate write_storage.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -516,10 +516,10 @@ snapshot[`write_storage.no_diff 1`] = `
 }
 `;
 
-snapshot[`write_storage_from_0.diff 1`] = `
+snapshot[`prestate write_storage_from_0.diff 1`] = `
 {
   post: {
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000002",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f66726f6d5f30000000000000000000000028",
@@ -527,7 +527,7 @@ snapshot[`write_storage_from_0.diff 1`] = `
     },
   },
   pre: {
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -540,9 +540,9 @@ snapshot[`write_storage_from_0.diff 1`] = `
 }
 `;
 
-snapshot[`write_storage_from_0.no_diff 1`] = `
+snapshot[`prestate write_storage_from_0.no_diff 1`] = `
 {
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -554,7 +554,7 @@ snapshot[`write_storage_from_0.no_diff 1`] = `
 }
 `;
 
-snapshot[`read_storage.diff 1`] = `
+snapshot[`prestate read_storage.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -570,13 +570,13 @@ snapshot[`read_storage.diff 1`] = `
 }
 `;
 
-snapshot[`read_storage.no_diff 1`] = `
+snapshot[`prestate read_storage.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -587,14 +587,14 @@ snapshot[`read_storage.no_diff 1`] = `
 }
 `;
 
-snapshot[`deposit.diff 1`] = `
+snapshot[`prestate deposit.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       storage: {
         "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
@@ -606,7 +606,7 @@ snapshot[`deposit.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -618,13 +618,13 @@ snapshot[`deposit.diff 1`] = `
 }
 `;
 
-snapshot[`deposit.no_diff 1`] = `
+snapshot[`prestate deposit.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -635,14 +635,14 @@ snapshot[`deposit.no_diff 1`] = `
 }
 `;
 
-snapshot[`withdraw.diff 1`] = `
+snapshot[`prestate withdraw.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       storage: {
         "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
@@ -654,7 +654,7 @@ snapshot[`withdraw.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -666,13 +666,13 @@ snapshot[`withdraw.diff 1`] = `
 }
 `;
 
-snapshot[`withdraw.no_diff 1`] = `
+snapshot[`prestate withdraw.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -683,7 +683,7 @@ snapshot[`withdraw.no_diff 1`] = `
 }
 `;
 
-snapshot[`get_balance.diff 1`] = `
+snapshot[`prestate get_balance.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -699,13 +699,13 @@ snapshot[`get_balance.diff 1`] = `
 }
 `;
 
-snapshot[`get_balance.no_diff 1`] = `
+snapshot[`prestate get_balance.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -713,7 +713,7 @@ snapshot[`get_balance.no_diff 1`] = `
 }
 `;
 
-snapshot[`get_external_balance.diff 1`] = `
+snapshot[`prestate get_external_balance.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -729,24 +729,24 @@ snapshot[`get_external_balance.diff 1`] = `
 }
 `;
 
-snapshot[`get_external_balance.no_diff 1`] = `
+snapshot[`prestate get_external_balance.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
   },
-  "<contract_addr_2>": {
+  "<prestate_contract_child_addr>": {
     balance: "<balance>",
   },
 }
 `;
 
-snapshot[`instantiate_child.diff 1`] = `
+snapshot[`prestate instantiate_child.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -762,13 +762,13 @@ snapshot[`instantiate_child.diff 1`] = `
 }
 `;
 
-snapshot[`instantiate_child.no_diff 1`] = `
+snapshot[`prestate instantiate_child.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -776,13 +776,13 @@ snapshot[`instantiate_child.no_diff 1`] = `
 }
 `;
 
-snapshot[`call_contract.diff 1`] = `
+snapshot[`prestate call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
       nonce: "<nonce>",
     },
-    "<contract_addr_2>": {
+    "<prestate_contract_child_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000002",
       },
@@ -793,7 +793,7 @@ snapshot[`call_contract.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr_2>": {
+    "<prestate_contract_child_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -805,18 +805,18 @@ snapshot[`call_contract.diff 1`] = `
 }
 `;
 
-snapshot[`call_contract.no_diff 1`] = `
+snapshot[`prestate call_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
   },
-  "<contract_addr_2>": {
+  "<prestate_contract_child_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -827,7 +827,7 @@ snapshot[`call_contract.no_diff 1`] = `
 }
 `;
 
-snapshot[`delegate_call_contract.diff 1`] = `
+snapshot[`prestate delegate_call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
@@ -843,13 +843,13 @@ snapshot[`delegate_call_contract.diff 1`] = `
 }
 `;
 
-snapshot[`delegate_call_contract.no_diff 1`] = `
+snapshot[`prestate delegate_call_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -857,7 +857,7 @@ snapshot[`delegate_call_contract.no_diff 1`] = `
 }
 `;
 
-snapshot[`trace_block_write_storage_twice.diff 1`] = `
+snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
 [
   {
     result: {
@@ -866,7 +866,7 @@ snapshot[`trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           storage: {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
             "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
@@ -878,7 +878,7 @@ snapshot[`trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           balance: "<balance>",
           code: "<code>",
           nonce: "<nonce>",
@@ -898,7 +898,7 @@ snapshot[`trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           storage: {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
           },
@@ -909,7 +909,7 @@ snapshot[`trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           balance: "<balance>",
           code: "<code>",
           nonce: "<nonce>",
@@ -924,14 +924,14 @@ snapshot[`trace_block_write_storage_twice.diff 1`] = `
 ]
 `;
 
-snapshot[`trace_tx_write_storage_twice.diff 1`] = `
+snapshot[`prestate trace_tx_write_storage_twice.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
@@ -943,7 +943,7 @@ snapshot[`trace_tx_write_storage_twice.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -956,7 +956,7 @@ snapshot[`trace_tx_write_storage_twice.diff 1`] = `
 }
 `;
 
-snapshot[`trace_block_write_storage_twice.no_diff 1`] = `
+snapshot[`prestate trace_block_write_storage_twice.no_diff 1`] = `
 [
   {
     result: {
@@ -964,7 +964,7 @@ snapshot[`trace_block_write_storage_twice.no_diff 1`] = `
         balance: "<balance>",
         nonce: "<nonce>",
       },
-      "<contract_addr>": {
+      "<prestate_contract_addr>": {
         balance: "<balance>",
         code: "<code>",
         nonce: "<nonce>",
@@ -982,7 +982,7 @@ snapshot[`trace_block_write_storage_twice.no_diff 1`] = `
         balance: "<balance>",
         nonce: "<nonce>",
       },
-      "<contract_addr>": {
+      "<prestate_contract_addr>": {
         balance: "<balance>",
         code: "<code>",
         nonce: "<nonce>",
@@ -997,13 +997,13 @@ snapshot[`trace_block_write_storage_twice.no_diff 1`] = `
 ]
 `;
 
-snapshot[`trace_tx_write_storage_twice.no_diff 1`] = `
+snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
 {
   "<caller_addr>": {
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
