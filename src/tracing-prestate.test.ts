@@ -7,7 +7,7 @@ import {
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
-import { encodeFunctionData, type Hex, parseEther, parseEventLogs } from 'viem'
+import { encodeFunctionData, type Hex, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import {
     env,
@@ -16,7 +16,6 @@ import {
     getPretraceFixtureReceipt,
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
-import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 const getBlock = memoized(async () => {
     const receipt = await getPretraceFixtureReceipt()
