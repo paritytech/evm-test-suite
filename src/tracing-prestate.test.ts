@@ -7,7 +7,7 @@ import {
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
-import { encodeFunctionData, type Hex, parseEther } from 'viem'
+import { encodeFunctionData, type Hex, parseEther, parseEventLogs } from 'viem'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import {
     env,
@@ -16,6 +16,7 @@ import {
     getPretraceFixtureReceipt,
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
+import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 const getBlock = memoized(async () => {
     const receipt = await getPretraceFixtureReceipt()
@@ -438,5 +439,47 @@ Deno.test(
 
             await matchFixture(t, res, diffMode)
         })
+    }),
+)
+
+Deno.test(
+    'prestate selfdestruct',
+    { ...opts, ignore: true },
+    withDiffModes(async (t, config, diffMode) => {
+        const tracingCallerAddr = await getTracingCallerAddr()
+        const res = await env.debugClient.traceCall(
+            {
+                to: tracingCallerAddr,
+                data: encodeFunctionData({
+                    abi: TracingCallerAbi,
+                    functionName: 'destruct',
+                    args: [],
+                }),
+            },
+            'prestateTracer',
+            config,
+        )
+        await matchFixture(t, res, diffMode)
+    }),
+)
+
+Deno.test(
+    'prestate create_and_destruct',
+    { ...opts, ignore: true },
+    withDiffModes(async (t, config, diffMode) => {
+        const tracingCallerAddr = await getTracingCallerAddr()
+        const res = await env.debugClient.traceCall(
+            {
+                to: tracingCallerAddr,
+                data: encodeFunctionData({
+                    abi: TracingCallerAbi,
+                    functionName: 'create_and_destruct',
+                    args: [],
+                }),
+            },
+            'prestateTracer',
+            config,
+        )
+        await matchFixture(t, res, diffMode)
     }),
 )
