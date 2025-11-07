@@ -217,7 +217,7 @@ Deno.test('call-trace debug_traceCall', opts, async (t) => {
     await matchFixture(t, res)
 })
 
-Deno.test('call-trace selfdestruct', { ...opts, ignore: true }, async (t) => {
+Deno.test('call-trace selfdestruct', opts, async (t) => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const res = await env.debugClient.traceCall(
         {
@@ -237,7 +237,7 @@ Deno.test('call-trace selfdestruct', { ...opts, ignore: true }, async (t) => {
 
 Deno.test(
     'call-trace create_and_destruct',
-    { ...opts, ignore: true },
+    opts,
     async (t) => {
         const tracingCallerAddr = await getTracingCallerAddr()
         const res = await env.debugClient.traceCall(

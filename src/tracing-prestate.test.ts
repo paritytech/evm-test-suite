@@ -117,7 +117,7 @@ const withDiffModes = (
 // skip for now until we resolve some traces diff on 0 nonce
 Deno.test(
     'prestate deploy_contract',
-    { ignore: true, ...opts },
+    opts,
     withDiffModes(async (t, config, diffMode) => {
         const receipt = await getPretraceFixtureReceipt()
         const res = await env.debugClient.traceTransaction(
@@ -444,7 +444,7 @@ Deno.test(
 
 Deno.test(
     'prestate selfdestruct',
-    { ...opts, ignore: true },
+    opts,
     withDiffModes(async (t, config, diffMode) => {
         const tracingCallerAddr = await getTracingCallerAddr()
         const res = await env.debugClient.traceCall(
@@ -465,7 +465,7 @@ Deno.test(
 
 Deno.test(
     'prestate create_and_destruct',
-    { ...opts, ignore: true },
+    opts,
     withDiffModes(async (t, config, diffMode) => {
         const tracingCallerAddr = await getTracingCallerAddr()
         const res = await env.debugClient.traceCall(
