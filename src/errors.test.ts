@@ -1,24 +1,7 @@
-import {
-    getByteCode,
-    getEnv,
-    jsonRpcErrors,
-    memoizedDeploy,
-    sanitizeOpts as opts,
-} from './util.ts'
+import { jsonRpcErrors, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { ErrorsAbi } from '../codegen/abi/Errors.ts'
-
-// Initialize test environment
-const env = await getEnv()
-
-const getErrorTesterAddr = memoizedDeploy(
-    env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: ErrorsAbi,
-            bytecode: getByteCode('Errors', env.evm),
-        }),
-)
+import { env, getErrorTesterAddr } from './deploy_contracts.ts'
 
 Deno.test('triggerAssertError', opts, async () => {
     try {

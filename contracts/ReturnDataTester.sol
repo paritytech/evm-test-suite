@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import "./contracts/Errors.sol";
 
 // Parent contract that creates a child and captures return data
 contract ReturnDataTester {
-    uint public returndatasize;
+    uint256 public returndatasize;
 
     function createChildContract() external {
         new Errors();
-        uint size;
+        uint256 size;
         assembly {
             size := returndatasize()
         }
@@ -16,7 +17,7 @@ contract ReturnDataTester {
     }
 
     // Read-only function to return the captured return data size
-    function getCapturedReturnDataSize() external view returns (uint) {
+    function getCapturedReturnDataSize() external view returns (uint256) {
         return returndatasize;
     }
 }

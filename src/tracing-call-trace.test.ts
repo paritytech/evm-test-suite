@@ -1,8 +1,6 @@
 import {
     getByteCode,
-    getEnv,
     memoized,
-    memoizedTx,
     sanitizeOpts as opts,
     visit,
     Visitor,
@@ -11,26 +9,16 @@ import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import { encodeFunctionData, parseEther } from 'viem'
 import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
-import { TracingCalleeAbi } from '../codegen/abi/TracingCallee.ts'
-
-// Initialize test environment
-const env = await getEnv()
-
-const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
-
-const getDeployTracingCalleeReceipt = memoizedTx(
+import {
     env,
-    () =>
-        env.accountWallet.deployContract({
-            abi: TracingCalleeAbi,
-            bytecode: TRACING_CALLEE_BYTECODE,
-        }),
-)
+    getDeployTracingCalleeReceipt,
+    getTracingCalleeAddr,
+} from './deploy_contracts.ts'
 
 const getTracingCalleeAddr = () =>
     getDeployTracingCalleeReceipt().then((r) => r.contractAddress!)
 
-export const getTracingCallerAddr = memoized(async () => {
+const getTracingCallerAddr = memoized(async () => {
     const tracingCalleeAddr = await getTracingCalleeAddr()
     const hash = await env.accountWallet.deployContract({
         abi: TracingCallerAbi,

@@ -5,25 +5,10 @@ import {
     hexToNumber,
     parseEther,
 } from 'viem'
-import {
-    getByteCode,
-    getEnv,
-    memoizedTx,
-    sanitizeOpts as opts,
-} from './util.ts'
+import { getByteCode, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { TesterAbi } from '../codegen/abi/Tester.ts'
-
-// Initialize test environment
-const env = await getEnv()
-
-const getTesterReceipt = memoizedTx(env, () =>
-    env.serverWallet.deployContract({
-        abi: TesterAbi,
-        bytecode: getByteCode('Tester', env.evm),
-        value: parseEther('2'),
-    }))
-const getTesterAddr = () => getTesterReceipt().then((r) => r.contractAddress!)
+import { env, getTesterAddr, getTesterReceipt } from './deploy_contracts.ts'
 
 Deno.test('eth_accounts', opts, async () => {
     const addresses = await env.debugClient.request({
@@ -212,10 +197,27 @@ Deno.test('eth_getTransactionCount', opts, async () => {
     expect(count).toBeGreaterThanOrEqual(1)
 })
 
-Deno.test('eth_getTransactionReceipt', opts, async () => {
-    const { transactionHash: hash } = await getTesterReceipt()
-    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
-    expect(receipt).toBeTruthy()
+Deno.test('eth_getTransactionReceipt', opts, async (t) => {
+    await t.step('eth_getTransactionReceipt status=success', async () => {
+        const { transactionHash: hash } = await getTesterReceipt()
+        const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+        expect(receipt).toBeTruthy()
+    })
+
+    await t.step('eth_getTransactionReceipt status=reverted', async () => {
+        const { gasLimit } = await env.accountWallet.getBlock()
+        const hash = await env.accountWallet.writeContract({
+            address: await getTesterAddr(),
+            abi: TesterAbi,
+            functionName: 'revertme',
+            gas: gasLimit / 2n,
+            args: [],
+        })
+
+        const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+        expect(receipt).toBeTruthy()
+        expect(receipt.status).toEqual('reverted')
+    })
 })
 
 Deno.test('eth_maxPriorityFeePerGas', opts, async () => {

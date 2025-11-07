@@ -1,45 +1,18 @@
-import {
-    getByteCode,
-    getEnv,
-    jsonRpcErrors,
-    memoizedDeploy,
-    sanitizeOpts as opts,
-} from './util.ts'
+import { getByteCode, jsonRpcErrors, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { decodeEventLog, encodeFunctionData, parseEther } from 'viem'
 import { ErrorsAbi } from '../codegen/abi/Errors.ts'
 import { EventExampleAbi } from '../codegen/abi/EventExample.ts'
 import { ReturnDataTesterAbi } from '../codegen/abi/ReturnDataTester.ts'
-
-// Initialize test environment
-const env = await getEnv()
-
-const getErrorTesterAddr = memoizedDeploy(
+import { TesterAbi } from '../codegen/abi/Tester.ts'
+import {
     env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: ErrorsAbi,
-            bytecode: getByteCode('Errors', env.evm),
-        }),
-)
-
-const getEventExampleAddr = memoizedDeploy(
-    env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: EventExampleAbi,
-            bytecode: getByteCode('EventExample', env.evm),
-        }),
-)
-
-const getReturnDataTesterAddr = memoizedDeploy(
-    env,
-    () =>
-        env.serverWallet.deployContract({
-            abi: ReturnDataTesterAbi,
-            bytecode: getByteCode('ReturnDataTester', env.evm),
-        }),
-)
+    getErrorTesterAddr,
+    getEventExampleAddr,
+    getReturnDataTesterAddr,
+    getTesterAddr,
+} from './deploy_contracts.ts'
+import { assert } from '@std/assert/assert'
 
 Deno.test('eth_call with insufficient funds', opts, async () => {
     try {
@@ -285,5 +258,56 @@ Deno.test('eth_call_deployment_returns_bytecode', opts, async () => {
     } else {
         // PVM does not return runtime bytecode for contract deployment calls
         expect(result.data).toBeUndefined()
+    }
+})
+
+Deno.test('getBlockHash at height minus 256', opts, async () => {
+    const testerAddr = await getTesterAddr()
+    let currentBlock = await env.serverWallet.getBlockNumber()
+
+    // Mine extra block so we get at least 257 blocks
+    for (let i = currentBlock + 1n; i <= 257n; i++) {
+        const hash = await env.serverWallet.writeContract({
+            address: testerAddr,
+            abi: TesterAbi,
+            functionName: 'setValue',
+            args: [i],
+        })
+        await env.serverWallet.waitForTransactionReceipt(hash)
+    }
+
+    currentBlock = await env.serverWallet.getBlockNumber()
+    assert(currentBlock >= 256n, 'Block height should be greater than 256')
+
+    {
+        const targetHashBlock = currentBlock - 256n
+        const blockHash = await env.serverWallet.readContract({
+            address: testerAddr,
+            abi: TesterAbi,
+            functionName: 'getBlockHash',
+            args: [targetHashBlock],
+        })
+
+        assert(
+            blockHash !==
+                '0x0000000000000000000000000000000000000000000000000000000000000000',
+            'Block hash should not be zero',
+        )
+    }
+
+    {
+        const targetHashBlock = currentBlock - 257n
+        const blockHash = await env.serverWallet.readContract({
+            address: testerAddr,
+            abi: TesterAbi,
+            functionName: 'getBlockHash',
+            args: [targetHashBlock],
+        })
+
+        assert(
+            blockHash ==
+                '0x0000000000000000000000000000000000000000000000000000000000000000',
+            'Block should not be zero',
+        )
     }
 })

@@ -28,19 +28,17 @@ contract PretraceFixture {
     }
 
     function withdraw(uint256 amount) external {
-        require(balances[msg.sender] >= amount, 'Insufficient balance');
+        require(balances[msg.sender] >= amount, "Insufficient balance");
         balances[msg.sender] -= amount;
-        (bool sent, ) = msg.sender.call{value: amount}('');
-        require(sent, 'Transfer failed');
+        (bool sent,) = msg.sender.call{value: amount}("");
+        require(sent, "Transfer failed");
     }
 
     function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
-    function getExternalBalance(
-        address account
-    ) external view returns (uint256) {
+    function getExternalBalance(address account) external view returns (uint256) {
         return account.balance;
     }
 
@@ -54,11 +52,10 @@ contract PretraceFixture {
     }
 
     function delegatecallContract(address childAddr) external {
-        (bool success, ) = childAddr.delegatecall(
-            abi.encodeWithSelector(PretraceFixtureChild.increment.selector)
-        );
+        (bool success,) = childAddr.delegatecall(abi.encodeWithSelector(PretraceFixtureChild.increment.selector));
         require(success, "Delegatecall failed");
-    }}
+    }
+}
 
 /// @title Child
 /// @notice A disposable child contract used to test contract deployment and calls
@@ -68,5 +65,4 @@ contract PretraceFixtureChild {
     function increment() external {
         value += 1;
     }
-
 }
