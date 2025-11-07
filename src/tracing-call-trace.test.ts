@@ -85,7 +85,7 @@ const getVisitor = async (): Promise<Visitor> => {
 
             case 'gas':
             case 'gasUsed': {
-                return [key, '0x42']
+                return [key, '<gas>']
             }
             case 'txHash': {
                 return [key, '<hash>']
@@ -250,5 +250,6 @@ Deno.test('call-trace create_and_destruct', opts, async (t) => {
         { withLog: true },
     )
 
+    console.log(res)
     await matchFixture(t, res)
 })

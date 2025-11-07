@@ -5,8 +5,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x",
       to: "<contract_callee_addr>",
       type: "CALL",
@@ -14,8 +14,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
     },
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -34,8 +34,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
     {
       error: "execution reverted",
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xd1b96663",
       output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
       revertReason: "This function always fails",
@@ -47,8 +47,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -56,8 +56,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -76,8 +76,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -87,8 +87,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
           to: "<contract_addr>",
           type: "CALL",
@@ -96,8 +96,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
       logs: [
         {
@@ -123,8 +123,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
     },
   ],
   from: "<caller>",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
   logs: [
     {
@@ -153,8 +153,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
 snapshot[`call-trace debug_deploy_traceTransaction 1`] = `
 {
   from: "<caller>",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "<code>",
   to: "<contract_callee_addr>",
   type: "CREATE",
@@ -169,8 +169,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -178,8 +178,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
           logs: [
             {
@@ -198,8 +198,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -211,8 +211,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
           calls: [
             {
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0x",
               to: "<contract_callee_addr>",
               type: "CALL",
@@ -220,8 +220,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             },
             {
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
               logs: [
                 {
@@ -240,8 +240,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             {
               error: "execution reverted",
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0xd1b96663",
               output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
               revertReason: "This function always fails",
@@ -251,8 +251,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             },
             {
               from: "<contract_addr>",
-              gas: "0x42",
-              gasUsed: "0x42",
+              gas: "<gas>",
+              gasUsed: "<gas>",
               input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
               to: "<contract_addr>",
               type: "CALL",
@@ -260,8 +260,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             },
           ],
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -287,8 +287,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
         },
       ],
       from: "<caller>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -322,8 +322,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x",
       to: "<contract_callee_addr>",
       type: "CALL",
@@ -331,8 +331,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
     },
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -351,8 +351,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
     {
       error: "execution reverted",
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0xd1b96663",
       output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
       revertReason: "This function always fails",
@@ -364,8 +364,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -373,8 +373,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -393,8 +393,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -404,8 +404,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
           to: "<contract_addr>",
           type: "CALL",
@@ -413,8 +413,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
       logs: [
         {
@@ -440,8 +440,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
   logs: [
     {
@@ -472,8 +472,8 @@ snapshot[`call-trace selfdestruct 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x",
       to: "0x0000000000000000000000000000000000000000",
       type: "SELFDESTRUCT",
@@ -481,8 +481,8 @@ snapshot[`call-trace selfdestruct 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "0x2b68b9c6",
   to: "<contract_addr>",
   type: "CALL",
@@ -495,8 +495,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "<code>",
       output: "0x608060405260043610610037575f3560e01c80632b68b9c614610042578063a329e8de14610058578063d1b96663146100805761003e565b3661003e57005b5f5ffd5b34801561004d575f5ffd5b5061005661008a565b005b348015610063575f5ffd5b5061007e60048036038101906100799190610188565b610091565b005b61008861010f565b005b5f33905080ff5b5f5f90505b600a8110156100d457806040516020016100b091906101d3565b60405160208183030381529060405280519060200120508080600101915050610096565b507fa07465e8ec189714f79f3786a8f616baf78ebd9cb1769bd61f18de45f25673608160405161010491906101fc565b60405180910390a150565b5f61014f576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016101469061026f565b60405180910390fd5b565b5f5ffd5b5f819050919050565b61016781610155565b8114610171575f5ffd5b50565b5f813590506101828161015e565b92915050565b5f6020828403121561019d5761019c610151565b5b5f6101aa84828501610174565b91505092915050565b5f819050919050565b6101cd6101c882610155565b6101b3565b82525050565b5f6101de82846101bc565b60208201915081905092915050565b6101f681610155565b82525050565b5f60208201905061020f5f8301846101ed565b92915050565b5f82825260208201905092915050565b7f546869732066756e6374696f6e20616c77617973206661696c730000000000005f82015250565b5f610259601a83610215565b915061026482610225565b602082019050919050565b5f6020820190508181035f8301526102868161024d565b905091905056fea26469706673582212208d6956cc6f33b66f3945d7fd6385012e42bd98c1db619c423220a729e0f1dcb764736f6c634300081e0033",
       to: "<addr>",
@@ -507,8 +507,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
       calls: [
         {
           from: "<addr>",
-          gas: "0x42",
-          gasUsed: "0x42",
+          gas: "<gas>",
+          gasUsed: "<gas>",
           input: "0x",
           to: "<contract_addr>",
           type: "SELFDESTRUCT",
@@ -516,8 +516,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "0x42",
-      gasUsed: "0x42",
+      gas: "<gas>",
+      gasUsed: "<gas>",
       input: "0x2b68b9c6",
       to: "<addr>",
       type: "CALL",
@@ -525,8 +525,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "0x42",
-  gasUsed: "0x42",
+  gas: "<gas>",
+  gasUsed: "<gas>",
   input: "0xfadbb018",
   to: "<contract_addr>",
   type: "CALL",
