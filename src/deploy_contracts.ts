@@ -7,6 +7,7 @@ import { ReturnDataTesterAbi } from '../codegen/abi/ReturnDataTester.ts'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import { PretraceFixtureChildAbi } from '../codegen/abi/PretraceFixtureChild.ts'
 import { TracingCalleeAbi } from '../codegen/abi/TracingCallee.ts'
+import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 // Initialize test environment
 export const env = await getEnv()
@@ -57,7 +58,7 @@ export const getReturnDataTesterAddr = memoizedDeploy(
 )
 
 // PretraceFixture contract
-export const getPretraceFixture = memoizedTx(
+export const getPretraceFixtureReceipt = memoizedTx(
     env,
     () =>
         env.accountWallet.deployContract({
@@ -68,7 +69,7 @@ export const getPretraceFixture = memoizedTx(
 )
 
 export const getPretraceFixtureAddr = () =>
-    getPretraceFixture().then((r) => r.contractAddress!)
+    getPretraceFixtureReceipt().then((r) => r.contractAddress!)
 
 // PretraceFixtureChild contract
 export const getPretraceFixtureChildAddr = memoizedDeploy(
@@ -79,6 +80,17 @@ export const getPretraceFixtureChildAddr = memoizedDeploy(
             bytecode: getByteCode('PretraceFixtureChild', env.evm),
         }),
 )
+
+// Tracing caller contract
+export const getTracingCallerAddr = memoizedDeploy(env, async () => {
+    const tracingCalleeAddr = await getTracingCalleeAddr()
+    return env.accountWallet.deployContract({
+        abi: TracingCallerAbi,
+        args: [tracingCalleeAddr],
+        bytecode: getByteCode('TracingCaller', env.evm),
+        value: parseEther('10'),
+    })
+})
 
 // TracingCallee contract
 export const getDeployTracingCalleeReceipt = memoizedTx(

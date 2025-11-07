@@ -11,10 +11,12 @@ import { encodeFunctionData, type Hex, parseEther } from 'viem'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import {
     env,
-    getPretraceFixture,
     getPretraceFixtureAddr,
     getPretraceFixtureChildAddr,
+    getPretraceFixtureReceipt,
+    getTracingCallerAddr,
 } from './deploy_contracts.ts'
+import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 const getBlock = memoized(async () => {
     const receipt = await getPretraceFixtureReceipt()
@@ -26,7 +28,7 @@ const getBlock = memoized(async () => {
 const getVisitor = async (): Promise<Visitor> => {
     const block = await getBlock()
     const addr = await getPretraceFixtureAddr()
-    const addr2 = await getAddr2()
+    const addr2 = await getPretraceFixtureChildAddr()
     const { miner: coinbaseAddr } = block
     const walletbalanceStorageSlot = computeMappingSlot(
         env.accountWallet.account.address,
@@ -115,9 +117,9 @@ Deno.test(
     'prestate deploy_contract',
     { ignore: true, ...opts },
     withDiffModes(async (t, config, diffMode) => {
-        const receiptHash = await getPretraceFixtureReceiptHash()
+        const receipt = await getPretraceFixtureReceipt()
         const res = await env.debugClient.traceTransaction(
-            receiptHash,
+            receipt.transactionHash,
             'prestateTracer',
             config,
         )
@@ -283,7 +285,7 @@ Deno.test(
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'getExternalBalance',
-                    args: [await getAddr2()],
+                    args: [await getPretraceFixtureChildAddr()],
                 }),
             },
             'prestateTracer',
@@ -340,7 +342,7 @@ Deno.test(
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'callContract',
-                    args: [await getAddr2()],
+                    args: [await getPretraceFixtureChildAddr()],
                 }),
             },
             'prestateTracer',
@@ -362,7 +364,7 @@ Deno.test(
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'callContract',
-                    args: [await getAddr2()],
+                    args: [await getPretraceFixtureChildAddr()],
                 }),
             },
             'prestateTracer',
