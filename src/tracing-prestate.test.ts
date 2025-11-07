@@ -7,7 +7,7 @@ import {
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
-import { encodeFunctionData, type Hex, parseEther } from 'viem'
+import { encodeFunctionData, type Hex, parseEther, parseEventLogs } from 'viem'
 import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import {
     env,
@@ -29,6 +29,7 @@ const getVisitor = async (): Promise<Visitor> => {
     const block = await getBlock()
     const prestateAddr = await getPretraceFixtureAddr()
     const prestateChildAddr = await getPretraceFixtureChildAddr()
+    const tracingCallerAddr = await getTracingCallerAddr()
     const { miner: coinbaseAddr } = block
     const walletbalanceStorageSlot = computeMappingSlot(
         env.accountWallet.account.address,
@@ -38,8 +39,9 @@ const getVisitor = async (): Promise<Visitor> => {
         [walletbalanceStorageSlot]: `<wallet_balance>`,
         [coinbaseAddr.toLowerCase()]: `<coinbase_addr>`,
         [env.accountWallet.account.address.toLowerCase()]: `<caller_addr>`,
-        [prestateAddr.toLowerCase()]: `<contract_addr>`,
-        [prestateChildAddr.toLowerCase()]: `<contract_child_addr>`,
+        [prestateAddr.toLowerCase()]: `<prestate_contract_addr>`,
+        [prestateChildAddr.toLowerCase()]: `<prestate_contract_child_addr>`,
+        [tracingCallerAddr.toLowerCase()]: `<tracing_contract_addr>`,
     }
 
     return (key, value) => {

@@ -540,7 +540,7 @@ snapshot[`prestate write_storage.diff 1`] = `
     "<caller_addr>": {
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x00000000000000000000000000000000000000000000000000000000000007e9",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167650000000000000000000000000000000000001a",
@@ -552,7 +552,7 @@ snapshot[`prestate write_storage.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -571,7 +571,7 @@ snapshot[`prestate write_storage.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -586,7 +586,7 @@ snapshot[`prestate write_storage.no_diff 1`] = `
 snapshot[`prestate write_storage_from_0.diff 1`] = `
 {
   post: {
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000002",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f66726f6d5f30000000000000000000000028",
@@ -594,7 +594,7 @@ snapshot[`prestate write_storage_from_0.diff 1`] = `
     },
   },
   pre: {
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -609,7 +609,7 @@ snapshot[`prestate write_storage_from_0.diff 1`] = `
 
 snapshot[`prestate write_storage_from_0.no_diff 1`] = `
 {
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -643,7 +643,7 @@ snapshot[`prestate read_storage.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -661,7 +661,7 @@ snapshot[`prestate deposit.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       storage: {
         "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
@@ -673,7 +673,7 @@ snapshot[`prestate deposit.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -691,7 +691,7 @@ snapshot[`prestate deposit.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -709,7 +709,7 @@ snapshot[`prestate withdraw.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       storage: {
         "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
@@ -721,7 +721,7 @@ snapshot[`prestate withdraw.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -739,7 +739,7 @@ snapshot[`prestate withdraw.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -772,7 +772,7 @@ snapshot[`prestate get_balance.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -802,13 +802,13 @@ snapshot[`prestate get_external_balance.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<contract_addr_2>": {
+    balance: "<balance>",
+  },
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
-  },
-  "<contract_addr_2>": {
-    balance: "<balance>",
   },
 }
 `;
@@ -835,7 +835,7 @@ snapshot[`prestate instantiate_child.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -849,7 +849,7 @@ snapshot[`prestate call_contract.diff 1`] = `
     "<caller_addr>": {
       nonce: "<nonce>",
     },
-    "<contract_child_addr>": {
+    "<prestate_contract_child_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000002",
       },
@@ -860,7 +860,7 @@ snapshot[`prestate call_contract.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_child_addr>": {
+    "<prestate_contract_child_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -878,12 +878,12 @@ snapshot[`prestate call_contract.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
   },
-  "<contract_child_addr>": {
+  "<prestate_contract_child_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -916,7 +916,7 @@ snapshot[`prestate delegate_call_contract.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -933,7 +933,7 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           storage: {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
             "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
@@ -945,7 +945,7 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           balance: "<balance>",
           code: "<code>",
           nonce: "<nonce>",
@@ -965,7 +965,7 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           storage: {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
           },
@@ -976,7 +976,7 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
           balance: "<balance>",
           nonce: "<nonce>",
         },
-        "<contract_addr>": {
+        "<prestate_contract_addr>": {
           balance: "<balance>",
           code: "<code>",
           nonce: "<nonce>",
@@ -998,7 +998,7 @@ snapshot[`prestate trace_tx_write_storage_twice.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
@@ -1010,7 +1010,7 @@ snapshot[`prestate trace_tx_write_storage_twice.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr>": {
+    "<prestate_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -1031,7 +1031,7 @@ snapshot[`prestate trace_block_write_storage_twice.no_diff 1`] = `
         balance: "<balance>",
         nonce: "<nonce>",
       },
-      "<contract_addr>": {
+      "<prestate_contract_addr>": {
         balance: "<balance>",
         code: "<code>",
         nonce: "<nonce>",
@@ -1049,7 +1049,7 @@ snapshot[`prestate trace_block_write_storage_twice.no_diff 1`] = `
         balance: "<balance>",
         nonce: "<nonce>",
       },
-      "<contract_addr>": {
+      "<prestate_contract_addr>": {
         balance: "<balance>",
         code: "<code>",
         nonce: "<nonce>",
@@ -1070,7 +1070,7 @@ snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
     balance: "<balance>",
     nonce: "<nonce>",
   },
-  "<contract_addr>": {
+  "<prestate_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -1086,7 +1086,7 @@ snapshot[`prestate selfdestruct.diff 1`] = `
 {
   post: {},
   pre: {
-    "0xeab4eeba1ff8504c124d031f6844ad98d07c318f": {
+    "<tracing_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -1097,7 +1097,7 @@ snapshot[`prestate selfdestruct.diff 1`] = `
 
 snapshot[`prestate selfdestruct.no_diff 1`] = `
 {
-  "0xeab4eeba1ff8504c124d031f6844ad98d07c318f": {
+  "<tracing_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
@@ -1108,12 +1108,12 @@ snapshot[`prestate selfdestruct.no_diff 1`] = `
 snapshot[`prestate create_and_destruct.diff 1`] = `
 {
   post: {
-    "0xeab4eeba1ff8504c124d031f6844ad98d07c318f": {
+    "<tracing_contract_addr>": {
       nonce: "<nonce>",
     },
   },
   pre: {
-    "0xeab4eeba1ff8504c124d031f6844ad98d07c318f": {
+    "<tracing_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -1124,7 +1124,7 @@ snapshot[`prestate create_and_destruct.diff 1`] = `
 
 snapshot[`prestate create_and_destruct.no_diff 1`] = `
 {
-  "0xeab4eeba1ff8504c124d031f6844ad98d07c318f": {
+  "<tracing_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
