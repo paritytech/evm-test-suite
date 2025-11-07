@@ -307,7 +307,7 @@ Deno.test('getBlockHash at height minus 256', opts, async () => {
         assert(
             blockHash ==
                 '0x0000000000000000000000000000000000000000000000000000000000000000',
-            'Block should not be zero',
+            'Block should be zero',
         )
     }
 })
