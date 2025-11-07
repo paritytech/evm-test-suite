@@ -849,7 +849,7 @@ snapshot[`prestate call_contract.diff 1`] = `
     "<caller_addr>": {
       nonce: "<nonce>",
     },
-    "<contract_addr_2>": {
+    "<contract_child_addr>": {
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000002",
       },
@@ -860,7 +860,7 @@ snapshot[`prestate call_contract.diff 1`] = `
       balance: "<balance>",
       nonce: "<nonce>",
     },
-    "<contract_addr_2>": {
+    "<contract_child_addr>": {
       balance: "<balance>",
       code: "<code>",
       nonce: "<nonce>",
@@ -883,7 +883,7 @@ snapshot[`prestate call_contract.no_diff 1`] = `
     code: "<code>",
     nonce: "<nonce>",
   },
-  "<contract_addr_2>": {
+  "<contract_child_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",

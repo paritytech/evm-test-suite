@@ -27,8 +27,8 @@ const getBlock = memoized(async () => {
 
 const getVisitor = async (): Promise<Visitor> => {
     const block = await getBlock()
-    const addr = await getPretraceFixtureAddr()
-    const addr2 = await getPretraceFixtureChildAddr()
+    const prestateAddr = await getPretraceFixtureAddr()
+    const prestateChildAddr = await getPretraceFixtureChildAddr()
     const { miner: coinbaseAddr } = block
     const walletbalanceStorageSlot = computeMappingSlot(
         env.accountWallet.account.address,
@@ -38,8 +38,8 @@ const getVisitor = async (): Promise<Visitor> => {
         [walletbalanceStorageSlot]: `<wallet_balance>`,
         [coinbaseAddr.toLowerCase()]: `<coinbase_addr>`,
         [env.accountWallet.account.address.toLowerCase()]: `<caller_addr>`,
-        [addr.toLowerCase()]: `<contract_addr>`,
-        [addr2.toLowerCase()]: `<contract_addr_2>`,
+        [prestateAddr.toLowerCase()]: `<contract_addr>`,
+        [prestateChildAddr.toLowerCase()]: `<contract_child_addr>`,
     }
 
     return (key, value) => {
