@@ -40,7 +40,6 @@ contract TracingCaller {
         newCallee.destruct();
     }
 
-
     function create() external returns (address) {
         TracingCallee newCallee = new TracingCallee();
         return address(newCallee);
