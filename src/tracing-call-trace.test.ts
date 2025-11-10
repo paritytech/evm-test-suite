@@ -54,7 +54,7 @@ const getCreate2Receipt = memoized(async () => {
 const getVisitor = async (): Promise<Visitor> => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const tracingCalleeAddr = await getTracingCalleeAddr()
-    return (key, value) => {
+    return (key, value, parent) => {
         switch (key) {
             case 'address':
             case 'from':
@@ -74,6 +74,14 @@ const getVisitor = async (): Promise<Visitor> => {
                 }
 
                 return [key, '<addr>']
+            }
+            case 'value': {
+                // deno-lint-ignore no-explicit-any
+                if ((parent as Record<string, any>)?.type == 'SELFDESTRUCT') {
+                    return [key, '<selfdestruct_value>']
+                } else {
+                    return [key, value]
+                }
             }
             case 'revertReason':
                 return [
