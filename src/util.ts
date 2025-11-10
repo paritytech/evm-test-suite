@@ -355,14 +355,21 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: unknown,
-    callback: (key: string, value: unknown, parent: unknown) => [string, unknown] | null,
-    parent: unknown = null,
+    callback: (
+        key: string,
+        value: unknown,
+        parent: unknown,
+    ) => [string, unknown] | null,
 ): unknown {
     if (Array.isArray(obj)) {
-        return obj.map((item) => visit(item, callback, obj))
+        return obj.map((item) => visit(item, callback))
     } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce((acc, key) => {
-            const mapped = callback(key, (obj as Record<string, unknown>)[key], obj)
+            const mapped = callback(
+                key,
+                (obj as Record<string, unknown>)[key],
+                obj,
+            )
             if (!mapped) {
                 return acc
             }
@@ -370,7 +377,7 @@ export function visit(
             if (mappedKey in acc) {
                 throw new Error(`visit(): duplicate mapped key "${mappedKey}"`)
             }
-            acc[mappedKey] = visit(mappedValue, callback, obj)
+            acc[mappedKey] = visit(mappedValue, callback)
             return acc
         }, {} as Record<string, unknown>)
     } else {
