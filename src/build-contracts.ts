@@ -1,10 +1,11 @@
 /// <reference path="./solc.d.ts" />
 
 import * as resolc from '@parity/resolc'
-import solc from 'solc'
+import solc, { CompileOutput } from 'solc'
 import { basename, join } from '@std/path'
 import * as log from '@std/log'
 import { parseArgs } from '@std/cli'
+import { decodeHex } from '@std/encoding/hex'
 
 type CompileInput = Parameters<typeof resolc.compile>[0]
 const LOG_LEVEL = (Deno.env.get('LOG_LEVEL')?.toUpperCase() ??
@@ -142,11 +143,7 @@ for (const file of input) {
                 if (contract?.evm?.bytecode?.object) {
                     const pvmFile = join(pvmDir, `${name}.polkavm`)
                     logger.info(`📜 Add PVM contract ${name}`)
-                    const bytecode = new Uint8Array(
-                        contract.evm.bytecode.object
-                            .match(/.{1,2}/g)!
-                            .map((byte) => parseInt(byte, 16)),
-                    )
+                    const bytecode = decodeHex(contract.evm.bytecode.object)
                     Deno.writeFileSync(pvmFile, bytecode)
                 }
             }
@@ -167,7 +164,7 @@ for (const file of input) {
 
     const evmOut = JSON.parse(
         evmCompile(file, inputSources),
-    ) as resolc.SolcOutput
+    ) as CompileOutput
 
     if (evmOut.errors) {
         for (const error of evmOut.errors) {
@@ -183,9 +180,10 @@ for (const file of input) {
         }
     }
 
-    for (const contracts of Object.values(evmOut.contracts)) {
+    for (const contracts of Object.values(evmOut.contracts ?? {})) {
         for (const [name, contract] of Object.entries(contracts)) {
             const evmFile = join(evmDir, `${name}.bin`)
+            const evmRuntimeFile = join(evmDir, `${name}.runtime.bin`)
             const abiFile = join(abiDir, `${name}.ts`)
 
             // Only write bytecode if it exists and is not empty
@@ -193,12 +191,18 @@ for (const file of input) {
                 const bytecodeHex = contract.evm.bytecode.object
                 if (bytecodeHex.length > 0) {
                     logger.info(`📜 Add EVM contract ${name}`)
-                    const bytecode = new Uint8Array(
-                        bytecodeHex
-                            .match(/.{1,2}/g)!
-                            .map((byte) => parseInt(byte, 16)),
-                    )
+                    const bytecode = decodeHex(bytecodeHex)
                     Deno.writeFileSync(evmFile, bytecode)
+                }
+            }
+
+            // Write runtime bytecode if it exists and is not empty
+            if (contract.evm?.deployedBytecode?.object) {
+                const runtimeBytecodeHex = contract.evm.deployedBytecode.object
+                if (runtimeBytecodeHex.length > 0) {
+                    logger.info(`📜 Add EVM runtime contract ${name}`)
+                    const runtimeBytecode = decodeHex(runtimeBytecodeHex)
+                    Deno.writeFileSync(evmRuntimeFile, runtimeBytecode)
                 }
             }
 

@@ -16,6 +16,7 @@ import {
 
 import { concat, hexToBytes, keccak256, pad } from 'viem/utils'
 import { nonceManager, privateKeyToAccount } from 'viem/accounts'
+import { encodeHex } from '@std/encoding/hex'
 
 export const sanitizeOpts = {
     sanitizeResources: false,
@@ -27,11 +28,14 @@ export function getByteCode(name: string, evm: boolean): Hex {
     const bytecode = evm
         ? Deno.readFileSync(`codegen/evm/${name}.bin`)
         : Deno.readFileSync(`codegen/pvm/${name}.polkavm`)
-    return `0x${
-        Array.from(bytecode)
-            .map((b: number) => b.toString(16).padStart(2, '0'))
-            .join('')
-    }` as Hex
+    return `0x${encodeHex(bytecode)}` as Hex
+}
+
+export function getRuntimeByteCode(name: string, evm: boolean): Hex {
+    const bytecode = evm
+        ? Deno.readFileSync(`codegen/evm/${name}.runtime.bin`)
+        : Deno.readFileSync(`codegen/pvm/${name}.polkavm`)
+    return `0x${encodeHex(bytecode)}` as Hex
 }
 
 export type JsonRpcError = {
@@ -77,29 +81,24 @@ export async function killProcessOnPort(port: number) {
 export type EnvName = 'geth' | 'revive-pvm' | 'revive-evm'
 
 function getEnvName(): EnvName {
-    const useGeth = !!Deno.env.get('USE_GETH')
-    const useRevive = Deno.env.get('USE_REVIVE') // 'pvm' or 'evm'
+    const platform = Deno.env.get('PLATFORM')
 
-    if (useGeth) {
-        return 'geth'
-    } else if (useRevive === 'pvm') {
-        return 'revive-pvm'
-    } else if (useRevive === 'evm') {
-        return 'revive-evm'
-    } else {
+    if (!platform || !['geth', 'revive-evm', 'revive-pvm'].includes(platform)) {
         throw new Error(
-            'No environment specified. Set USE_GETH or USE_REVIVE (pvm|evm)',
+            'No platform specified. PLATFORM should be set to one of: geth, revive-evm, revive-pvm',
         )
     }
+
+    return platform as EnvName
 }
 
 export const jsonRpcErrors: JsonRpcError[] = []
 
 export type Env = Awaited<ReturnType<typeof getEnv>>
 export async function getEnv() {
-    const name = getEnvName()
     const port = Deno.env.get('RPC_PORT') ?? '8545'
     const url = `http://localhost:${port}`
+    const name = getEnvName()
 
     const id = await (async (): Promise<number> => {
         const resp = await fetch(url, {
@@ -295,6 +294,7 @@ export async function getEnv() {
         ...waitForTransactionReceiptExtension(publicClient),
     }))
 
+    const useByteCode = Deno.env.get('USE_BYTECODE') ?? 'evm'
     return {
         chain,
         debugClient,
@@ -302,7 +302,7 @@ export async function getEnv() {
         emptyWallet,
         serverWallet,
         accountWallet,
-        evm: name === 'geth' || name === 'revive-evm',
+        evm: useByteCode === 'evm',
         name,
     }
 }
@@ -355,13 +355,21 @@ export function waitForHealth(url: string) {
 
 export function visit(
     obj: unknown,
-    callback: (key: string, value: unknown) => [string, unknown] | null,
+    callback: (
+        key: string,
+        value: unknown,
+        parent: unknown,
+    ) => [string, unknown] | null,
 ): unknown {
     if (Array.isArray(obj)) {
         return obj.map((item) => visit(item, callback))
     } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce((acc, key) => {
-            const mapped = callback(key, (obj as Record<string, unknown>)[key])
+            const mapped = callback(
+                key,
+                (obj as Record<string, unknown>)[key],
+                obj,
+            )
             if (!mapped) {
                 return acc
             }

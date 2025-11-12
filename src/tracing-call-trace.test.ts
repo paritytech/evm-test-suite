@@ -1,5 +1,6 @@
 import {
     getByteCode,
+    getRuntimeByteCode,
     memoized,
     sanitizeOpts as opts,
     visit,
@@ -16,6 +17,10 @@ import {
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
 const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
+const TRACING_CALLEE_RUNTIME_BYTECODE = getRuntimeByteCode(
+    'TracingCallee',
+    env.evm,
+)
 
 const getStartReceipt = memoized(async () => {
     const tracingCallerAddr = await getTracingCallerAddr()
@@ -54,7 +59,7 @@ const getCreate2Receipt = memoized(async () => {
 const getVisitor = async (): Promise<Visitor> => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const tracingCalleeAddr = await getTracingCalleeAddr()
-    return (key, value) => {
+    return (key, value, parent) => {
         switch (key) {
             case 'address':
             case 'from':
@@ -75,6 +80,14 @@ const getVisitor = async (): Promise<Visitor> => {
 
                 return [key, '<addr>']
             }
+            case 'value': {
+                // deno-lint-ignore no-explicit-any
+                if ((parent as Record<string, any>)?.type == 'SELFDESTRUCT') {
+                    return [key, '<selfdestruct_value>']
+                } else {
+                    return [key, value]
+                }
+            }
             case 'revertReason':
                 return [
                     key,
@@ -93,7 +106,17 @@ const getVisitor = async (): Promise<Visitor> => {
             case 'input': {
                 return [
                     key,
-                    value === TRACING_CALLEE_BYTECODE ? '<code>' : value,
+                    value === TRACING_CALLEE_BYTECODE
+                        ? '<tracing_callee_init_code>'
+                        : value,
+                ]
+            }
+            case 'output': {
+                return [
+                    key,
+                    value === TRACING_CALLEE_RUNTIME_BYTECODE
+                        ? '<tracing_callee_runtime_code>'
+                        : value,
                 ]
             }
             default: {
