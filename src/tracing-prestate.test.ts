@@ -1,5 +1,6 @@
 import {
     computeMappingSlot,
+    getRuntimeByteCode,
     memoized,
     sanitizeOpts as opts,
     visit,
@@ -81,6 +82,7 @@ const matchFixture = async (
     diffMode: string,
 ) => {
     const visitor = await getVisitor()
+    const out = visit(res, visitor)
     if (Deno.env.get('DEBUG')) {
         const currentDir = new URL('.', import.meta.url).pathname
         const dir = `${currentDir}samples/prestate_tracer/`
@@ -89,9 +91,12 @@ const matchFixture = async (
             `${dir}${t.name}.${env.chain.name}.${diffMode}.json`,
             JSON.stringify(res, null, 2),
         )
+        await Deno.writeTextFile(
+            `${dir}${t.name}.${env.chain.name}.${diffMode}.mapped.json`,
+            JSON.stringify(out, null, 2),
+        )
     }
 
-    const out = visit(res, visitor)
     await assertSnapshot(t, out, {
         name: `${t.name}.${diffMode}`,
     })
@@ -103,9 +108,10 @@ const withDiffModes = (
         config: { diffMode: boolean },
         diffMode: string,
     ) => Promise<void>,
+    configs = [{ diffMode: true }, { diffMode: false }],
 ) => {
     return async (t: Deno.TestContext) => {
-        for (const config of [{ diffMode: true }, { diffMode: false }]) {
+        for (const config of configs) {
             const diffMode = config.diffMode ? 'diff' : 'no_diff'
             await t.step(diffMode, async () => {
                 await testFn(t, config, diffMode)
@@ -466,20 +472,22 @@ Deno.test(
 Deno.test(
     'prestate create_and_destruct',
     opts,
-    withDiffModes(async (t, config, diffMode) => {
-        const tracingCallerAddr = await getTracingCallerAddr()
-        const res = await env.debugClient.traceCall(
-            {
-                to: tracingCallerAddr,
-                data: encodeFunctionData({
-                    abi: TracingCallerAbi,
-                    functionName: 'create_and_destruct',
-                    args: [],
-                }),
-            },
-            'prestateTracer',
-            config,
-        )
-        await matchFixture(t, res, diffMode)
-    }),
+    withDiffModes(
+        async (t, config, diffMode) => {
+            const tracingCallerAddr = await getTracingCallerAddr()
+            const res = await env.debugClient.traceCall(
+                {
+                    to: tracingCallerAddr,
+                    data: encodeFunctionData({
+                        abi: TracingCallerAbi,
+                        functionName: 'create_and_destruct',
+                        args: [],
+                    }),
+                },
+                'prestateTracer',
+                config,
+            )
+            await matchFixture(t, res, diffMode)
+        },
+    ),
 )

@@ -276,7 +276,6 @@ Deno.test(
             { withLog: true },
         )
 
-        console.log(res)
         await matchFixture(t, res)
     },
 )
