@@ -1,5 +1,6 @@
 import {
     getByteCode,
+    getRuntimeByteCode,
     memoized,
     sanitizeOpts as opts,
     visit,
@@ -16,6 +17,10 @@ import {
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
 const TRACING_CALLEE_BYTECODE = getByteCode('TracingCallee', env.evm)
+const TRACING_CALLEE_RUNTIME_BYTECODE = getRuntimeByteCode(
+    'TracingCallee',
+    env.evm,
+)
 
 const getStartReceipt = memoized(async () => {
     const tracingCallerAddr = await getTracingCallerAddr()
@@ -101,7 +106,17 @@ const getVisitor = async (): Promise<Visitor> => {
             case 'input': {
                 return [
                     key,
-                    value === TRACING_CALLEE_BYTECODE ? '<code>' : value,
+                    value === TRACING_CALLEE_BYTECODE
+                        ? '<tracing_callee_init_code>'
+                        : value,
+                ]
+            }
+            case 'output': {
+                return [
+                    key,
+                    value === TRACING_CALLEE_RUNTIME_BYTECODE
+                        ? '<tracing_callee_runtime_code>'
+                        : value,
                 ]
             }
             default: {

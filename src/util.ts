@@ -16,6 +16,7 @@ import {
 
 import { concat, hexToBytes, keccak256, pad } from 'viem/utils'
 import { nonceManager, privateKeyToAccount } from 'viem/accounts'
+import { encodeHex } from '@std/encoding/hex'
 
 export const sanitizeOpts = {
     sanitizeResources: false,
@@ -27,11 +28,14 @@ export function getByteCode(name: string, evm: boolean): Hex {
     const bytecode = evm
         ? Deno.readFileSync(`codegen/evm/${name}.bin`)
         : Deno.readFileSync(`codegen/pvm/${name}.polkavm`)
-    return `0x${
-        Array.from(bytecode)
-            .map((b: number) => b.toString(16).padStart(2, '0'))
-            .join('')
-    }` as Hex
+    return `0x${encodeHex(bytecode)}` as Hex
+}
+
+export function getRuntimeByteCode(name: string, evm: boolean): Hex {
+    const bytecode = evm
+        ? Deno.readFileSync(`codegen/evm/${name}.runtime.bin`)
+        : Deno.readFileSync(`codegen/pvm/${name}.polkavm`)
+    return `0x${encodeHex(bytecode)}` as Hex
 }
 
 export type JsonRpcError = {

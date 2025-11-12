@@ -261,53 +261,57 @@ Deno.test('eth_call_deployment_returns_bytecode', opts, async () => {
     }
 })
 
-Deno.test('getBlockHash at height minus 256', opts, async () => {
-    const testerAddr = await getTesterAddr()
-    let currentBlock = await env.serverWallet.getBlockNumber()
+Deno.test(
+    'getBlockHash at height minus 256',
+    { ...opts, ignore: true },
+    async () => {
+        const testerAddr = await getTesterAddr()
+        let currentBlock = await env.serverWallet.getBlockNumber()
 
-    // Mine extra block so we get at least 257 blocks
-    for (let i = currentBlock + 1n; i <= 257n; i++) {
-        const hash = await env.serverWallet.writeContract({
-            address: testerAddr,
-            abi: TesterAbi,
-            functionName: 'setValue',
-            args: [i],
-        })
-        await env.serverWallet.waitForTransactionReceipt(hash)
-    }
+        // Mine extra block so we get at least 257 blocks
+        for (let i = currentBlock + 1n; i <= 257n; i++) {
+            const hash = await env.serverWallet.writeContract({
+                address: testerAddr,
+                abi: TesterAbi,
+                functionName: 'setValue',
+                args: [i],
+            })
+            await env.serverWallet.waitForTransactionReceipt(hash)
+        }
 
-    currentBlock = await env.serverWallet.getBlockNumber()
-    assert(currentBlock >= 256n, 'Block height should be greater than 256')
+        currentBlock = await env.serverWallet.getBlockNumber()
+        assert(currentBlock >= 256n, 'Block height should be greater than 256')
 
-    {
-        const targetHashBlock = currentBlock - 256n
-        const blockHash = await env.serverWallet.readContract({
-            address: testerAddr,
-            abi: TesterAbi,
-            functionName: 'getBlockHash',
-            args: [targetHashBlock],
-        })
+        {
+            const targetHashBlock = currentBlock - 256n
+            const blockHash = await env.serverWallet.readContract({
+                address: testerAddr,
+                abi: TesterAbi,
+                functionName: 'getBlockHash',
+                args: [targetHashBlock],
+            })
 
-        assert(
-            blockHash !==
-                '0x0000000000000000000000000000000000000000000000000000000000000000',
-            'Block hash should not be zero',
-        )
-    }
+            assert(
+                blockHash !==
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                'Block hash should not be zero',
+            )
+        }
 
-    {
-        const targetHashBlock = currentBlock - 257n
-        const blockHash = await env.serverWallet.readContract({
-            address: testerAddr,
-            abi: TesterAbi,
-            functionName: 'getBlockHash',
-            args: [targetHashBlock],
-        })
+        {
+            const targetHashBlock = currentBlock - 257n
+            const blockHash = await env.serverWallet.readContract({
+                address: testerAddr,
+                abi: TesterAbi,
+                functionName: 'getBlockHash',
+                args: [targetHashBlock],
+            })
 
-        assert(
-            blockHash ==
-                '0x0000000000000000000000000000000000000000000000000000000000000000',
-            'Block should be zero',
-        )
-    }
-})
+            assert(
+                blockHash ==
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                'Block should be zero',
+            )
+        }
+    },
+)

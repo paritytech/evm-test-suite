@@ -22,6 +22,7 @@
     },
     "imports": {
         "@std/cli": "jsr:@std/cli@^1.0.23",
+        "@std/encoding": "jsr:@std/encoding@^1.0.10",
         "viem": "npm:viem@^2.38.3",
         "viem/": "npm:/viem@^2.38.3/",
         "solc": "npm:solc@^0.8.30",
