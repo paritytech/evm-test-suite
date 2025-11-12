@@ -1120,7 +1120,11 @@ snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
 
 snapshot[`prestate selfdestruct.diff 1`] = `
 {
-  post: {},
+  post: {
+    "<tracing_contract_addr>": {
+      balance: "<balance>",
+    },
+  },
   pre: {
     "<tracing_contract_addr>": {
       balance: "<balance>",
