@@ -1,6 +1,5 @@
 import {
     computeMappingSlot,
-    getRuntimeByteCode,
     memoized,
     sanitizeOpts as opts,
     visit,
