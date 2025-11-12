@@ -3,6 +3,40 @@ import { killProcessOnPort, waitForHealth } from './util.ts'
 let processes: Deno.ChildProcess[] = []
 let setupComplete = false
 
+async function detectAndSetPlatform(url: string) {
+    try {
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'web3_clientVersion',
+                id: 1,
+            }),
+        })
+        const { result } = (await resp.json()) as { result: string }
+        const clientVersion = result.toLowerCase()
+
+        // Determine the platform based on client version
+        if (clientVersion.includes('geth')) {
+            Deno.env.set('PLATFORM', 'geth')
+        } else if (clientVersion.includes('eth-rpc')) {
+            Deno.env.set(
+                'PLATFORM',
+                Deno.env.get('USE_BYTECODE') === 'pvm'
+                    ? 'revive-pvm'
+                    : 'revive-evm',
+            )
+        }
+    } catch (_) {
+        throw new Error(
+            'No platform detected. Start the chain manually or use START_GETH or START_REVIVE_DEV_NODE and START_ETH_RPC to start the chain from the test runner.',
+        )
+    }
+}
+
 export async function setupTests() {
     // Only run setup once, even if imported by multiple test files
     if (setupComplete) {
@@ -31,7 +65,10 @@ export async function setupTests() {
         }).spawn()
         processes.push(gethProcess)
         await waitForHealth('http://localhost:8545').catch(() => {})
-        Deno.env.set('USE_GETH', 'true')
+
+        if (!Deno.env.has('USE_BYTECODE')) {
+            Deno.env.set('USE_BYTECODE', 'evm')
+        }
     }
 
     if (Deno.env.get('START_REVIVE_DEV_NODE')) {
@@ -72,10 +109,15 @@ export async function setupTests() {
         processes.push(ethRpcProcess)
         await waitForHealth('http://localhost:8545').catch(() => {})
 
-        if (!Deno.env.has('USE_REVIVE')) {
-            Deno.env.set('USE_REVIVE', 'evm')
+        if (!Deno.env.has('USE_BYTECODE')) {
+            Deno.env.set('USE_BYTECODE', 'evm')
         }
     }
+
+    // Detect and set the PLATFORM variable
+    const port = Deno.env.get('RPC_PORT') ?? '8545'
+    const url = `http://localhost:${port}`
+    await detectAndSetPlatform(url)
 }
 
 export function cleanupTests() {

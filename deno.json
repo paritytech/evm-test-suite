@@ -10,9 +10,11 @@
     },
     "tasks": {
         "build": "deno run -P src/build-contracts.ts",
-        "test:evm": "deno task build --solcOnly && USE_REVIVE=evm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
-        "test:pvm": "deno task build && USE_REVIVE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
-        "test:geth": "deno task build --solcOnly && START_GETH=true deno test -P",
+        "test:evm": "deno task build --solcOnly && USE_BYTECODE=evm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
+        "test:evm:manual": "deno task build --solcOnly && USE_BYTECODE=evm deno test -P",
+        "test:pvm:manual": "deno task build && USE_BYTECODE=pvm deno test -P",
+        "test:pvm": "deno task build && USE_BYTECODE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
+        "test:geth": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P",
         "lint": "deno fmt --check && deno lint"
     },
     "test": {
@@ -20,6 +22,7 @@
     },
     "imports": {
         "@std/cli": "jsr:@std/cli@^1.0.23",
+        "@std/encoding": "jsr:@std/encoding@^1.0.10",
         "viem": "npm:viem@^2.38.3",
         "viem/": "npm:/viem@^2.38.3/",
         "solc": "npm:solc@^0.8.30",

@@ -155,7 +155,7 @@ snapshot[`call-trace debug_deploy_traceTransaction 1`] = `
   from: "<caller>",
   gas: "<gas>",
   gasUsed: "<gas>",
-  input: "<code>",
+  input: "<tracing_callee_init_code>",
   to: "<contract_callee_addr>",
   type: "CREATE",
   value: "0x0",
@@ -464,6 +464,42 @@ snapshot[`call-trace debug_traceCall 1`] = `
   to: "<contract_addr>",
   type: "CALL",
   value: "0x0",
+}
+`;
+
+snapshot[`prestate deploy_contract.diff 1`] = `
+{
+  post: {
+    "<caller_addr>": {
+      balance: "<balance>",
+      nonce: "<nonce>",
+    },
+    "<prestate_contract_addr>": {
+      balance: "<balance>",
+      code: "<code>",
+      nonce: "<nonce>",
+      storage: {
+        "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
+        "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
+        "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
+      },
+    },
+  },
+  pre: {
+    "<caller_addr>": {
+      balance: "<balance>",
+      nonce: "<nonce>",
+    },
+  },
+}
+`;
+
+snapshot[`prestate deploy_contract.no_diff 1`] = `
+{
+  "<caller_addr>": {
+    balance: "<balance>",
+    nonce: "<nonce>",
+  },
 }
 `;
 
