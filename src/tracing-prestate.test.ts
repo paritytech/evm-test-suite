@@ -1,6 +1,5 @@
 import {
     computeMappingSlot,
-    getRuntimeByteCode,
     memoized,
     sanitizeOpts as opts,
     visit,
@@ -17,7 +16,6 @@ import {
     getPretraceFixtureReceipt,
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
-import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 const getBlock = memoized(async () => {
     const receipt = await getPretraceFixtureReceipt()
