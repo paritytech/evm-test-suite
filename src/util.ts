@@ -80,7 +80,7 @@ export async function killProcessOnPort(port: number) {
 
 export type EnvName = 'geth' | 'revive-pvm' | 'revive-evm'
 
-function getEnvName(): EnvName {
+export function getEnvName(): EnvName {
     const platform = Deno.env.get('PLATFORM')
 
     if (!platform || !['geth', 'revive-evm', 'revive-pvm'].includes(platform)) {

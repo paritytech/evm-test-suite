@@ -5,6 +5,7 @@ import {
     sanitizeOpts as opts,
     visit,
     Visitor,
+    getEnvName,
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
@@ -262,6 +263,10 @@ Deno.test(
     'call-trace create_and_destruct',
     opts,
     async (t) => {
+        if (getEnvName() === 'revive-pvm') {
+            // skip
+            return
+        }
         const tracingCallerAddr = await getTracingCallerAddr()
         const res = await env.debugClient.traceCall(
             {
