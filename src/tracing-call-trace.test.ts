@@ -1,11 +1,11 @@
 import {
     getByteCode,
+    getEnvName,
     getRuntimeByteCode,
     memoized,
     sanitizeOpts as opts,
     visit,
     Visitor,
-    getEnvName,
 } from './util.ts'
 import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
