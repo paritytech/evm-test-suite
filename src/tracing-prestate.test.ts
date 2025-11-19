@@ -454,7 +454,9 @@ Deno.test(
         const tracingCallerAddr = await getTracingCallerAddr()
         const res = await env.debugClient.traceCall(
             {
+                from: env.accountWallet.account.address,
                 to: tracingCallerAddr,
+                value: parseEther('1'),
                 data: encodeFunctionData({
                     abi: TracingCallerAbi,
                     functionName: 'destruct',
