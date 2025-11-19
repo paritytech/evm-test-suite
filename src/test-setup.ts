@@ -57,6 +57,14 @@ export async function setupTests() {
         ]
 
         await killProcessOnPort(8545)
+
+        const versionOutput = await new Deno.Command(geth, {
+            args: ['version'],
+            stdout: 'piped',
+            stderr: 'piped',
+        }).output()
+        const version = new TextDecoder().decode(versionOutput.stdout)
+        console.log(version)
         console.log('🚀 Start geth...')
         const gethProcess = new Deno.Command(geth, {
             args: gethArgs,

@@ -467,6 +467,73 @@ snapshot[`call-trace debug_traceCall 1`] = `
 }
 `;
 
+snapshot[`call-trace selfdestruct 1`] = `
+{
+  calls: [
+    {
+      from: "<contract_addr>",
+      gas: "<gas>",
+      gasUsed: "<gas>",
+      input: "0x",
+      to: "0x0000000000000000000000000000000000000000",
+      type: "SELFDESTRUCT",
+      value: "<selfdestruct_value>",
+    },
+  ],
+  from: "0x0000000000000000000000000000000000000000",
+  gas: "<gas>",
+  gasUsed: "<gas>",
+  input: "0x2b68b9c6",
+  to: "<contract_addr>",
+  type: "CALL",
+  value: "0x0",
+}
+`;
+
+snapshot[`call-trace create_and_destruct 1`] = `
+{
+  calls: [
+    {
+      from: "<contract_addr>",
+      gas: "<gas>",
+      gasUsed: "<gas>",
+      input: "<tracing_callee_init_code>",
+      output: "<tracing_callee_runtime_code>",
+      to: "<addr>",
+      type: "CREATE",
+      value: "0x0",
+    },
+    {
+      calls: [
+        {
+          from: "<addr>",
+          gas: "<gas>",
+          gasUsed: "<gas>",
+          input: "0x",
+          to: "<contract_addr>",
+          type: "SELFDESTRUCT",
+          value: "<selfdestruct_value>",
+        },
+      ],
+      from: "<contract_addr>",
+      gas: "<gas>",
+      gasUsed: "<gas>",
+      input: "0x2b68b9c6",
+      to: "<addr>",
+      type: "CALL",
+      value: "0x0",
+    },
+  ],
+  from: "0x0000000000000000000000000000000000000000",
+  gas: "<gas>",
+  gasUsed: "<gas>",
+  input: "0xfadbb018",
+  to: "<contract_addr>",
+  type: "CALL",
+  value: "0x0",
+}
+`;
+
 snapshot[`prestate deploy_contract.diff 1`] = `
 {
   post: {
@@ -1047,6 +1114,60 @@ snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
       "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
     },
+  },
+}
+`;
+
+snapshot[`prestate selfdestruct.diff 1`] = `
+{
+  post: {
+    "<tracing_contract_addr>": {
+      balance: "<balance>",
+    },
+  },
+  pre: {
+    "<tracing_contract_addr>": {
+      balance: "<balance>",
+      code: "<code>",
+      nonce: "<nonce>",
+    },
+  },
+}
+`;
+
+snapshot[`prestate selfdestruct.no_diff 1`] = `
+{
+  "<tracing_contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+  },
+}
+`;
+
+snapshot[`prestate create_and_destruct.diff 1`] = `
+{
+  post: {
+    "<tracing_contract_addr>": {
+      nonce: "<nonce>",
+    },
+  },
+  pre: {
+    "<tracing_contract_addr>": {
+      balance: "<balance>",
+      code: "<code>",
+      nonce: "<nonce>",
+    },
+  },
+}
+`;
+
+snapshot[`prestate create_and_destruct.no_diff 1`] = `
+{
+  "<tracing_contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;

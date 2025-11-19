@@ -16,6 +16,7 @@ import {
     getPretraceFixtureReceipt,
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
+import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 
 const getBlock = memoized(async () => {
     const receipt = await getPretraceFixtureReceipt()
@@ -444,4 +445,48 @@ Deno.test(
             await matchFixture(t, res, diffMode)
         })
     }),
+)
+
+Deno.test(
+    'prestate selfdestruct',
+    opts,
+    withDiffModes(async (t, config, diffMode) => {
+        const tracingCallerAddr = await getTracingCallerAddr()
+        const res = await env.debugClient.traceCall(
+            {
+                to: tracingCallerAddr,
+                data: encodeFunctionData({
+                    abi: TracingCallerAbi,
+                    functionName: 'destruct',
+                    args: [],
+                }),
+            },
+            'prestateTracer',
+            config,
+        )
+        await matchFixture(t, res, diffMode)
+    }),
+)
+
+Deno.test(
+    'prestate create_and_destruct',
+    opts,
+    withDiffModes(
+        async (t, config, diffMode) => {
+            const tracingCallerAddr = await getTracingCallerAddr()
+            const res = await env.debugClient.traceCall(
+                {
+                    to: tracingCallerAddr,
+                    data: encodeFunctionData({
+                        abi: TracingCallerAbi,
+                        functionName: 'create_and_destruct',
+                        args: [],
+                    }),
+                },
+                'prestateTracer',
+                config,
+            )
+            await matchFixture(t, res, diffMode)
+        },
+    ),
 )
