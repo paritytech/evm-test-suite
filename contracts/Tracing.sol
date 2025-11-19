@@ -28,7 +28,7 @@ contract TracingCaller {
         this.start(counter - 1);
     }
 
-    function destruct() external payable {
+    function destruct() external {
         address recipient = msg.sender;
         assembly {
             selfdestruct(recipient)
@@ -64,7 +64,7 @@ contract TracingCallee {
         emit CalleeCalled(counter);
     }
 
-    function destruct() external payable {
+    function destruct() external {
         address recipient = msg.sender;
         assembly {
             selfdestruct(recipient)

@@ -1121,19 +1121,11 @@ snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
 snapshot[`prestate selfdestruct.diff 1`] = `
 {
   post: {
-    "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
-    },
     "<tracing_contract_addr>": {
       balance: "<balance>",
     },
   },
   pre: {
-    "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
-    },
     "<tracing_contract_addr>": {
       balance: "<balance>",
       code: "<code>",
@@ -1145,10 +1137,6 @@ snapshot[`prestate selfdestruct.diff 1`] = `
 
 snapshot[`prestate selfdestruct.no_diff 1`] = `
 {
-  "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
-  },
   "<tracing_contract_addr>": {
     balance: "<balance>",
     code: "<code>",
