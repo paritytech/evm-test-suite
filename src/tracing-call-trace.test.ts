@@ -260,7 +260,7 @@ Deno.test('call-trace selfdestruct', opts, async (t) => {
 
 Deno.test(
     'call-trace create_and_destruct',
-    opts,
+    { ...opts, ignore: !env.evm },
     async (t) => {
         const tracingCallerAddr = await getTracingCallerAddr()
         const res = await env.debugClient.traceCall(
