@@ -364,21 +364,21 @@ Deno.test(
     'prestate delegate_call_contract',
     opts,
     withDiffModes(async (t, config, diffMode) => {
+        const to = await getPretraceFixtureAddr()
+        const childAddr = await getPretraceFixtureChildAddr()
+
         const res = await env.debugClient.traceCall(
             {
                 from: env.accountWallet.account.address,
-                to: await getPretraceFixtureAddr(),
+                to,
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
                     functionName: 'delegatecallContract',
-                    args: [await getPretraceFixtureChildAddr()],
+                    args: [childAddr],
                 }),
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
