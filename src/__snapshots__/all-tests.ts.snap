@@ -845,6 +845,8 @@ snapshot[`prestate get_external_balance.no_diff 1`] = `
   },
   "<prestate_contract_child_addr>": {
     balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;

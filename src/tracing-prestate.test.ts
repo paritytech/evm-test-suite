@@ -26,11 +26,10 @@ const getBlock = memoized(async () => {
 })
 
 const getVisitor = async (): Promise<Visitor> => {
-    const block = await getBlock()
     const prestateAddr = await getPretraceFixtureAddr()
     const prestateChildAddr = await getPretraceFixtureChildAddr()
     const tracingCallerAddr = await getTracingCallerAddr()
-    const { miner: coinbaseAddr } = block
+    const { miner: coinbaseAddr } = await getBlock()
     const walletbalanceStorageSlot = computeMappingSlot(
         env.accountWallet.account.address,
         1,
@@ -150,9 +149,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
@@ -174,9 +170,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
@@ -198,9 +191,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
@@ -223,9 +213,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
@@ -248,9 +235,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
@@ -272,9 +256,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
@@ -297,17 +278,7 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )) as Record<string, unknown>
-
-        // Geth is missing prestate_contract_child_addr just add it back to make test pass
-        if (env.name == 'geth' && diffMode == 'no_diff') {
-            res['<prestate_contract_child_addr>'] = {
-                balance: '<balance>',
-            }
-        }
 
         await matchFixture(t, res, diffMode)
     }),
@@ -329,9 +300,6 @@ Deno.test(
             },
             'prestateTracer',
             config,
-            (
-                await getBlock()
-            ).hash!,
         )
 
         await matchFixture(t, res, diffMode)
