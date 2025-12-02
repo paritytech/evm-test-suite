@@ -845,6 +845,8 @@ snapshot[`prestate get_external_balance.no_diff 1`] = `
   },
   "<prestate_contract_child_addr>": {
     balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
   },
 }
 `;
@@ -936,11 +938,24 @@ snapshot[`prestate delegate_call_contract.diff 1`] = `
     "<caller_addr>": {
       nonce: "<nonce>",
     },
+    "<prestate_contract_addr>": {
+      storage: {
+        "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
+      },
+    },
   },
   pre: {
     "<caller_addr>": {
       balance: "<balance>",
       nonce: "<nonce>",
+    },
+    "<prestate_contract_addr>": {
+      balance: "<balance>",
+      code: "<code>",
+      nonce: "<nonce>",
+      storage: {
+        "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
+      },
     },
   },
 }
@@ -953,6 +968,14 @@ snapshot[`prestate delegate_call_contract.no_diff 1`] = `
     nonce: "<nonce>",
   },
   "<prestate_contract_addr>": {
+    balance: "<balance>",
+    code: "<code>",
+    nonce: "<nonce>",
+    storage: {
+      "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
+    },
+  },
+  "<prestate_contract_child_addr>": {
     balance: "<balance>",
     code: "<code>",
     nonce: "<nonce>",
