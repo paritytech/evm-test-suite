@@ -370,7 +370,7 @@ Deno.test(
                 to: await getPretraceFixtureAddr(),
                 data: encodeFunctionData({
                     abi: PretraceFixtureAbi,
-                    functionName: 'callContract',
+                    functionName: 'delegatecallContract',
                     args: [await getPretraceFixtureChildAddr()],
                 }),
             },
