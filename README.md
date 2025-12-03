@@ -38,7 +38,7 @@ deno task lint
 Tests are configured via environment variables:
 
 - `RPC_PORT` - Specify custom JSON-RPC port (default: 8545)
-- `USE_BYTECODE` - Specify the bytecode platform: `evm` or `pvm`. 
+- `USE_BYTECODE` - Specify the bytecode platform: `evm` or `pvm`.
 - `START_GETH=1` - Start Geth
 - `GETH_PATH` - Path to the Geth binary (default: to geth)
 
