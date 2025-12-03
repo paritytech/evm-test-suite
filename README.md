@@ -9,9 +9,9 @@ This repository contains a test suite for Ethereum rpc methods.
 ## Running Tests
 
 ```bash
-# start revive and eth rpc, then run tests with pvm bytecode
+# start a PVM compatible platform, then run tests with pvm bytecode
 deno task test:pvm
-# start revive and eth rpc, then run tests with evm bytecode
+# start an EVM platform, then run tests with evm bytecode
 deno task test:evm
 # start geth, then run tests with evm bytecode
 deno task test:geth
@@ -38,8 +38,7 @@ deno task lint
 Tests are configured via environment variables:
 
 - `RPC_PORT` - Specify custom JSON-RPC port (default: 8545)
-- `USE_BYTECODE` - Specify the bytecode platform: `evm` or `pvm`. The actual runtime platform (`geth`, `revive-evm`, or `revive-pvm`) is automatically detected via `web3_clientVersion` RPC call
-
+- `USE_BYTECODE` - Specify the bytecode platform: `evm` or `pvm`. 
 - `START_GETH=1` - Start Geth
 - `GETH_PATH` - Path to the Geth binary (default: to geth)
 
