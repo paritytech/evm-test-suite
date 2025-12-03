@@ -17,19 +17,11 @@ async function detectAndSetPlatform(url: string) {
             }),
         })
         const { result } = (await resp.json()) as { result: string }
-        const clientVersion = result.toLowerCase()
-
-        // Determine the platform based on client version
-        if (clientVersion.includes('geth')) {
-            Deno.env.set('PLATFORM', 'geth')
-        } else if (clientVersion.includes('eth-rpc')) {
-            Deno.env.set(
-                'PLATFORM',
-                Deno.env.get('USE_BYTECODE') === 'pvm'
-                    ? 'revive-pvm'
-                    : 'revive-evm',
-            )
+        let platform = result.toLowerCase().split('/')[0]
+        if (Deno.env.get('USE_BYTECODE') === 'pvm') {
+            platform += '-pvm'
         }
+        Deno.env.set('PLATFORM', platform)
     } catch (_) {
         throw new Error(
             'No platform detected. Start the chain manually or use START_GETH or START_REVIVE_DEV_NODE and START_ETH_RPC to start the chain from the test runner.',

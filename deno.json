@@ -11,10 +11,11 @@
     "tasks": {
         "build": "deno run -P src/build-contracts.ts",
         "test:evm": "deno task build --solcOnly && USE_BYTECODE=evm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
+        "test:pvm": "deno task build && USE_BYTECODE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
         "test:evm:manual": "deno task build --solcOnly && USE_BYTECODE=evm deno test -P",
         "test:pvm:manual": "deno task build && USE_BYTECODE=pvm deno test -P",
-        "test:pvm": "deno task build && USE_BYTECODE=pvm START_REVIVE_DEV_NODE=true START_ETH_RPC=true deno test -P",
         "test:geth": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P",
+        "test:update": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P -- --update",
         "lint": "deno fmt --check && deno lint"
     },
     "test": {

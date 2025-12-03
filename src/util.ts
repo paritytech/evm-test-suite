@@ -78,18 +78,14 @@ export async function killProcessOnPort(port: number) {
     }
 }
 
-export type EnvName = 'geth' | 'revive-pvm' | 'revive-evm'
-
-function getEnvName(): EnvName {
+function getEnvName(): string {
     const platform = Deno.env.get('PLATFORM')
 
-    if (!platform || !['geth', 'revive-evm', 'revive-pvm'].includes(platform)) {
-        throw new Error(
-            'No platform specified. PLATFORM should be set to one of: geth, revive-evm, revive-pvm',
-        )
+    if (!platform) {
+        throw new Error('No platform detected.')
     }
 
-    return platform as EnvName
+    return platform
 }
 
 export const jsonRpcErrors: JsonRpcError[] = []
@@ -209,18 +205,16 @@ export async function getEnv() {
         .extend(publicActions)
         .extend(waitForTransactionReceiptExtension)
 
-    // On geth let's endow the account wallet with some funds, to match the eth-rpc setup
-    if (name === 'geth') {
-        const endowment = parseEther('1000')
-        const balance = await serverWallet.getBalance(accountWallet.account)
-        if (balance < endowment / 2n) {
-            const hash = await serverWallet.sendTransaction({
-                account: serverWallet.account,
-                to: accountWallet.account.address,
-                value: endowment,
-            })
-            await serverWallet.waitForTransactionReceipt(hash)
-        }
+    //  endow the account wallet with some funds if needed
+    const endowment = parseEther('1000')
+    const balance = await serverWallet.getBalance(accountWallet.account)
+    if (balance < endowment / 2n) {
+        const hash = await serverWallet.sendTransaction({
+            account: serverWallet.account,
+            to: accountWallet.account.address,
+            value: endowment,
+        })
+        await serverWallet.waitForTransactionReceipt(hash)
     }
 
     const emptyWallet = createWalletClient({
