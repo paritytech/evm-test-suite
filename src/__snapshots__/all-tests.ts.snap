@@ -534,6 +534,1146 @@ snapshot[`call-trace create_and_destruct 1`] = `
 }
 `;
 
+snapshot[`EVM opcode tracer: deploy flipper 1`] = `
+{
+  failed: false,
+  returnValue: "0x6080604052348015600e575f5ffd5b5060043610603a575f3560e01c80632096525514603e5780633fa4f245146058578063cde4efa9146072575b5f5ffd5b6044607a565b604051604f919060df565b60405180910390f35b605e608e565b6040516069919060df565b60405180910390f35b6078609f565b005b5f5f5f9054906101000a900460ff16905090565b5f5f9054906101000a900460ff1681565b5f5f9054906101000a900460ff16155f5f6101000a81548160ff021916908315150217905550565b5f8115159050919050565b60d98160c7565b82525050565b5f60208201905060f05f83018460d2565b9291505056fea2646970667358221220bba63d297a7f7ca3762bda36b1927da1525c30bedb785cf246426272bd00979364736f6c634300081e0033",
+  structLogs: [
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 0,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 2,
+      stack: [
+        "0x80",
+      ],
+    },
+    {
+      depth: 1,
+      op: "MSTORE",
+      pc: 4,
+      stack: [
+        "0x80",
+        "0x40",
+      ],
+    },
+    {
+      depth: 1,
+      op: "CALLVALUE",
+      pc: 5,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "DUP1",
+      pc: 6,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 7,
+      stack: [
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 8,
+      stack: [
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPI",
+      pc: 10,
+      stack: [
+        "0x0",
+        "0x1",
+        "0xe",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPDEST",
+      pc: 14,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "POP",
+      pc: 15,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 16,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 18,
+      stack: [
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 19,
+      stack: [
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH2",
+      pc: 20,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "EXP",
+      pc: 23,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x100",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP2",
+      pc: 24,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SLOAD",
+      pc: 25,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+      storage: {
+        "0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+    },
+    {
+      depth: 1,
+      op: "DUP2",
+      pc: 26,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 27,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "MUL",
+      pc: 29,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+        "0x1",
+        "0xff",
+      ],
+    },
+    {
+      depth: 1,
+      op: "NOT",
+      pc: 30,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+        "0xff",
+      ],
+    },
+    {
+      depth: 1,
+      op: "AND",
+      pc: 31,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 32,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP4",
+      pc: 33,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 34,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 35,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "MUL",
+      pc: 36,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "OR",
+      pc: 37,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 38,
+      stack: [
+        "0x1",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SSTORE",
+      pc: 39,
+      stack: [
+        "0x1",
+        "0x1",
+        "0x0",
+      ],
+      storage: {
+        "0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000001",
+      },
+    },
+    {
+      depth: 1,
+      op: "POP",
+      pc: 40,
+      stack: [
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH2",
+      pc: 41,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "DUP1",
+      pc: 44,
+      stack: [
+        "0x12c",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH2",
+      pc: 45,
+      stack: [
+        "0x12c",
+        "0x12c",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 48,
+      stack: [
+        "0x12c",
+        "0x12c",
+        "0x35",
+      ],
+    },
+    {
+      depth: 1,
+      op: "CODECOPY",
+      pc: 49,
+      stack: [
+        "0x12c",
+        "0x12c",
+        "0x35",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 50,
+      stack: [
+        "0x12c",
+      ],
+    },
+    {
+      depth: 1,
+      op: "RETURN",
+      pc: 51,
+      stack: [
+        "0x12c",
+        "0x0",
+      ],
+    },
+  ],
+}
+`;
+
+snapshot[`EVM opcode tracer: flip 1`] = `
+{
+  failed: false,
+  returnValue: "0x",
+  structLogs: [
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 0,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 2,
+      stack: [
+        "0x80",
+      ],
+    },
+    {
+      depth: 1,
+      op: "MSTORE",
+      pc: 4,
+      stack: [
+        "0x80",
+        "0x40",
+      ],
+    },
+    {
+      depth: 1,
+      op: "CALLVALUE",
+      pc: 5,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "DUP1",
+      pc: 6,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 7,
+      stack: [
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 8,
+      stack: [
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPI",
+      pc: 10,
+      stack: [
+        "0x0",
+        "0x1",
+        "0xe",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPDEST",
+      pc: 14,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "POP",
+      pc: 15,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 16,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "CALLDATASIZE",
+      pc: 18,
+      stack: [
+        "0x4",
+      ],
+    },
+    {
+      depth: 1,
+      op: "LT",
+      pc: 19,
+      stack: [
+        "0x4",
+        "0x4",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 20,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPI",
+      pc: 22,
+      stack: [
+        "0x0",
+        "0x3a",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 23,
+      stack: [],
+    },
+    {
+      depth: 1,
+      op: "CALLDATALOAD",
+      pc: 24,
+      stack: [
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 25,
+      stack: [
+        "0xcde4efa900000000000000000000000000000000000000000000000000000000",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SHR",
+      pc: 27,
+      stack: [
+        "0xcde4efa900000000000000000000000000000000000000000000000000000000",
+        "0xe0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP1",
+      pc: 28,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH4",
+      pc: 29,
+      stack: [
+        "0xcde4efa9",
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "EQ",
+      pc: 34,
+      stack: [
+        "0xcde4efa9",
+        "0xcde4efa9",
+        "0x20965255",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 35,
+      stack: [
+        "0xcde4efa9",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPI",
+      pc: 37,
+      stack: [
+        "0xcde4efa9",
+        "0x0",
+        "0x3e",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP1",
+      pc: 38,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH4",
+      pc: 39,
+      stack: [
+        "0xcde4efa9",
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "EQ",
+      pc: 44,
+      stack: [
+        "0xcde4efa9",
+        "0xcde4efa9",
+        "0x3fa4f245",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 45,
+      stack: [
+        "0xcde4efa9",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPI",
+      pc: 47,
+      stack: [
+        "0xcde4efa9",
+        "0x0",
+        "0x58",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP1",
+      pc: 48,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH4",
+      pc: 49,
+      stack: [
+        "0xcde4efa9",
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "EQ",
+      pc: 54,
+      stack: [
+        "0xcde4efa9",
+        "0xcde4efa9",
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 55,
+      stack: [
+        "0xcde4efa9",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPI",
+      pc: 57,
+      stack: [
+        "0xcde4efa9",
+        "0x1",
+        "0x72",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPDEST",
+      pc: 114,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 115,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 117,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMP",
+      pc: 119,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x9f",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPDEST",
+      pc: 159,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 160,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 161,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 162,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SLOAD",
+      pc: 163,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+      ],
+      storage: {
+        "0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000001",
+      },
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 164,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH2",
+      pc: 165,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "EXP",
+      pc: 168,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+        "0x0",
+        "0x100",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 169,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DIV",
+      pc: 170,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 171,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "AND",
+      pc: 173,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+        "0xff",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 174,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 175,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH0",
+      pc: 176,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH2",
+      pc: 177,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "EXP",
+      pc: 180,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x100",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP2",
+      pc: 181,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SLOAD",
+      pc: 182,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+      storage: {
+        "0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000001",
+      },
+    },
+    {
+      depth: 1,
+      op: "DUP2",
+      pc: 183,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "PUSH1",
+      pc: 184,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "MUL",
+      pc: 186,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+        "0x1",
+        "0xff",
+      ],
+    },
+    {
+      depth: 1,
+      op: "NOT",
+      pc: 187,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+        "0xff",
+      ],
+    },
+    {
+      depth: 1,
+      op: "AND",
+      pc: 188,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 189,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "DUP4",
+      pc: 190,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 191,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "ISZERO",
+      pc: 192,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x1",
+      ],
+    },
+    {
+      depth: 1,
+      op: "MUL",
+      pc: 193,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x1",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "OR",
+      pc: 194,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SWAP1",
+      pc: 195,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "SSTORE",
+      pc: 196,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+        "0x0",
+        "0x0",
+      ],
+      storage: {
+        "0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000000",
+      },
+    },
+    {
+      depth: 1,
+      op: "POP",
+      pc: 197,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+        "0x0",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMP",
+      pc: 198,
+      stack: [
+        "0xcde4efa9",
+        "0x78",
+      ],
+    },
+    {
+      depth: 1,
+      op: "JUMPDEST",
+      pc: 120,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+    {
+      depth: 1,
+      op: "STOP",
+      pc: 121,
+      stack: [
+        "0xcde4efa9",
+      ],
+    },
+  ],
+}
+`;
+
 snapshot[`prestate deploy_contract.diff 1`] = `
 {
   post: {

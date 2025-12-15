@@ -118,7 +118,6 @@ const withDiffModes = (
     }
 }
 
-// skip for now until we resolve some traces diff on 0 nonce
 Deno.test(
     'prestate deploy_contract',
     opts,

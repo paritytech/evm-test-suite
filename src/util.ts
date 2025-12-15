@@ -229,8 +229,14 @@ export async function getEnv() {
         .extend(publicActions)
         .extend(waitForTransactionReceiptExtension)
 
-    type TracerType = 'callTracer' | 'prestateTracer'
+    type TracerType = 'callTracer' | 'prestateTracer' | 'opcodeTracer'
     type TracerConfig = {
+        ['opcodeTracer']: {
+            enableMemory?: boolean
+            disableStack?: boolean
+            disableStorage?: boolean
+            enableReturnData?: boolean
+        }
         callTracer: { withLog?: boolean; onlyTopCall?: boolean }
         prestateTracer: {
             diffMode?: boolean
@@ -252,7 +258,10 @@ export async function getEnv() {
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceTransaction' as 'eth_chainId',
-                params: [txHash, { tracer, tracerConfig }] as never,
+                params: [txHash, {
+                    tracer: tracer == 'opcodeTracer' ? null : tracer,
+                    tracerConfig,
+                }] as never,
             })
         },
         traceBlock<Tracer extends TracerType>(
@@ -264,7 +273,10 @@ export async function getEnv() {
                 method: 'debug_traceBlockByNumber' as 'eth_chainId',
                 params: [
                     `0x${blockNumber.toString(16)}`,
-                    { tracer, tracerConfig },
+                    {
+                        tracer: tracer == 'opcodeTracer' ? null : tracer,
+                        tracerConfig,
+                    },
                 ] as never,
             })
         },
@@ -280,7 +292,10 @@ export async function getEnv() {
                 params: [
                     formatTransactionRequest(args),
                     blockOrTag,
-                    { tracer, tracerConfig },
+                    {
+                        tracer: tracer == 'opcodeTracer' ? null : tracer,
+                        tracerConfig,
+                    },
                 ] as never,
             })
         },
