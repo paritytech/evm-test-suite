@@ -5,8 +5,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x",
       to: "<contract_callee_addr>",
       type: "CALL",
@@ -14,8 +14,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
     },
     {
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -34,8 +34,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
     {
       error: "execution reverted",
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0xd1b96663",
       output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
       revertReason: "This function always fails",
@@ -47,8 +47,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -56,8 +56,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -76,8 +76,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -87,8 +87,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
           to: "<contract_addr>",
           type: "CALL",
@@ -96,8 +96,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
       logs: [
         {
@@ -123,8 +123,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
     },
   ],
   from: "<caller>",
-  gas: "<gas>",
-  gasUsed: "<gas>",
+  gas: "<string>",
+  gasUsed: "<string>",
   input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
   logs: [
     {
@@ -153,8 +153,8 @@ snapshot[`call-trace debug_traceTransaction 1`] = `
 snapshot[`call-trace debug_deploy_traceTransaction 1`] = `
 {
   from: "<caller>",
-  gas: "<gas>",
-  gasUsed: "<gas>",
+  gas: "<string>",
+  gasUsed: "<string>",
   input: "<tracing_callee_init_code>",
   to: "<contract_callee_addr>",
   type: "CREATE",
@@ -169,8 +169,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -178,8 +178,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
           logs: [
             {
@@ -198,8 +198,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -211,8 +211,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
           calls: [
             {
               from: "<contract_addr>",
-              gas: "<gas>",
-              gasUsed: "<gas>",
+              gas: "<string>",
+              gasUsed: "<string>",
               input: "0x",
               to: "<contract_callee_addr>",
               type: "CALL",
@@ -220,8 +220,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             },
             {
               from: "<contract_addr>",
-              gas: "<gas>",
-              gasUsed: "<gas>",
+              gas: "<string>",
+              gasUsed: "<string>",
               input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
               logs: [
                 {
@@ -240,8 +240,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             {
               error: "execution reverted",
               from: "<contract_addr>",
-              gas: "<gas>",
-              gasUsed: "<gas>",
+              gas: "<string>",
+              gasUsed: "<string>",
               input: "0xd1b96663",
               output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
               revertReason: "This function always fails",
@@ -251,8 +251,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             },
             {
               from: "<contract_addr>",
-              gas: "<gas>",
-              gasUsed: "<gas>",
+              gas: "<string>",
+              gasUsed: "<string>",
               input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
               to: "<contract_addr>",
               type: "CALL",
@@ -260,8 +260,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
             },
           ],
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -287,8 +287,8 @@ snapshot[`call-trace debug_traceBlock 1`] = `
         },
       ],
       from: "<caller>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -322,8 +322,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x",
       to: "<contract_callee_addr>",
       type: "CALL",
@@ -331,8 +331,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
     },
     {
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000002",
       logs: [
         {
@@ -351,8 +351,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
     {
       error: "execution reverted",
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0xd1b96663",
       output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
       revertReason: "This function always fails",
@@ -364,8 +364,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
       calls: [
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x",
           to: "<contract_callee_addr>",
           type: "CALL",
@@ -373,8 +373,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0xa329e8de0000000000000000000000000000000000000000000000000000000000000001",
           logs: [
             {
@@ -393,8 +393,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         {
           error: "execution reverted",
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0xd1b96663",
           output: "0x08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001a546869732066756e6374696f6e20616c77617973206661696c73000000000000",
           revertReason: "This function always fails",
@@ -404,8 +404,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         },
         {
           from: "<contract_addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000000",
           to: "<contract_addr>",
           type: "CALL",
@@ -413,8 +413,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000001",
       logs: [
         {
@@ -440,8 +440,8 @@ snapshot[`call-trace debug_traceCall 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "<gas>",
-  gasUsed: "<gas>",
+  gas: "<string>",
+  gasUsed: "<string>",
   input: "0x95805dad0000000000000000000000000000000000000000000000000000000000000002",
   logs: [
     {
@@ -472,8 +472,8 @@ snapshot[`call-trace selfdestruct 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x",
       to: "0x0000000000000000000000000000000000000000",
       type: "SELFDESTRUCT",
@@ -481,8 +481,8 @@ snapshot[`call-trace selfdestruct 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "<gas>",
-  gasUsed: "<gas>",
+  gas: "<string>",
+  gasUsed: "<string>",
   input: "0x2b68b9c6",
   to: "<contract_addr>",
   type: "CALL",
@@ -495,8 +495,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
   calls: [
     {
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "<tracing_callee_init_code>",
       output: "<tracing_callee_runtime_code>",
       to: "<addr>",
@@ -507,8 +507,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
       calls: [
         {
           from: "<addr>",
-          gas: "<gas>",
-          gasUsed: "<gas>",
+          gas: "<string>",
+          gasUsed: "<string>",
           input: "0x",
           to: "<contract_addr>",
           type: "SELFDESTRUCT",
@@ -516,8 +516,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
         },
       ],
       from: "<contract_addr>",
-      gas: "<gas>",
-      gasUsed: "<gas>",
+      gas: "<string>",
+      gasUsed: "<string>",
       input: "0x2b68b9c6",
       to: "<addr>",
       type: "CALL",
@@ -525,8 +525,8 @@ snapshot[`call-trace create_and_destruct 1`] = `
     },
   ],
   from: "0x0000000000000000000000000000000000000000",
-  gas: "<gas>",
-  gasUsed: "<gas>",
+  gas: "<string>",
+  gasUsed: "<string>",
   input: "0xfadbb018",
   to: "<contract_addr>",
   type: "CALL",
@@ -537,16 +537,21 @@ snapshot[`call-trace create_and_destruct 1`] = `
 snapshot[`EVM opcode tracer: deploy flipper 1`] = `
 {
   failed: false,
+  gas: "<number>",
   returnValue: "0x6080604052348015600e575f5ffd5b5060043610603a575f3560e01c80632096525514603e5780633fa4f245146058578063cde4efa9146072575b5f5ffd5b6044607a565b604051604f919060df565b60405180910390f35b605e608e565b6040516069919060df565b60405180910390f35b6078609f565b005b5f5f5f9054906101000a900460ff16905090565b5f5f9054906101000a900460ff1681565b5f5f9054906101000a900460ff16155f5f6101000a81548160ff021916908315150217905550565b5f8115159050919050565b60d98160c7565b82525050565b5f60208201905060f05f83018460d2565b9291505056fea2646970667358221220bba63d297a7f7ca3762bda36b1927da1525c30bedb785cf246426272bd00979364736f6c634300081e0033",
   structLogs: [
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 0,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 2,
       stack: [
@@ -555,6 +560,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "MSTORE",
       pc: 4,
       stack: [
@@ -564,12 +571,16 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "CALLVALUE",
       pc: 5,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP1",
       pc: 6,
       stack: [
@@ -578,6 +589,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 7,
       stack: [
@@ -587,6 +600,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 8,
       stack: [
@@ -596,6 +611,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPI",
       pc: 10,
       stack: [
@@ -606,6 +623,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPDEST",
       pc: 14,
       stack: [
@@ -614,6 +633,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "POP",
       pc: 15,
       stack: [
@@ -622,12 +643,16 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 16,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 18,
       stack: [
@@ -636,6 +661,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 19,
       stack: [
@@ -645,6 +672,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH2",
       pc: 20,
       stack: [
@@ -655,6 +684,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "EXP",
       pc: 23,
       stack: [
@@ -666,6 +697,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP2",
       pc: 24,
       stack: [
@@ -676,6 +709,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SLOAD",
       pc: 25,
       stack: [
@@ -690,6 +725,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP2",
       pc: 26,
       stack: [
@@ -701,6 +738,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 27,
       stack: [
@@ -713,6 +752,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "MUL",
       pc: 29,
       stack: [
@@ -726,6 +767,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "NOT",
       pc: 30,
       stack: [
@@ -738,6 +781,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "AND",
       pc: 31,
       stack: [
@@ -750,6 +795,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 32,
       stack: [
@@ -761,6 +808,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP4",
       pc: 33,
       stack: [
@@ -772,6 +821,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 34,
       stack: [
@@ -784,6 +835,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 35,
       stack: [
@@ -796,6 +849,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "MUL",
       pc: 36,
       stack: [
@@ -808,6 +863,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "OR",
       pc: 37,
       stack: [
@@ -819,6 +876,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 38,
       stack: [
@@ -829,6 +888,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SSTORE",
       pc: 39,
       stack: [
@@ -842,6 +903,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "POP",
       pc: 40,
       stack: [
@@ -850,12 +913,16 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH2",
       pc: 41,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP1",
       pc: 44,
       stack: [
@@ -864,6 +931,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH2",
       pc: 45,
       stack: [
@@ -873,6 +942,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 48,
       stack: [
@@ -883,6 +954,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "CODECOPY",
       pc: 49,
       stack: [
@@ -894,6 +967,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 50,
       stack: [
@@ -902,6 +977,8 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "RETURN",
       pc: 51,
       stack: [
@@ -916,16 +993,21 @@ snapshot[`EVM opcode tracer: deploy flipper 1`] = `
 snapshot[`EVM opcode tracer: flip 1`] = `
 {
   failed: false,
+  gas: "<number>",
   returnValue: "0x",
   structLogs: [
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 0,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 2,
       stack: [
@@ -934,6 +1016,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "MSTORE",
       pc: 4,
       stack: [
@@ -943,12 +1027,16 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "CALLVALUE",
       pc: 5,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP1",
       pc: 6,
       stack: [
@@ -957,6 +1045,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 7,
       stack: [
@@ -966,6 +1056,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 8,
       stack: [
@@ -975,6 +1067,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPI",
       pc: 10,
       stack: [
@@ -985,6 +1079,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPDEST",
       pc: 14,
       stack: [
@@ -993,6 +1089,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "POP",
       pc: 15,
       stack: [
@@ -1001,12 +1099,16 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 16,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "CALLDATASIZE",
       pc: 18,
       stack: [
@@ -1015,6 +1117,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "LT",
       pc: 19,
       stack: [
@@ -1024,6 +1128,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 20,
       stack: [
@@ -1032,6 +1138,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPI",
       pc: 22,
       stack: [
@@ -1041,12 +1149,16 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 23,
       stack: [],
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "CALLDATALOAD",
       pc: 24,
       stack: [
@@ -1055,6 +1167,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 25,
       stack: [
@@ -1063,6 +1177,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SHR",
       pc: 27,
       stack: [
@@ -1072,6 +1188,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP1",
       pc: 28,
       stack: [
@@ -1080,6 +1198,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH4",
       pc: 29,
       stack: [
@@ -1089,6 +1209,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "EQ",
       pc: 34,
       stack: [
@@ -1099,6 +1221,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 35,
       stack: [
@@ -1108,6 +1232,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPI",
       pc: 37,
       stack: [
@@ -1118,6 +1244,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP1",
       pc: 38,
       stack: [
@@ -1126,6 +1254,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH4",
       pc: 39,
       stack: [
@@ -1135,6 +1265,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "EQ",
       pc: 44,
       stack: [
@@ -1145,6 +1277,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 45,
       stack: [
@@ -1154,6 +1288,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPI",
       pc: 47,
       stack: [
@@ -1164,6 +1300,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP1",
       pc: 48,
       stack: [
@@ -1172,6 +1310,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH4",
       pc: 49,
       stack: [
@@ -1181,6 +1321,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "EQ",
       pc: 54,
       stack: [
@@ -1191,6 +1333,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 55,
       stack: [
@@ -1200,6 +1344,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPI",
       pc: 57,
       stack: [
@@ -1210,6 +1356,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPDEST",
       pc: 114,
       stack: [
@@ -1218,6 +1366,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 115,
       stack: [
@@ -1226,6 +1376,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 117,
       stack: [
@@ -1235,6 +1387,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMP",
       pc: 119,
       stack: [
@@ -1245,6 +1399,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPDEST",
       pc: 159,
       stack: [
@@ -1254,6 +1410,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 160,
       stack: [
@@ -1263,6 +1421,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 161,
       stack: [
@@ -1273,6 +1433,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 162,
       stack: [
@@ -1284,6 +1446,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SLOAD",
       pc: 163,
       stack: [
@@ -1298,6 +1462,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 164,
       stack: [
@@ -1309,6 +1475,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH2",
       pc: 165,
       stack: [
@@ -1320,6 +1488,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "EXP",
       pc: 168,
       stack: [
@@ -1332,6 +1502,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 169,
       stack: [
@@ -1343,6 +1515,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DIV",
       pc: 170,
       stack: [
@@ -1354,6 +1528,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 171,
       stack: [
@@ -1364,6 +1540,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "AND",
       pc: 173,
       stack: [
@@ -1375,6 +1553,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 174,
       stack: [
@@ -1385,6 +1565,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 175,
       stack: [
@@ -1395,6 +1577,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH0",
       pc: 176,
       stack: [
@@ -1406,6 +1590,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH2",
       pc: 177,
       stack: [
@@ -1418,6 +1604,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "EXP",
       pc: 180,
       stack: [
@@ -1431,6 +1619,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP2",
       pc: 181,
       stack: [
@@ -1443,6 +1633,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SLOAD",
       pc: 182,
       stack: [
@@ -1459,6 +1651,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP2",
       pc: 183,
       stack: [
@@ -1472,6 +1666,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "PUSH1",
       pc: 184,
       stack: [
@@ -1486,6 +1682,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "MUL",
       pc: 186,
       stack: [
@@ -1501,6 +1699,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "NOT",
       pc: 187,
       stack: [
@@ -1515,6 +1715,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "AND",
       pc: 188,
       stack: [
@@ -1529,6 +1731,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 189,
       stack: [
@@ -1542,6 +1746,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "DUP4",
       pc: 190,
       stack: [
@@ -1555,6 +1761,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 191,
       stack: [
@@ -1569,6 +1777,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "ISZERO",
       pc: 192,
       stack: [
@@ -1583,6 +1793,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "MUL",
       pc: 193,
       stack: [
@@ -1597,6 +1809,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "OR",
       pc: 194,
       stack: [
@@ -1610,6 +1824,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SWAP1",
       pc: 195,
       stack: [
@@ -1622,6 +1838,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "SSTORE",
       pc: 196,
       stack: [
@@ -1637,6 +1855,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "POP",
       pc: 197,
       stack: [
@@ -1647,6 +1867,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMP",
       pc: 198,
       stack: [
@@ -1656,6 +1878,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "JUMPDEST",
       pc: 120,
       stack: [
@@ -1664,6 +1888,8 @@ snapshot[`EVM opcode tracer: flip 1`] = `
     },
     {
       depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
       op: "STOP",
       pc: 121,
       stack: [
@@ -1678,13 +1904,13 @@ snapshot[`prestate deploy_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -1694,8 +1920,8 @@ snapshot[`prestate deploy_contract.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -1704,8 +1930,8 @@ snapshot[`prestate deploy_contract.diff 1`] = `
 snapshot[`prestate deploy_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
 }
 `;
@@ -1714,7 +1940,7 @@ snapshot[`prestate write_storage.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
       storage: {
@@ -1725,13 +1951,13 @@ snapshot[`prestate write_storage.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -1744,13 +1970,13 @@ snapshot[`prestate write_storage.diff 1`] = `
 snapshot[`prestate write_storage.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
       "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -1771,9 +1997,9 @@ snapshot[`prestate write_storage_from_0.diff 1`] = `
   },
   pre: {
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -1786,9 +2012,9 @@ snapshot[`prestate write_storage_from_0.diff 1`] = `
 snapshot[`prestate write_storage_from_0.no_diff 1`] = `
 {
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
       "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -1801,13 +2027,13 @@ snapshot[`prestate read_storage.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -1816,13 +2042,13 @@ snapshot[`prestate read_storage.diff 1`] = `
 snapshot[`prestate read_storage.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
     },
@@ -1834,11 +2060,11 @@ snapshot[`prestate deposit.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
+      balance: "<string>",
       storage: {
         "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
       },
@@ -1846,13 +2072,13 @@ snapshot[`prestate deposit.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
       },
@@ -1864,13 +2090,13 @@ snapshot[`prestate deposit.diff 1`] = `
 snapshot[`prestate deposit.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
     },
@@ -1882,11 +2108,11 @@ snapshot[`prestate withdraw.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
+      balance: "<string>",
       storage: {
         "<wallet_balance>": "0x00000000000000000000000000000000000000000000000098a7d9b8314c0000",
       },
@@ -1894,13 +2120,13 @@ snapshot[`prestate withdraw.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
       },
@@ -1912,13 +2138,13 @@ snapshot[`prestate withdraw.diff 1`] = `
 snapshot[`prestate withdraw.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "<wallet_balance>": "0x0000000000000000000000000000000000000000000000008ac7230489e80000",
     },
@@ -1930,13 +2156,13 @@ snapshot[`prestate get_balance.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -1945,13 +2171,13 @@ snapshot[`prestate get_balance.diff 1`] = `
 snapshot[`prestate get_balance.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
 }
 `;
@@ -1960,13 +2186,13 @@ snapshot[`prestate get_external_balance.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -1975,18 +2201,18 @@ snapshot[`prestate get_external_balance.diff 1`] = `
 snapshot[`prestate get_external_balance.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_child_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
 }
 `;
@@ -1995,13 +2221,13 @@ snapshot[`prestate instantiate_child.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -2010,13 +2236,13 @@ snapshot[`prestate instantiate_child.diff 1`] = `
 snapshot[`prestate instantiate_child.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
 }
 `;
@@ -2025,7 +2251,7 @@ snapshot[`prestate call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
     "<prestate_contract_child_addr>": {
       storage: {
@@ -2035,13 +2261,13 @@ snapshot[`prestate call_contract.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_child_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000001",
       },
@@ -2053,18 +2279,18 @@ snapshot[`prestate call_contract.diff 1`] = `
 snapshot[`prestate call_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_child_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x0000000000000000000000000000000000000000000000000000000000000001",
     },
@@ -2076,7 +2302,7 @@ snapshot[`prestate delegate_call_contract.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
       storage: {
@@ -2086,13 +2312,13 @@ snapshot[`prestate delegate_call_contract.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
       },
@@ -2104,21 +2330,21 @@ snapshot[`prestate delegate_call_contract.diff 1`] = `
 snapshot[`prestate delegate_call_contract.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
     },
   },
   "<prestate_contract_child_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
 }
 `;
@@ -2129,8 +2355,8 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
     result: {
       post: {
         "<caller_addr>": {
-          balance: "<balance>",
-          nonce: "<nonce>",
+          balance: "<string>",
+          nonce: "<number>",
         },
         "<prestate_contract_addr>": {
           storage: {
@@ -2141,13 +2367,13 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
       },
       pre: {
         "<caller_addr>": {
-          balance: "<balance>",
-          nonce: "<nonce>",
+          balance: "<string>",
+          nonce: "<number>",
         },
         "<prestate_contract_addr>": {
-          balance: "<balance>",
-          code: "<code>",
-          nonce: "<nonce>",
+          balance: "<string>",
+          code: "<string>",
+          nonce: "<number>",
           storage: {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
             "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -2155,14 +2381,14 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
         },
       },
     },
-    txHash: "<tx_hash>",
+    txHash: "<string>",
   },
   {
     result: {
       post: {
         "<caller_addr>": {
-          balance: "<balance>",
-          nonce: "<nonce>",
+          balance: "<string>",
+          nonce: "<number>",
         },
         "<prestate_contract_addr>": {
           storage: {
@@ -2172,20 +2398,20 @@ snapshot[`prestate trace_block_write_storage_twice.diff 1`] = `
       },
       pre: {
         "<caller_addr>": {
-          balance: "<balance>",
-          nonce: "<nonce>",
+          balance: "<string>",
+          nonce: "<number>",
         },
         "<prestate_contract_addr>": {
-          balance: "<balance>",
-          code: "<code>",
-          nonce: "<nonce>",
+          balance: "<string>",
+          code: "<string>",
+          nonce: "<number>",
           storage: {
             "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002c",
           },
         },
       },
     },
-    txHash: "<tx_hash>",
+    txHash: "<string>",
   },
 ]
 `;
@@ -2194,8 +2420,8 @@ snapshot[`prestate trace_tx_write_storage_twice.diff 1`] = `
 {
   post: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
       storage: {
@@ -2206,13 +2432,13 @@ snapshot[`prestate trace_tx_write_storage_twice.diff 1`] = `
   },
   pre: {
     "<caller_addr>": {
-      balance: "<balance>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      nonce: "<number>",
     },
     "<prestate_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
       storage: {
         "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0x0000000000000000000000000000000000000000000000000000000000000002": "0x696e697400000000000000000000000000000000000000000000000000000008",
@@ -2227,38 +2453,38 @@ snapshot[`prestate trace_block_write_storage_twice.no_diff 1`] = `
   {
     result: {
       "<caller_addr>": {
-        balance: "<balance>",
-        nonce: "<nonce>",
+        balance: "<string>",
+        nonce: "<number>",
       },
       "<prestate_contract_addr>": {
-        balance: "<balance>",
-        code: "<code>",
-        nonce: "<nonce>",
+        balance: "<string>",
+        code: "<string>",
+        nonce: "<number>",
         storage: {
           "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
           "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
         },
       },
     },
-    txHash: "<tx_hash>",
+    txHash: "<string>",
   },
   {
     result: {
       "<caller_addr>": {
-        balance: "<balance>",
-        nonce: "<nonce>",
+        balance: "<string>",
+        nonce: "<number>",
       },
       "<prestate_contract_addr>": {
-        balance: "<balance>",
-        code: "<code>",
-        nonce: "<nonce>",
+        balance: "<string>",
+        code: "<string>",
+        nonce: "<number>",
         storage: {
           "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002d",
           "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
         },
       },
     },
-    txHash: "<tx_hash>",
+    txHash: "<string>",
   },
 ]
 `;
@@ -2266,13 +2492,13 @@ snapshot[`prestate trace_block_write_storage_twice.no_diff 1`] = `
 snapshot[`prestate trace_tx_write_storage_twice.no_diff 1`] = `
 {
   "<caller_addr>": {
-    balance: "<balance>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    nonce: "<number>",
   },
   "<prestate_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
     storage: {
       "0x0000000000000000000000000000000000000000000000000000000000000000": "0x000000000000000000000000000000000000000000000000000000000000002b",
       "0x0000000000000000000000000000000000000000000000000000000000000002": "0x77726974655f73746f726167655f747769636500000000000000000000000026",
@@ -2285,14 +2511,14 @@ snapshot[`prestate selfdestruct.diff 1`] = `
 {
   post: {
     "<tracing_contract_addr>": {
-      balance: "<balance>",
+      balance: "<string>",
     },
   },
   pre: {
     "<tracing_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -2301,9 +2527,9 @@ snapshot[`prestate selfdestruct.diff 1`] = `
 snapshot[`prestate selfdestruct.no_diff 1`] = `
 {
   "<tracing_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
 }
 `;
@@ -2312,14 +2538,14 @@ snapshot[`prestate create_and_destruct.diff 1`] = `
 {
   post: {
     "<tracing_contract_addr>": {
-      nonce: "<nonce>",
+      nonce: "<number>",
     },
   },
   pre: {
     "<tracing_contract_addr>": {
-      balance: "<balance>",
-      code: "<code>",
-      nonce: "<nonce>",
+      balance: "<string>",
+      code: "<string>",
+      nonce: "<number>",
     },
   },
 }
@@ -2328,9 +2554,9 @@ snapshot[`prestate create_and_destruct.diff 1`] = `
 snapshot[`prestate create_and_destruct.no_diff 1`] = `
 {
   "<tracing_contract_addr>": {
-    balance: "<balance>",
-    code: "<code>",
-    nonce: "<nonce>",
+    balance: "<string>",
+    code: "<string>",
+    nonce: "<number>",
   },
 }
 `;

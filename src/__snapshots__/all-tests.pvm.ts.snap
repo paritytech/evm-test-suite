@@ -1,0 +1,47 @@
+export const snapshot = {};
+
+snapshot[`PVM syscall tracer: flip 1`] = `
+{
+  failed: false,
+  gas: "<number>",
+  returnValue: "0x",
+  structLogs: [
+    {
+      depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
+      op: "call_data_size",
+    },
+    {
+      depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
+      op: "call_data_load",
+    },
+    {
+      depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
+      op: "value_transferred",
+    },
+    {
+      depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
+      op: "get_storage",
+    },
+    {
+      depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
+      op: "set_storage",
+    },
+    {
+      depth: 1,
+      gas: "<number>",
+      gasCost: "<number>",
+      op: "seal_return",
+    },
+  ],
+}
+`;

@@ -98,7 +98,7 @@ const getVisitor = async (): Promise<Visitor> => {
 
             case 'gas':
             case 'gasUsed': {
-                return [key, '<gas>']
+                return [key, `<${typeof value}>`]
             }
             case 'txHash': {
                 return [key, '<hash>']

@@ -47,16 +47,16 @@ const getVisitor = async (): Promise<Visitor> => {
         key = mappedKeys[key] ?? key
         switch (key) {
             case 'code': {
-                return [key, '<code>']
+                return [key, `<${typeof value}>`]
             }
             case 'nonce': {
-                return [key, '<nonce>']
+                return [key, `<${typeof value}>`]
             }
             case 'balance': {
-                return [key, '<balance>']
+                return [key, `<${typeof value}>`]
             }
             case 'txHash': {
-                return [key, '<tx_hash>']
+                return [key, `<${typeof value}>`]
             }
             case 'codeHash': {
                 // Geth now returns the codeHash, skip it for now

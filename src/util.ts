@@ -229,9 +229,16 @@ export async function getEnv() {
         .extend(publicActions)
         .extend(waitForTransactionReceiptExtension)
 
-    type TracerType = 'callTracer' | 'prestateTracer' | 'opcodeTracer'
+    type TracerType =
+        | 'callTracer'
+        | 'prestateTracer'
+        | 'opcodeTracer'
+        | 'syscallTracer'
     type TracerConfig = {
-        ['opcodeTracer']: {
+        syscallTracer: {
+            enableReturnData?: boolean
+        }
+        opcodeTracer: {
             enableMemory?: boolean
             disableStack?: boolean
             disableStorage?: boolean

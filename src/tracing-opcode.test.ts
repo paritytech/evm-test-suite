@@ -30,7 +30,9 @@ const getVisitor = (): Visitor => {
     return (key, value) => {
         switch (key) {
             case 'gas':
-            case 'gasCost':
+            case 'gasCost': {
+                return [key, `<${typeof value}>`]
+            }
             case 'refund': {
                 return null
             }
@@ -44,6 +46,7 @@ const getVisitor = (): Visitor => {
 const matchFixture = async (
     t: Deno.TestContext,
     res: OpcodeTracerResponse,
+    path?: string,
 ) => {
     const visitor = getVisitor()
     const out = visit(res, visitor)
@@ -64,6 +67,7 @@ const matchFixture = async (
 
     await assertSnapshot(t, out, {
         name: t.name,
+        path,
     })
 }
 
@@ -98,5 +102,31 @@ Deno.test(
             { disableStack: false, disableStorage: false },
         )
         await matchFixture(t, res as OpcodeTracerResponse)
+    },
+)
+
+Deno.test(
+    'PVM syscall tracer: flip',
+    { ...opts, ignore: env.evm },
+    async (t) => {
+        const { request } = await env.accountWallet.simulateContract({
+            address: await getFlipperContractAddr(),
+            abi: FlipperAbi,
+            functionName: 'flip',
+        })
+        const hash = await env.accountWallet.writeContract(request)
+        await env.accountWallet.waitForTransactionReceipt(hash)
+
+        const res = await env.debugClient.traceTransaction(
+            hash,
+            'opcodeTracer',
+            {},
+        )
+
+        await matchFixture(
+            t,
+            res as OpcodeTracerResponse,
+            '__snapshots__/all-tests.pvm.ts.snap',
+        )
     },
 )
