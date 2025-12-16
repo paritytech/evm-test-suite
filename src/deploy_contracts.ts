@@ -8,6 +8,7 @@ import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import { PretraceFixtureChildAbi } from '../codegen/abi/PretraceFixtureChild.ts'
 import { TracingCalleeAbi } from '../codegen/abi/TracingCallee.ts'
 import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
+import { FlipperAbi } from '../codegen/abi/Flipper.ts'
 
 // Initialize test environment
 export const env = await getEnv()
@@ -104,3 +105,15 @@ export const getDeployTracingCalleeReceipt = memoizedTx(
 
 export const getTracingCalleeAddr = () =>
     getDeployTracingCalleeReceipt().then((r) => r.contractAddress!)
+
+export const getFlipperReceipt = memoizedTx(
+    env,
+    () =>
+        env.accountWallet.deployContract({
+            abi: FlipperAbi,
+            bytecode: getByteCode('Flipper', env.evm),
+        }),
+)
+
+export const getFlipperContractAddr = () =>
+    getFlipperReceipt().then((r) => r.contractAddress!)
