@@ -15,12 +15,17 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       gas: "<number>",
       gasCost: "<number>",
       op: "call_data_size",
+      returned: "0x4",
       weightCost: {
         proof_size: "<number>",
         ref_time: "<number>",
       },
     },
     {
+      args: [
+        "0xfffdfea0",
+        "0x0",
+      ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
@@ -31,6 +36,9 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       },
     },
     {
+      args: [
+        "0xfffdff40",
+      ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
@@ -41,26 +49,47 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       },
     },
     {
+      args: [
+        "0x0",
+        "0xfffdfd40",
+        "0xffffffff",
+        "0xfffdfd60",
+        "0xfffdfd80",
+      ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "get_storage",
+      returned: "0x0",
       weightCost: {
         proof_size: "<number>",
         ref_time: "<number>",
       },
     },
     {
+      args: [
+        "0x0",
+        "0xfffdfd40",
+        "0xffffffff",
+        "0xfffdfd60",
+        "0x20",
+      ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "set_storage",
+      returned: "0x20",
       weightCost: {
         proof_size: "<number>",
         ref_time: "<number>",
       },
     },
     {
+      args: [
+        "0x0",
+        "0x20010",
+        "0x0",
+      ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
