@@ -30,7 +30,9 @@ const getVisitor = (): Visitor => {
     return (key, value) => {
         switch (key) {
             case 'gas':
-            case 'gasCost': {
+            case 'gasCost':
+            case 'ref_time':
+            case 'proof_size': {
                 return [key, `<${typeof value}>`]
             }
             case 'refund': {

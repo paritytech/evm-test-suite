@@ -2,6 +2,10 @@ export const snapshot = {};
 
 snapshot[`PVM syscall tracer: flip 1`] = `
 {
+  baseCallWeight: {
+    proof_size: "<number>",
+    ref_time: "<number>",
+  },
   failed: false,
   gas: "<number>",
   returnValue: "0x",
@@ -11,37 +15,65 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       gas: "<number>",
       gasCost: "<number>",
       op: "call_data_size",
+      weightCost: {
+        proof_size: "<number>",
+        ref_time: "<number>",
+      },
     },
     {
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "call_data_load",
+      weightCost: {
+        proof_size: "<number>",
+        ref_time: "<number>",
+      },
     },
     {
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "value_transferred",
+      weightCost: {
+        proof_size: "<number>",
+        ref_time: "<number>",
+      },
     },
     {
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "get_storage",
+      weightCost: {
+        proof_size: "<number>",
+        ref_time: "<number>",
+      },
     },
     {
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "set_storage",
+      weightCost: {
+        proof_size: "<number>",
+        ref_time: "<number>",
+      },
     },
     {
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "seal_return",
+      weightCost: {
+        proof_size: "<number>",
+        ref_time: "<number>",
+      },
     },
   ],
+  weightConsumed: {
+    proof_size: "<number>",
+    ref_time: "<number>",
+  },
 }
 `;

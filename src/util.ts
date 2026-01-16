@@ -265,10 +265,12 @@ export async function getEnv() {
         ): Promise<unknown> {
             return client.request({
                 method: 'debug_traceTransaction' as 'eth_chainId',
-                params: [txHash, {
-                    tracer: tracer == 'opcodeTracer' ? null : tracer,
-                    tracerConfig,
-                }] as never,
+                params: [
+                    txHash,
+                    tracer == 'opcodeTracer'
+                        ? tracerConfig
+                        : { tracer, tracerConfig },
+                ] as never,
             })
         },
         traceBlock<Tracer extends TracerType>(
@@ -280,10 +282,9 @@ export async function getEnv() {
                 method: 'debug_traceBlockByNumber' as 'eth_chainId',
                 params: [
                     `0x${blockNumber.toString(16)}`,
-                    {
-                        tracer: tracer == 'opcodeTracer' ? null : tracer,
-                        tracerConfig,
-                    },
+                    tracer == 'opcodeTracer'
+                        ? tracerConfig
+                        : { tracer, tracerConfig },
                 ] as never,
             })
         },
@@ -299,10 +300,9 @@ export async function getEnv() {
                 params: [
                     formatTransactionRequest(args),
                     blockOrTag,
-                    {
-                        tracer: tracer == 'opcodeTracer' ? null : tracer,
-                        tracerConfig,
-                    },
+                    tracer == 'opcodeTracer'
+                        ? tracerConfig
+                        : { tracer, tracerConfig },
                 ] as never,
             })
         },
