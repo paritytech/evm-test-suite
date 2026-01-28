@@ -534,6 +534,29 @@ snapshot[`call-trace create_and_destruct 1`] = `
 }
 `;
 
+snapshot[`call-trace delegatecall 1`] = `
+{
+  calls: [
+    {
+      from: "<pretrace_fixture_addr>",
+      gas: "<string>",
+      gasUsed: "<string>",
+      input: "0xd09de08a",
+      to: "<pretrace_fixture_child_addr>",
+      type: "DELEGATECALL",
+      value: "0x0",
+    },
+  ],
+  from: "<caller>",
+  gas: "<string>",
+  gasUsed: "<string>",
+  input: "0x23d43804000000000000000000000000<pretrace_fixture_child_addr>",
+  to: "<pretrace_fixture_addr>",
+  type: "CALL",
+  value: "0x0",
+}
+`;
+
 snapshot[`EVM opcode tracer: deploy flipper 1`] = `
 {
   failed: false,
