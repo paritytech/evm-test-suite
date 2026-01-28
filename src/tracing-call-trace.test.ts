@@ -122,8 +122,8 @@ const getVisitor = async (): Promise<Visitor> => {
                     typeof sanitizedInput === 'string' &&
                     sanitizedInput.startsWith('0x')
                 ) {
-                    const addrWithoutPrefix =
-                        pretraceFixtureChildAddr.slice(2).toLowerCase()
+                    const addrWithoutPrefix = pretraceFixtureChildAddr.slice(2)
+                        .toLowerCase()
                     sanitizedInput = sanitizedInput.replace(
                         new RegExp(addrWithoutPrefix, 'gi'),
                         '<pretrace_fixture_child_addr>',
