@@ -10,9 +10,12 @@ import { assertSnapshot } from '@std/testing/snapshot'
 import { expect } from '@std/expect'
 import { encodeFunctionData } from 'viem'
 import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
+import { PretraceFixtureAbi } from '../codegen/abi/PretraceFixture.ts'
 import {
     env,
     getDeployTracingCalleeReceipt,
+    getPretraceFixtureAddr,
+    getPretraceFixtureChildAddr,
     getTracingCalleeAddr,
     getTracingCallerAddr,
 } from './deploy_contracts.ts'
@@ -59,6 +62,8 @@ const getCreate2Receipt = memoized(async () => {
 const getVisitor = async (): Promise<Visitor> => {
     const tracingCallerAddr = await getTracingCallerAddr()
     const tracingCalleeAddr = await getTracingCalleeAddr()
+    const pretraceFixtureAddr = await getPretraceFixtureAddr()
+    const pretraceFixtureChildAddr = await getPretraceFixtureChildAddr()
     return (key, value, parent) => {
         switch (key) {
             case 'address':
@@ -68,6 +73,10 @@ const getVisitor = async (): Promise<Visitor> => {
                     return [key, '<contract_addr>']
                 } else if (value === tracingCalleeAddr) {
                     return [key, '<contract_callee_addr>']
+                } else if (value === pretraceFixtureAddr) {
+                    return [key, '<pretrace_fixture_addr>']
+                } else if (value === pretraceFixtureChildAddr) {
+                    return [key, '<pretrace_fixture_child_addr>']
                 } else if (
                     value == env.accountWallet.account.address.toLowerCase()
                 ) {
@@ -104,12 +113,23 @@ const getVisitor = async (): Promise<Visitor> => {
                 return [key, '<hash>']
             }
             case 'input': {
-                return [
-                    key,
-                    value === TRACING_CALLEE_BYTECODE
-                        ? '<tracing_callee_init_code>'
-                        : value,
-                ]
+                if (value === TRACING_CALLEE_BYTECODE) {
+                    return [key, '<tracing_callee_init_code>']
+                }
+                // Replace embedded addresses in input data
+                let sanitizedInput = value as string
+                if (
+                    typeof sanitizedInput === 'string' &&
+                    sanitizedInput.startsWith('0x')
+                ) {
+                    const addrWithoutPrefix =
+                        pretraceFixtureChildAddr.slice(2).toLowerCase()
+                    sanitizedInput = sanitizedInput.replace(
+                        new RegExp(addrWithoutPrefix, 'gi'),
+                        '<pretrace_fixture_child_addr>',
+                    )
+                }
+                return [key, sanitizedInput]
             }
             case 'output': {
                 return [
@@ -279,3 +299,23 @@ Deno.test(
         await matchFixture(t, res)
     },
 )
+
+Deno.test('call-trace delegatecall', opts, async (t) => {
+    const pretraceFixtureAddr = await getPretraceFixtureAddr()
+    const pretraceFixtureChildAddr = await getPretraceFixtureChildAddr()
+    const res = await env.debugClient.traceCall(
+        {
+            from: env.accountWallet.account.address,
+            to: pretraceFixtureAddr,
+            data: encodeFunctionData({
+                abi: PretraceFixtureAbi,
+                functionName: 'delegatecallContract',
+                args: [pretraceFixtureChildAddr],
+            }),
+        },
+        'callTracer',
+        { withLog: true },
+    )
+
+    await matchFixture(t, res)
+})
