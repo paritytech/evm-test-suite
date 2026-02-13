@@ -2,10 +2,6 @@ export const snapshot = {};
 
 snapshot[`PVM syscall tracer: flip 1`] = `
 {
-  baseCallWeight: {
-    proof_size: "<number>",
-    ref_time: "<number>",
-  },
   failed: false,
   gas: "<number>",
   returnValue: "0x",
@@ -16,10 +12,6 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       gasCost: "<number>",
       op: "call_data_size",
       returned: "0x4",
-      weightCost: {
-        proof_size: "<number>",
-        ref_time: "<number>",
-      },
     },
     {
       args: [
@@ -30,59 +22,38 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       gas: "<number>",
       gasCost: "<number>",
       op: "call_data_load",
-      weightCost: {
-        proof_size: "<number>",
-        ref_time: "<number>",
-      },
     },
     {
       args: [
-        "0xfffdff40",
+        "0xfffdfe80",
       ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
       op: "value_transferred",
-      weightCost: {
-        proof_size: "<number>",
-        ref_time: "<number>",
-      },
     },
     {
       args: [
         "0x0",
-        "0xfffdfd40",
-        "0xffffffff",
-        "0xfffdfd60",
-        "0xfffdfd80",
+        "0xfffdfe20",
+        "0xfffdfe00",
       ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
-      op: "get_storage",
-      returned: "0x0",
-      weightCost: {
-        proof_size: "<number>",
-        ref_time: "<number>",
-      },
+      op: "get_storage_or_zero",
     },
     {
       args: [
         "0x0",
-        "0xfffdfd40",
-        "0xffffffff",
-        "0xfffdfd60",
-        "0x20",
+        "0xfffdfde0",
+        "0xfffdfdc0",
       ],
       depth: 1,
       gas: "<number>",
       gasCost: "<number>",
-      op: "set_storage",
+      op: "set_storage_or_clear",
       returned: "0x20",
-      weightCost: {
-        proof_size: "<number>",
-        ref_time: "<number>",
-      },
     },
     {
       args: [
@@ -94,15 +65,7 @@ snapshot[`PVM syscall tracer: flip 1`] = `
       gas: "<number>",
       gasCost: "<number>",
       op: "seal_return",
-      weightCost: {
-        proof_size: "<number>",
-        ref_time: "<number>",
-      },
     },
   ],
-  weightConsumed: {
-    proof_size: "<number>",
-    ref_time: "<number>",
-  },
 }
 `;

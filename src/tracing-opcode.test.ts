@@ -35,7 +35,10 @@ const getVisitor = (): Visitor => {
             case 'proof_size': {
                 return [key, `<${typeof value}>`]
             }
-            case 'refund': {
+            case 'refund':
+            case 'weightCost':
+            case 'weightConsumed':
+            case 'baseCallWeight': {
                 return null
             }
             default: {
