@@ -20,11 +20,11 @@ jobs:
                   deno-version: v2.x
                   cache: true
 
-            - name: Install Geth
+            - name: Install Geth v1.16.9
               run: |
-                  sudo add-apt-repository -y ppa:ethereum/ethereum
-                  sudo apt-get update
-                  sudo apt-get install -y ethereum
+                  curl -fsSL https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.16.9-95665d57.tar.gz -o geth.tar.gz
+                  tar xzf geth.tar.gz
+                  sudo cp geth-linux-amd64-1.16.9-95665d57/geth /usr/local/bin/
                   geth version
 
             - name: Run tests
