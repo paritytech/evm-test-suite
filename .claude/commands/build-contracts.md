@@ -10,7 +10,7 @@ Build the Solidity contracts in `contracts/` directory, generating ABI files and
 User provided these flags: `$ARGUMENTS`
 
 ```
-cd /home/pg/github/evm-test-suite && deno task build $ARGUMENTS
+cd ~/github/evm-test-suite && deno task build $ARGUMENTS
 ```
 
 - Default: compiles with both `solc` (EVM bytecode → `codegen/evm/`) and `resolc` (PVM bytecode → `codegen/pvm/`)
