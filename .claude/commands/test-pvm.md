@@ -1,6 +1,7 @@
 ---
 description: Build Revive, start dev stack, and run PVM tests
 allowed-tools: Bash(node-env:*), Bash(tmux:*), Bash(deno:*), Bash(curl:*), Bash(kill:*), Bash(lsof:*)
+model: haiku
 ---
 
 Build revive-dev-node + eth-rpc, start the dev stack via node-env, then run PVM tests.

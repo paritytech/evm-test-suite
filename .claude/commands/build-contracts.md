@@ -2,6 +2,7 @@
 description: Build Solidity contracts for EVM and PVM
 allowed-tools: Bash(deno:*)
 argument-hint: [--solcOnly]
+model: haiku
 ---
 
 Build the Solidity contracts in `contracts/` directory, generating ABI files and bytecode.
