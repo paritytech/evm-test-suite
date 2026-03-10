@@ -6,7 +6,7 @@ model: haiku
 
 Build revive-dev-node + eth-rpc, start the dev stack via node-env, then run EVM tests.
 
-Requires `node-env` on PATH. Install from `~/github/node-env` — add `~/github/node-env/bin` to PATH.
+Requires `node-env` on PATH. Clone from https://github.com/paritytech/node-env and add `~/github/node-env/bin` to PATH.
 
 ## Steps
 
