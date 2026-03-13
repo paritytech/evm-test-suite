@@ -180,23 +180,19 @@ Deno.test('eip7702', opts, async (t) => {
             to: accountB.address,
             value: parseEther('10'),
         })
-        await env.serverWallet.waitForTransactionReceipt(fundB)
+        const r1 = await env.serverWallet.waitForTransactionReceipt(fundB)
+        expect(r1.status).toEqual('success')
 
         // Delegate B -> A (another delegated EOA, not a contract).
-        // Explicit gas needed: after auth processing, B's code resolves to
-        // A's 0xef0100 prefix which is an invalid opcode, so estimateGas fails.
         const authB = await walletB.signAuthorization({
             contractAddress: eoaAccount.address,
         })
         const delegateB = await env.accountWallet.sendTransaction({
             authorizationList: [authB],
-            to: accountB.address,
-            gas: 100_000n,
+            to: env.accountWallet.account.address,
         })
-        await env.accountWallet.waitForTransactionReceipt(delegateB)
-        // The call to `to` (B) reverts because B's resolved code is the
-        // 0xef0100 prefix (invalid opcode), but the authorization is still
-        // applied regardless of tx status.
+        const r2 = await env.accountWallet.waitForTransactionReceipt(delegateB)
+        expect(r2.status).toEqual('success')
 
         // B's code points to A
         const codeB = await walletB.getCode({ address: accountB.address })
