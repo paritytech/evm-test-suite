@@ -9,6 +9,7 @@ import { PretraceFixtureChildAbi } from '../codegen/abi/PretraceFixtureChild.ts'
 import { TracingCalleeAbi } from '../codegen/abi/TracingCallee.ts'
 import { TracingCallerAbi } from '../codegen/abi/TracingCaller.ts'
 import { FlipperAbi } from '../codegen/abi/Flipper.ts'
+import { SimpleDelegateAbi } from '../codegen/abi/SimpleDelegate.ts'
 
 // Initialize test environment
 export const env = await getEnv()
@@ -117,3 +118,13 @@ export const getFlipperReceipt = memoizedTx(
 
 export const getFlipperContractAddr = () =>
     getFlipperReceipt().then((r) => r.contractAddress!)
+
+// SimpleDelegate contract (EIP-7702 tests)
+export const getSimpleDelegateAddr = memoizedDeploy(
+    env,
+    () =>
+        env.serverWallet.deployContract({
+            abi: SimpleDelegateAbi,
+            bytecode: getByteCode('SimpleDelegate', env.evm),
+        }),
+)
