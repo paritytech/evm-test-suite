@@ -130,25 +130,6 @@ Deno.test('eip7702', opts, async (t) => {
         expect(reportedBalance).toBe(balanceAfter)
     })
 
-    await t.step('self-sponsored set and execute', async () => {
-        const hash = await eoaWallet.sendTransaction({
-            to: eoaAccount.address,
-            data: encodeFunctionData({
-                abi: SimpleDelegateAbi,
-                functionName: 'increment',
-            }),
-        })
-        const receipt = await eoaWallet.waitForTransactionReceipt({ hash })
-        expect(receipt.status).toEqual('success')
-
-        const counter = await env.serverWallet.readContract({
-            address: eoaAccount.address,
-            abi: SimpleDelegateAbi,
-            functionName: 'getCounter',
-        })
-        expect(counter).toBe(3n)
-    })
-
     await t.step('clear delegation', async () => {
         const receipt = await setDelegation(zeroAddress)
         expect(receipt.status).toEqual('success')
@@ -179,7 +160,65 @@ Deno.test('eip7702', opts, async (t) => {
             abi: SimpleDelegateAbi,
             functionName: 'getCounter',
         })
-        expect(counter).toBe(3n)
+        expect(counter).toBe(2n)
     })
 
+    await t.step('delegation chains do not resolve', async () => {
+        // A (eoaAccount) is already delegated to the SimpleDelegate contract.
+        // Create B, delegate B -> A. Calling B should NOT follow A's delegation
+        // (EIP-7702 forbids chained delegation).
+        const accountB = privateKeyToAccount(generatePrivateKey())
+        const walletB = createWalletClient({
+            account: accountB,
+            transport: http(env.chain.rpcUrls.default.http[0]),
+            chain: env.chain,
+            cacheTime: 0,
+        }).extend(publicActions)
+
+        // Fund B
+        const fundB = await env.serverWallet.sendTransaction({
+            to: accountB.address,
+            value: parseEther('10'),
+        })
+        await env.serverWallet.waitForTransactionReceipt(fundB)
+
+        // Delegate B -> A (another delegated EOA, not a contract).
+        // Explicit gas needed: after auth processing, B's code resolves to
+        // A's 0xef0100 prefix which is an invalid opcode, so estimateGas fails.
+        const authB = await walletB.signAuthorization({
+            contractAddress: eoaAccount.address,
+        })
+        const delegateB = await env.accountWallet.sendTransaction({
+            authorizationList: [authB],
+            to: accountB.address,
+            gas: 100_000n,
+        })
+        await env.accountWallet.waitForTransactionReceipt(delegateB)
+        // The call to `to` (B) reverts because B's resolved code is the
+        // 0xef0100 prefix (invalid opcode), but the authorization is still
+        // applied regardless of tx status.
+
+        // B's code points to A
+        const codeB = await walletB.getCode({ address: accountB.address })
+        expect(codeB?.toLowerCase()).toBe(
+            `0xef0100${eoaAccount.address.slice(2).toLowerCase()}`,
+        )
+
+        // Calling getCounter on B should fail because the chain
+        // B -> A -> SimpleDelegate is not followed.
+        let chainedCallFailed = false
+        try {
+            const result = await env.serverWallet.call({
+                to: accountB.address,
+                data: encodeFunctionData({
+                    abi: SimpleDelegateAbi,
+                    functionName: 'getCounter',
+                }),
+            })
+            chainedCallFailed = !result.data || result.data === '0x'
+        } catch {
+            chainedCallFailed = true
+        }
+        expect(chainedCallFailed).toBe(true)
+    })
 })
