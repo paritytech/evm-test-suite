@@ -15,7 +15,7 @@ import {
     WsProvider,
 } from '@polkadot/api'
 import type { AddressOrPair, SubmittableExtrinsic } from '@polkadot/api/types'
-import type { Hex } from 'viem'
+import { decodeAbiParameters, type Hex } from 'viem'
 import { expect } from '@std/expect'
 import { getEnv, sanitizeOpts as opts } from './util.ts'
 
@@ -33,6 +33,24 @@ interface ScaleOption<T> {
 const SUBSTRATE_WS = `ws://localhost:${
     Deno.env.get('SUBSTRATE_RPC_PORT') ?? '9944'
 }`
+
+/// Connect to the substrate node and run a callback with the API and Alice signer.
+async function withApi(
+    fn: (
+        api: ApiPromise,
+        alice: ReturnType<Keyring['addFromUri']>,
+    ) => Promise<void>,
+): Promise<void> {
+    const provider = new WsProvider(SUBSTRATE_WS)
+    const api = await ApiPromise.create({ provider })
+    const keyring = new Keyring({ type: 'sr25519' })
+    const alice = keyring.addFromUri('//Alice')
+    try {
+        await fn(api, alice)
+    } finally {
+        await api.disconnect()
+    }
+}
 
 // ERC20 precompile address for an asset using InlineIdConfig.
 // The kitchensink runtime uses InlineIdConfig<0x1> for Instance1, meaning the
@@ -113,13 +131,8 @@ async function getForeignIdToAssetIndex(
 Deno.test(
     'polkadot-tests: create populates foreign asset mapping',
     opts,
-    async () => {
-        const provider = new WsProvider(SUBSTRATE_WS)
-        const api = await ApiPromise.create({ provider })
-        const keyring = new Keyring({ type: 'sr25519' })
-        const alice = keyring.addFromUri('//Alice')
-
-        try {
+    () =>
+        withApi(async (api, alice) => {
             const nextIdx = await getNextAssetIndex(api)
             expect(nextIdx).toEqual(0)
             expect(await getAssetIndexToForeignId(api, 0)).toBeNull()
@@ -145,10 +158,7 @@ Deno.test(
             expect(await getNextAssetIndex(api)).toEqual(2)
             expect(await getAssetIndexToForeignId(api, 1)).toEqual(100)
             expect(await getForeignIdToAssetIndex(api, 100)).toEqual(1)
-        } finally {
-            await api.disconnect()
-        }
-    },
+        }),
 )
 
 // ---------------------------------------------------------------------------
@@ -158,13 +168,8 @@ Deno.test(
 Deno.test(
     'polkadot-tests: destroy cleans up foreign asset mapping',
     opts,
-    async () => {
-        const provider = new WsProvider(SUBSTRATE_WS)
-        const api = await ApiPromise.create({ provider })
-        const keyring = new Keyring({ type: 'sr25519' })
-        const alice = keyring.addFromUri('//Alice')
-
-        try {
+    () =>
+        withApi(async (api, alice) => {
             // Create two assets.
             await submitAndWait(
                 api,
@@ -204,10 +209,7 @@ Deno.test(
 
             // Asset 201 should be unaffected.
             expect(await getAssetIndexToForeignId(api, idx201!)).toEqual(201)
-        } finally {
-            await api.disconnect()
-        }
-    },
+        }),
 )
 
 // ---------------------------------------------------------------------------
@@ -217,13 +219,8 @@ Deno.test(
 Deno.test(
     'polkadot-tests: re-created asset gets new index',
     opts,
-    async () => {
-        const provider = new WsProvider(SUBSTRATE_WS)
-        const api = await ApiPromise.create({ provider })
-        const keyring = new Keyring({ type: 'sr25519' })
-        const alice = keyring.addFromUri('//Alice')
-
-        try {
+    () =>
+        withApi(async (api, alice) => {
             // Create asset 300.
             await submitAndWait(
                 api,
@@ -259,10 +256,7 @@ Deno.test(
 
             // Reverse lookup works.
             expect(await getAssetIndexToForeignId(api, newIndex!)).toEqual(300)
-        } finally {
-            await api.disconnect()
-        }
-    },
+        }),
 )
 
 // ---------------------------------------------------------------------------
@@ -272,13 +266,8 @@ Deno.test(
 Deno.test(
     'polkadot-tests: force_create triggers callback',
     opts,
-    async () => {
-        const provider = new WsProvider(SUBSTRATE_WS)
-        const api = await ApiPromise.create({ provider })
-        const keyring = new Keyring({ type: 'sr25519' })
-        const alice = keyring.addFromUri('//Alice')
-
-        try {
+    () =>
+        withApi(async (api, alice) => {
             const nextBefore = await getNextAssetIndex(api)
 
             await submitAndWait(
@@ -302,10 +291,7 @@ Deno.test(
             expect(
                 await getAssetIndexToForeignId(api, mapping!),
             ).toEqual(999)
-        } finally {
-            await api.disconnect()
-        }
-    },
+        }),
 )
 
 // ---------------------------------------------------------------------------
@@ -315,13 +301,8 @@ Deno.test(
 Deno.test(
     'polkadot-tests: force_destroy cleans up mapping',
     opts,
-    async () => {
-        const provider = new WsProvider(SUBSTRATE_WS)
-        const api = await ApiPromise.create({ provider })
-        const keyring = new Keyring({ type: 'sr25519' })
-        const alice = keyring.addFromUri('//Alice')
-
-        try {
+    () =>
+        withApi(async (api, alice) => {
             // force_create asset 998.
             await submitAndWait(
                 api,
@@ -354,10 +335,7 @@ Deno.test(
 
             expect(await getAssetIndexToForeignId(api, idx!)).toBeNull()
             expect(await getForeignIdToAssetIndex(api, 998)).toBeNull()
-        } finally {
-            await api.disconnect()
-        }
-    },
+        }),
 )
 
 // ---------------------------------------------------------------------------
@@ -367,13 +345,8 @@ Deno.test(
 Deno.test(
     'polkadot-tests: ERC20 precompile works for foreign asset',
     opts,
-    async () => {
-        const provider = new WsProvider(SUBSTRATE_WS)
-        const api = await ApiPromise.create({ provider })
-        const keyring = new Keyring({ type: 'sr25519' })
-        const alice = keyring.addFromUri('//Alice')
-
-        try {
+    () =>
+        withApi(async (api, alice) => {
             // Create asset 500 with metadata and mint tokens.
             await submitAndWait(
                 api,
@@ -401,85 +374,36 @@ Deno.test(
 
             // Use viem to call the ERC20 precompile via eth-rpc.
             const env = await getEnv()
+            const ethCall = (selector: Hex) =>
+                env.publicClient.request({
+                    method: 'eth_call',
+                    params: [{ to: precompileAddr, data: selector }, 'latest'],
+                })
 
-            // name()
-            const nameResult = await env.publicClient.request({
-                method: 'eth_call',
-                params: [
-                    {
-                        to: precompileAddr,
-                        // name() selector = 0x06fdde03
-                        data: '0x06fdde03' as Hex,
-                    },
-                    'latest',
-                ],
-            })
-            // ABI-encoded string "Test Token" should be in the result.
-            const nameDecoded = decodeAbiString(nameResult as Hex)
-            expect(nameDecoded).toEqual('Test Token')
+            const [nameResult, symbolResult, decimalsResult, supplyResult] =
+                await Promise.all([
+                    ethCall('0x06fdde03'), // name()
+                    ethCall('0x95d89b41'), // symbol()
+                    ethCall('0x313ce567'), // decimals()
+                    ethCall('0x18160ddd'), // totalSupply()
+                ])
 
-            // symbol()
-            const symbolResult = await env.publicClient.request({
-                method: 'eth_call',
-                params: [
-                    {
-                        to: precompileAddr,
-                        // symbol() selector = 0x95d89b41
-                        data: '0x95d89b41' as Hex,
-                    },
-                    'latest',
-                ],
-            })
-            const symbolDecoded = decodeAbiString(symbolResult as Hex)
-            expect(symbolDecoded).toEqual('TST')
+            const [name] = decodeAbiParameters(
+                [{ type: 'string' }],
+                nameResult as Hex,
+            )
+            expect(name).toEqual('Test Token')
 
-            // decimals()
-            const decimalsResult = await env.publicClient.request({
-                method: 'eth_call',
-                params: [
-                    {
-                        to: precompileAddr,
-                        // decimals() selector = 0x313ce567
-                        data: '0x313ce567' as Hex,
-                    },
-                    'latest',
-                ],
-            })
+            const [symbol] = decodeAbiParameters(
+                [{ type: 'string' }],
+                symbolResult as Hex,
+            )
+            expect(symbol).toEqual('TST')
+
             const decimals = parseInt(decimalsResult as string, 16)
             expect(decimals).toEqual(18)
 
-            // totalSupply()
-            const supplyResult = await env.publicClient.request({
-                method: 'eth_call',
-                params: [
-                    {
-                        to: precompileAddr,
-                        // totalSupply() selector = 0x18160ddd
-                        data: '0x18160ddd' as Hex,
-                    },
-                    'latest',
-                ],
-            })
             const supply = BigInt(supplyResult as string)
             expect(supply > 0n).toBe(true)
-        } finally {
-            await api.disconnect()
-        }
-    },
+        }),
 )
-
-/// Decode an ABI-encoded string return value.
-function decodeAbiString(hex: Hex): string {
-    // Remove 0x prefix.
-    const data = hex.slice(2)
-    // First 32 bytes: offset to string data.
-    // Next 32 bytes: string length.
-    const lengthHex = data.slice(64, 128)
-    const length = parseInt(lengthHex, 16)
-    // Following bytes: UTF-8 string data.
-    const strHex = data.slice(128, 128 + length * 2)
-    const bytes = new Uint8Array(
-        strHex.match(/.{2}/g)!.map((b) => parseInt(b, 16)),
-    )
-    return new TextDecoder().decode(bytes)
-}
