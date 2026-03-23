@@ -8,10 +8,27 @@
 /// They require the kitchensink node (not revive-dev-node) and do NOT
 /// run against geth.
 
-import { ApiPromise, Keyring, WsProvider } from '@polkadot/api'
-import { type Hex } from 'viem'
+import {
+    ApiPromise,
+    Keyring,
+    SubmittableResult,
+    WsProvider,
+} from '@polkadot/api'
+import type { AddressOrPair, SubmittableExtrinsic } from '@polkadot/api/types'
+import type { Hex } from 'viem'
 import { expect } from '@std/expect'
 import { getEnv, sanitizeOpts as opts } from './util.ts'
+
+// Minimal type aliases for unaugmented storage return values.
+// @polkadot/types is a transitive dep and not in the import map,
+// so we define the shapes we need inline.
+interface ScaleU32 {
+    toNumber(): number
+}
+interface ScaleOption<T> {
+    isSome: boolean
+    unwrap(): T
+}
 
 const SUBSTRATE_WS = `ws://localhost:${
     Deno.env.get('SUBSTRATE_RPC_PORT') ?? '9944'
@@ -30,16 +47,13 @@ function inlineAssetPrecompileAddress(assetId: number): Hex {
 /// Submit a signed extrinsic and wait for inclusion.
 function submitAndWait(
     api: ApiPromise,
-    // deno-lint-ignore no-explicit-any
-    tx: any,
-    // deno-lint-ignore no-explicit-any
-    signer: any,
+    tx: SubmittableExtrinsic<'promise'>,
+    signer: AddressOrPair,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         tx.signAndSend(
             signer,
-            // deno-lint-ignore no-explicit-any
-            ({ status, dispatchError }: any) => {
+            ({ status, dispatchError }: SubmittableResult) => {
                 if (status.isInBlock || status.isFinalized) {
                     if (dispatchError) {
                         if (dispatchError.isModule) {
@@ -67,8 +81,7 @@ function submitAndWait(
 
 async function getNextAssetIndex(api: ApiPromise): Promise<number> {
     const val = await api.query.assetsPrecompiles.nextAssetIndex()
-    // deno-lint-ignore no-explicit-any
-    return (val as any).toNumber()
+    return (val as unknown as ScaleU32).toNumber()
 }
 
 async function getAssetIndexToForeignId(
@@ -78,8 +91,7 @@ async function getAssetIndexToForeignId(
     const val = await api.query.assetsPrecompiles.assetIndexToForeignAssetId(
         index,
     )
-    // deno-lint-ignore no-explicit-any
-    const opt = val as any
+    const opt = val as unknown as ScaleOption<ScaleU32>
     return opt.isSome ? opt.unwrap().toNumber() : null
 }
 
@@ -90,8 +102,7 @@ async function getForeignIdToAssetIndex(
     const val = await api.query.assetsPrecompiles.foreignAssetIdToAssetIndex(
         assetId,
     )
-    // deno-lint-ignore no-explicit-any
-    const opt = val as any
+    const opt = val as unknown as ScaleOption<ScaleU32>
     return opt.isSome ? opt.unwrap().toNumber() : null
 }
 
