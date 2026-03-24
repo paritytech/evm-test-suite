@@ -97,6 +97,7 @@ export async function setupTests() {
             stderr: 'null',
         }).spawn()
         processes.push(nodeProcess)
+        await waitForHealth('http://localhost:9944').catch(() => {})
     } else if (Deno.env.get('START_REVIVE_DEV_NODE')) {
         const devNodeArgs = [
             '--dev',
