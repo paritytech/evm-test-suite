@@ -25,6 +25,9 @@ import { sanitizeOpts as opts } from './util.ts'
 interface ScaleU32 {
     toNumber(): number
 }
+interface ScaleCodec {
+    toJSON(): unknown
+}
 interface ScaleOption<T> {
     isSome: boolean
     unwrap(): T
@@ -39,6 +42,12 @@ const SUBSTRATE_WS = `ws://localhost:${
 // unique location for each test asset.
 function assetLocation(parachainId: number) {
     return { parents: 1, interior: { X1: [{ Parachain: parachainId }] } }
+}
+
+// .toJSON() on SCALE-encoded XCM Locations lowercases keys (x1, parachain).
+// This returns the expected JSON form for use with toEqual().
+function assetLocationJson(parachainId: number) {
+    return { parents: 1, interior: { x1: [{ parachain: parachainId }] } }
 }
 
 /// Connect to the substrate node and run a callback with the API and Alice signer.
@@ -66,10 +75,12 @@ function submitAndWait(
     signer: AddressOrPair,
 ): Promise<void> {
     return new Promise((resolve, reject) => {
+        let unsub: (() => void) | undefined
         tx.signAndSend(
             signer,
             ({ status, dispatchError }: SubmittableResult) => {
                 if (status.isInBlock || status.isFinalized) {
+                    unsub?.()
                     if (dispatchError) {
                         if (dispatchError.isModule) {
                             const decoded = api.registry.findMetaError(
@@ -90,7 +101,9 @@ function submitAndWait(
                     }
                 }
             },
-        )
+        ).then((u) => {
+            unsub = u
+        })
     })
 }
 
@@ -102,20 +115,17 @@ async function getNextAssetIndex(api: ApiPromise): Promise<number> {
 async function getAssetIndexToForeignId(
     api: ApiPromise,
     index: number,
-    // deno-lint-ignore no-explicit-any
-): Promise<any | null> {
+): Promise<unknown> {
     const val = await api.query.assetsPrecompiles.assetIndexToForeignAssetId(
         index,
     )
-    // deno-lint-ignore no-explicit-any
-    const opt = val as any
+    const opt = val as unknown as ScaleOption<ScaleCodec>
     return opt.isSome ? opt.unwrap().toJSON() : null
 }
 
 async function getForeignIdToAssetIndex(
     api: ApiPromise,
-    // deno-lint-ignore no-explicit-any
-    location: any,
+    location: Record<string, unknown>,
 ): Promise<number | null> {
     const val = await api.query.assetsPrecompiles.foreignAssetIdToAssetIndex(
         location,
@@ -155,9 +165,9 @@ Deno.test(
             expect(idx42).not.toBeNull()
             expect(idx42).toEqual(nextBefore)
 
-            // Reverse lookup.
+            // Reverse lookup — verify it points back to the correct location.
             const stored = await getAssetIndexToForeignId(api, idx42!)
-            expect(stored).not.toBeNull()
+            expect(stored).toEqual(assetLocationJson(4200))
 
             // Create another — verify sequential indexing.
             const loc100 = assetLocation(10000)
@@ -245,7 +255,7 @@ Deno.test(
             // loc201 should be unaffected.
             expect(
                 await getAssetIndexToForeignId(api, idx201!),
-            ).not.toBeNull()
+            ).toEqual(assetLocationJson(20100))
         }),
 )
 
@@ -309,7 +319,7 @@ Deno.test(
             // Reverse lookup works.
             expect(
                 await getAssetIndexToForeignId(api, newIndex!),
-            ).not.toBeNull()
+            ).toEqual(assetLocationJson(30000))
         }),
 )
 
@@ -345,7 +355,7 @@ Deno.test(
             expect(mapping).not.toBeNull()
             expect(
                 await getAssetIndexToForeignId(api, mapping!),
-            ).not.toBeNull()
+            ).toEqual(assetLocationJson(99900))
         }),
 )
 
@@ -375,7 +385,9 @@ Deno.test(
 
             const idx = await getForeignIdToAssetIndex(api, loc998)
             expect(idx).not.toBeNull()
-            expect(await getAssetIndexToForeignId(api, idx!)).not.toBeNull()
+            expect(await getAssetIndexToForeignId(api, idx!)).toEqual(
+                assetLocationJson(99800),
+            )
 
             // Destroy it.
             await submitAndWait(
@@ -475,7 +487,12 @@ Deno.test(
                         `eth_call failed: ${json.error.message} (${json.error.code})`,
                     )
                 }
-                return json.result! as Hex
+                if (!json.result) {
+                    throw new Error(
+                        `eth_call returned no result: ${JSON.stringify(json)}`,
+                    )
+                }
+                return json.result as Hex
             }
 
             const [nameResult, symbolResult, decimalsResult, supplyResult] =
