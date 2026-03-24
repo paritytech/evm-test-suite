@@ -1,4 +1,8 @@
-import { killProcessOnPort, waitForHealth } from './util.ts'
+import {
+    killProcessOnPort,
+    waitForHealth,
+    waitForSubstrateHealth,
+} from './util.ts'
 
 let processes: Deno.ChildProcess[] = []
 let setupComplete = false
@@ -97,7 +101,7 @@ export async function setupTests() {
             stderr: 'inherit',
         }).spawn()
         processes.push(nodeProcess)
-        await waitForHealth('http://localhost:9944').catch(() => {})
+        await waitForSubstrateHealth('http://localhost:9944')
     } else if (Deno.env.get('START_REVIVE_DEV_NODE')) {
         const devNodeArgs = [
             '--dev',

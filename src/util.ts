@@ -333,7 +333,7 @@ export function timeout(ms: number) {
     )
 }
 
-// wait for http request to return 200
+// Wait for an Ethereum JSON-RPC endpoint to respond with HTTP 200.
 export function waitForHealth(url: string) {
     return new Promise<void>((resolve, reject) => {
         const start = Date.now()
@@ -363,6 +363,49 @@ export function waitForHealth(url: string) {
                 if (elapsed > 60_000) {
                     clearInterval(interval)
                     reject(new Error('hit timeout'))
+                }
+            }
+        }, 1000)
+    })
+}
+
+// Wait for a Substrate node to be ready via system_health RPC.
+// Unlike waitForHealth, this uses a Substrate-native method and validates
+// the JSON-RPC response body (not just HTTP status).
+export function waitForSubstrateHealth(url: string) {
+    return new Promise<void>((resolve, reject) => {
+        const start = Date.now()
+        const interval = setInterval(async () => {
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'system_health',
+                        params: [],
+                        id: 1,
+                    }),
+                })
+                const json = (await res.json()) as {
+                    result?: { isSyncing: boolean }
+                    error?: { code: number; message: string }
+                }
+                if (json.result && !json.result.isSyncing) {
+                    clearInterval(interval)
+                    resolve()
+                }
+            } catch (_err) {
+                const elapsed = Date.now() - start
+                if (elapsed > 120_000) {
+                    clearInterval(interval)
+                    reject(
+                        new Error(
+                            `substrate node health check timed out after 120s (${url})`,
+                        ),
+                    )
                 }
             }
         }, 1000)

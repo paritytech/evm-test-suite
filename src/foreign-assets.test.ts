@@ -452,7 +452,7 @@ Deno.test(
             const rpcUrl = `http://localhost:${
                 Deno.env.get('RPC_PORT') ?? '8545'
             }`
-            const ethCall = async (selector: Hex): Promise<string> => {
+            const ethCall = async (selector: Hex): Promise<Hex> => {
                 const resp = await fetch(rpcUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -475,7 +475,7 @@ Deno.test(
                         `eth_call failed: ${json.error.message} (${json.error.code})`,
                     )
                 }
-                return json.result!
+                return json.result! as Hex
             }
 
             const [nameResult, symbolResult, decimalsResult, supplyResult] =
@@ -488,31 +488,30 @@ Deno.test(
 
             // Sanity-check that the precompile address is correct and returned data.
             for (const r of [nameResult, symbolResult, decimalsResult, supplyResult]) {
-                expect(r).toBeDefined()
                 expect(r).not.toEqual('0x')
             }
 
             const [name] = decodeAbiParameters(
                 [{ type: 'string' }],
-                nameResult as Hex,
+                nameResult,
             )
             expect(name).toEqual('Test Token')
 
             const [symbol] = decodeAbiParameters(
                 [{ type: 'string' }],
-                symbolResult as Hex,
+                symbolResult,
             )
             expect(symbol).toEqual('TST')
 
             const [decimals] = decodeAbiParameters(
                 [{ type: 'uint8' }],
-                decimalsResult as Hex,
+                decimalsResult,
             )
             expect(Number(decimals)).toEqual(18)
 
             const [supply] = decodeAbiParameters(
                 [{ type: 'uint256' }],
-                supplyResult as Hex,
+                supplyResult,
             )
             expect(supply > 0n).toBe(true)
         }),
