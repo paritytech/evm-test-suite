@@ -466,8 +466,16 @@ Deno.test(
                         id: 1,
                     }),
                 })
-                const { result } = (await resp.json()) as { result: string }
-                return result
+                const json = (await resp.json()) as {
+                    result?: string
+                    error?: { message: string; code: number }
+                }
+                if (json.error) {
+                    throw new Error(
+                        `eth_call failed: ${json.error.message} (${json.error.code})`,
+                    )
+                }
+                return json.result!
             }
 
             const [nameResult, symbolResult, decimalsResult, supplyResult] =
