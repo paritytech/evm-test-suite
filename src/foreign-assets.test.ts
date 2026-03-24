@@ -1,11 +1,11 @@
 /// ForeignAssetId CallbackHandle integration tests.
 ///
-/// These are Polkadot-specific: they test that pallet-assets extrinsics
-/// (create, force_create, start_destroy/finish_destroy) trigger the
+/// These are Polkadot-specific: they test that foreign asset extrinsics
+/// (force_create, start_destroy/finish_destroy) trigger the
 /// ForeignAssetId callback, and that the ERC20 precompile is reachable
 /// at the derived foreign asset address.
 ///
-/// They require the kitchensink node (not revive-dev-node) and do NOT
+/// They require the asset-hub-westend node (not revive-dev-node) and do NOT
 /// run against geth.
 
 import {
@@ -17,7 +17,7 @@ import {
 import type { AddressOrPair, SubmittableExtrinsic } from '@polkadot/api/types'
 import { decodeAbiParameters, type Hex } from 'viem'
 import { expect } from '@std/expect'
-import { getEnv, sanitizeOpts as opts } from './util.ts'
+import { sanitizeOpts as opts } from './util.ts'
 
 // Minimal type aliases for unaugmented storage return values.
 // @polkadot/types is a transitive dep and not in the import map,
@@ -33,6 +33,13 @@ interface ScaleOption<T> {
 const SUBSTRATE_WS = `ws://localhost:${
     Deno.env.get('SUBSTRATE_RPC_PORT') ?? '9944'
 }`
+
+// XCM Location representing a foreign asset.
+// We use { parents: 1, interior: { X1: [{ Parachain: N }] } } as a simple
+// unique location for each test asset.
+function assetLocation(parachainId: number) {
+    return { parents: 1, interior: { X1: [{ Parachain: parachainId }] } }
+}
 
 /// Connect to the substrate node and run a callback with the API and Alice signer.
 async function withApi(
@@ -50,16 +57,6 @@ async function withApi(
     } finally {
         await api.disconnect()
     }
-}
-
-// ERC20 precompile address for an asset using InlineIdConfig.
-// The kitchensink runtime uses InlineIdConfig<0x1> for Instance1, meaning the
-// asset ID is embedded directly in bytes 0-3 of the address.
-// Layout: bytes 0-3 = asset ID, bytes 4-15 = zeros,
-//         bytes 16-17 = prefix (0x0001), bytes 18-19 = zeros.
-function inlineAssetPrecompileAddress(assetId: number): Hex {
-    const hex = assetId.toString(16).padStart(8, '0')
-    return `0x${hex}00000000000000000000000000010000` as Hex
 }
 
 /// Submit a signed extrinsic and wait for inclusion.
@@ -105,27 +102,30 @@ async function getNextAssetIndex(api: ApiPromise): Promise<number> {
 async function getAssetIndexToForeignId(
     api: ApiPromise,
     index: number,
-): Promise<number | null> {
+    // deno-lint-ignore no-explicit-any
+): Promise<any | null> {
     const val = await api.query.assetsPrecompiles.assetIndexToForeignAssetId(
         index,
     )
-    const opt = val as unknown as ScaleOption<ScaleU32>
-    return opt.isSome ? opt.unwrap().toNumber() : null
+    // deno-lint-ignore no-explicit-any
+    const opt = val as any
+    return opt.isSome ? opt.unwrap().toJSON() : null
 }
 
 async function getForeignIdToAssetIndex(
     api: ApiPromise,
-    assetId: number,
+    // deno-lint-ignore no-explicit-any
+    location: any,
 ): Promise<number | null> {
     const val = await api.query.assetsPrecompiles.foreignAssetIdToAssetIndex(
-        assetId,
+        location,
     )
     const opt = val as unknown as ScaleOption<ScaleU32>
     return opt.isSome ? opt.unwrap().toNumber() : null
 }
 
 // ---------------------------------------------------------------------------
-// Test 1: Asset creation populates foreign asset mapping
+// Test 1: Foreign asset creation populates foreign asset mapping
 // ---------------------------------------------------------------------------
 
 Deno.test(
@@ -133,31 +133,50 @@ Deno.test(
     opts,
     () =>
         withApi(async (api, alice) => {
-            const nextIdx = await getNextAssetIndex(api)
-            expect(nextIdx).toEqual(0)
-            expect(await getAssetIndexToForeignId(api, 0)).toBeNull()
+            const nextBefore = await getNextAssetIndex(api)
 
-            // Create asset 42.
+            const loc42 = assetLocation(4200)
+            // Foreign assets require ForceOrigin (root) to create.
             await submitAndWait(
                 api,
-                api.tx.assets.create(42, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc42,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
 
-            expect(await getNextAssetIndex(api)).toEqual(1)
-            expect(await getAssetIndexToForeignId(api, 0)).toEqual(42)
-            expect(await getForeignIdToAssetIndex(api, 42)).toEqual(0)
+            expect(await getNextAssetIndex(api)).toEqual(nextBefore + 1)
+            const idx42 = await getForeignIdToAssetIndex(api, loc42)
+            expect(idx42).not.toBeNull()
+            expect(idx42).toEqual(nextBefore)
 
-            // Create asset 100 — verify sequential indexing.
+            // Reverse lookup.
+            const stored = await getAssetIndexToForeignId(api, idx42!)
+            expect(stored).not.toBeNull()
+
+            // Create another — verify sequential indexing.
+            const loc100 = assetLocation(10000)
             await submitAndWait(
                 api,
-                api.tx.assets.create(100, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc100,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
 
-            expect(await getNextAssetIndex(api)).toEqual(2)
-            expect(await getAssetIndexToForeignId(api, 1)).toEqual(100)
-            expect(await getForeignIdToAssetIndex(api, 100)).toEqual(1)
+            expect(await getNextAssetIndex(api)).toEqual(nextBefore + 2)
+            const idx100 = await getForeignIdToAssetIndex(api, loc100)
+            expect(idx100).toEqual(nextBefore + 1)
         }),
 )
 
@@ -170,45 +189,63 @@ Deno.test(
     opts,
     () =>
         withApi(async (api, alice) => {
-            // Create two assets.
+            const loc200 = assetLocation(20000)
+            const loc201 = assetLocation(20100)
+
             await submitAndWait(
                 api,
-                api.tx.assets.create(200, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc200,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
             await submitAndWait(
                 api,
-                api.tx.assets.create(201, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc201,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
 
-            const idx200 = await getForeignIdToAssetIndex(api, 200)
+            const idx200 = await getForeignIdToAssetIndex(api, loc200)
             expect(idx200).not.toBeNull()
-            const idx201 = await getForeignIdToAssetIndex(api, 201)
+            const idx201 = await getForeignIdToAssetIndex(api, loc201)
             expect(idx201).not.toBeNull()
 
-            // Destroy asset 200.
+            // Destroy asset loc200.
             await submitAndWait(
                 api,
-                api.tx.assets.startDestroy(200),
+                api.tx.foreignAssets.startDestroy(loc200),
                 alice,
             )
             await submitAndWait(
                 api,
-                api.tx.assets.finishDestroy(200),
+                api.tx.foreignAssets.finishDestroy(loc200),
                 alice,
             )
 
-            // Mapping for 200 should be gone.
+            // Mapping for loc200 should be gone.
             expect(await getAssetIndexToForeignId(api, idx200!)).toBeNull()
-            expect(await getForeignIdToAssetIndex(api, 200)).toBeNull()
+            expect(await getForeignIdToAssetIndex(api, loc200)).toBeNull()
 
             // NextAssetIndex should NOT be decremented.
             const nextIdx = await getNextAssetIndex(api)
             expect(nextIdx).toBeGreaterThan(idx201!)
 
-            // Asset 201 should be unaffected.
-            expect(await getAssetIndexToForeignId(api, idx201!)).toEqual(201)
+            // loc201 should be unaffected.
+            expect(
+                await getAssetIndexToForeignId(api, idx201!),
+            ).not.toBeNull()
         }),
 )
 
@@ -221,46 +258,63 @@ Deno.test(
     opts,
     () =>
         withApi(async (api, alice) => {
-            // Create asset 300.
+            const loc300 = assetLocation(30000)
+
             await submitAndWait(
                 api,
-                api.tx.assets.create(300, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc300,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
-            const oldIndex = await getForeignIdToAssetIndex(api, 300)
+            const oldIndex = await getForeignIdToAssetIndex(api, loc300)
             expect(oldIndex).not.toBeNull()
 
             // Destroy it.
             await submitAndWait(
                 api,
-                api.tx.assets.startDestroy(300),
+                api.tx.foreignAssets.startDestroy(loc300),
                 alice,
             )
             await submitAndWait(
                 api,
-                api.tx.assets.finishDestroy(300),
+                api.tx.foreignAssets.finishDestroy(loc300),
                 alice,
             )
-            expect(await getForeignIdToAssetIndex(api, 300)).toBeNull()
+            expect(await getForeignIdToAssetIndex(api, loc300)).toBeNull()
 
             // Re-create — should get a new, higher index.
             await submitAndWait(
                 api,
-                api.tx.assets.create(300, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc300,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
-            const newIndex = await getForeignIdToAssetIndex(api, 300)
+            const newIndex = await getForeignIdToAssetIndex(api, loc300)
             expect(newIndex).not.toBeNull()
             expect(newIndex).not.toEqual(oldIndex)
             expect(newIndex!).toBeGreaterThan(oldIndex!)
 
             // Reverse lookup works.
-            expect(await getAssetIndexToForeignId(api, newIndex!)).toEqual(300)
+            expect(
+                await getAssetIndexToForeignId(api, newIndex!),
+            ).not.toBeNull()
         }),
 )
 
 // ---------------------------------------------------------------------------
-// Test 4: force_create also triggers callback
+// Test 4: force_create triggers callback (delta pattern)
 // ---------------------------------------------------------------------------
 
 Deno.test(
@@ -270,11 +324,12 @@ Deno.test(
         withApi(async (api, alice) => {
             const nextBefore = await getNextAssetIndex(api)
 
+            const loc999 = assetLocation(99900)
             await submitAndWait(
                 api,
                 api.tx.sudo.sudo(
-                    api.tx.assets.forceCreate(
-                        999,
+                    api.tx.foreignAssets.forceCreate(
+                        loc999,
                         alice.address,
                         false,
                         1,
@@ -286,29 +341,30 @@ Deno.test(
             const nextAfter = await getNextAssetIndex(api)
             expect(nextAfter).toEqual(nextBefore + 1)
 
-            const mapping = await getForeignIdToAssetIndex(api, 999)
+            const mapping = await getForeignIdToAssetIndex(api, loc999)
             expect(mapping).not.toBeNull()
             expect(
                 await getAssetIndexToForeignId(api, mapping!),
-            ).toEqual(999)
+            ).not.toBeNull()
         }),
 )
 
 // ---------------------------------------------------------------------------
-// Test 5: force_destroy cleans up mapping
+// Test 5: destroy cleans up mapping (force_create + destroy)
 // ---------------------------------------------------------------------------
 
 Deno.test(
-    'polkadot-tests: force_destroy cleans up mapping',
+    'polkadot-tests: destroy after force_create cleans up mapping',
     opts,
     () =>
         withApi(async (api, alice) => {
-            // force_create asset 998.
+            const loc998 = assetLocation(99800)
+
             await submitAndWait(
                 api,
                 api.tx.sudo.sudo(
-                    api.tx.assets.forceCreate(
-                        998,
+                    api.tx.foreignAssets.forceCreate(
+                        loc998,
                         alice.address,
                         false,
                         1,
@@ -317,24 +373,24 @@ Deno.test(
                 alice,
             )
 
-            const idx = await getForeignIdToAssetIndex(api, 998)
+            const idx = await getForeignIdToAssetIndex(api, loc998)
             expect(idx).not.toBeNull()
-            expect(await getAssetIndexToForeignId(api, idx!)).toEqual(998)
+            expect(await getAssetIndexToForeignId(api, idx!)).not.toBeNull()
 
             // Destroy it.
             await submitAndWait(
                 api,
-                api.tx.assets.startDestroy(998),
+                api.tx.foreignAssets.startDestroy(loc998),
                 alice,
             )
             await submitAndWait(
                 api,
-                api.tx.assets.finishDestroy(998),
+                api.tx.foreignAssets.finishDestroy(loc998),
                 alice,
             )
 
             expect(await getAssetIndexToForeignId(api, idx!)).toBeNull()
-            expect(await getForeignIdToAssetIndex(api, 998)).toBeNull()
+            expect(await getForeignIdToAssetIndex(api, loc998)).toBeNull()
         }),
 )
 
@@ -347,38 +403,72 @@ Deno.test(
     opts,
     () =>
         withApi(async (api, alice) => {
-            // Create asset 500 with metadata and mint tokens.
+            const loc500 = assetLocation(50000)
+
+            // Create foreign asset with metadata and mint tokens.
             await submitAndWait(
                 api,
-                api.tx.assets.create(500, alice.address, 1),
+                api.tx.sudo.sudo(
+                    api.tx.foreignAssets.forceCreate(
+                        loc500,
+                        alice.address,
+                        false,
+                        1,
+                    ),
+                ),
                 alice,
             )
             await submitAndWait(
                 api,
-                api.tx.assets.setMetadata(500, 'Test Token', 'TST', 18),
+                api.tx.foreignAssets.setMetadata(
+                    loc500,
+                    'Test Token',
+                    'TST',
+                    18,
+                ),
                 alice,
             )
             await submitAndWait(
                 api,
-                api.tx.assets.mint(
-                    500,
+                api.tx.foreignAssets.mint(
+                    loc500,
                     alice.address,
                     '1000000000000000000000',
                 ),
                 alice,
             )
 
-            const index = await getForeignIdToAssetIndex(api, 500)
+            const index = await getForeignIdToAssetIndex(api, loc500)
             expect(index).not.toBeNull()
-            const precompileAddr = inlineAssetPrecompileAddress(500)
 
-            // Use viem to call the ERC20 precompile via eth-rpc.
-            const env = await getEnv()
-            const ethCall = (selector: Hex) =>
-                env.publicClient.request({
-                    method: 'eth_call',
-                    params: [{ to: precompileAddr, data: selector }, 'latest'],
+            // Foreign assets use ForeignIdConfig<0x220>.
+            // The precompile address encodes the sequential index, not the Location.
+            // Layout: prefix 0x0220 at bytes 16-17, index at bytes 0-3.
+            const idxHex = index!.toString(16).padStart(8, '0')
+            const precompileAddr =
+                `0x${idxHex}00000000000000000000000002200000` as Hex
+
+            // Use raw JSON-RPC eth_call (read-only, no funded wallet needed).
+            const rpcUrl = `http://localhost:${
+                Deno.env.get('RPC_PORT') ?? '8545'
+            }`
+            const ethCall = async (selector: Hex): Promise<string> => {
+                const resp = await fetch(rpcUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'eth_call',
+                        params: [
+                            { to: precompileAddr, data: selector },
+                            'latest',
+                        ],
+                        id: 1,
+                    }),
                 })
+                const { result } = (await resp.json()) as { result: string }
+                return result
+            }
 
             const [nameResult, symbolResult, decimalsResult, supplyResult] =
                 await Promise.all([

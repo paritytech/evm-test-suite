@@ -1,5 +1,5 @@
 // Entry point for Polkadot-specific tests.
-// These tests require the kitchensink node (not revive-dev-node) and do NOT
+// These tests require the asset-hub-westend node (not revive-dev-node) and do NOT
 // compare results against geth.
 //
 // Run with: deno task test:polkadot

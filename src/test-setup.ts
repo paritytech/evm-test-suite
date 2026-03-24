@@ -71,20 +71,27 @@ export async function setupTests() {
         }
     }
 
-    if (Deno.env.get('START_KITCHENSINK')) {
+    if (Deno.env.get('START_ASSET_HUB_WESTEND')) {
+        const sdkDir = Deno.env.get('POLKADOT_SDK_DIR') ??
+            `${Deno.env.get('HOME')}/polkadot-sdk`
+        const omniNode = Deno.env.get('OMNI_NODE_PATH') ??
+            `${sdkDir}/target/release/polkadot-omni-node`
+        const chainSpec = await buildAssetHubWestendSpec(sdkDir, omniNode)
+
         const nodeArgs = [
             '--dev',
+            `--chain=${chainSpec}`,
+            '--dev-block-time=3000',
             '--tmp',
             '--rpc-port=9944',
             '--rpc-cors=all',
+            '--no-prometheus',
             '-l=error,sc_rpc_server=info,runtime::revive=debug',
         ]
 
         await killProcessOnPort(9944)
-        const nodePath = Deno.env.get('KITCHENSINK_NODE_PATH') ??
-            `${Deno.env.get('HOME')}/polkadot-sdk/target/release/substrate-node`
-        console.log('🚀 Start kitchensink node ...')
-        const nodeProcess = new Deno.Command(nodePath, {
+        console.log('🚀 Start asset-hub-westend node ...')
+        const nodeProcess = new Deno.Command(omniNode, {
             args: nodeArgs,
             stdout: 'null',
             stderr: 'null',
@@ -117,7 +124,7 @@ export async function setupTests() {
         ]
 
         await killProcessOnPort(8545)
-        const defaultProfile = Deno.env.get('START_KITCHENSINK')
+        const defaultProfile = Deno.env.get('START_ASSET_HUB_WESTEND')
             ? 'release'
             : 'debug'
         const ethRpcPath = Deno.env.get('ETH_RPC_PATH') ??
@@ -157,4 +164,98 @@ export function cleanupTests() {
         }
     }
     processes = []
+}
+
+// ---------------------------------------------------------------------------
+// Asset-hub-westend chain spec generation
+// ---------------------------------------------------------------------------
+// Parachain runtimes need two genesis storage keys injected so the scheduler
+// doesn't crawl from relay block 1 to ~295M on every block.
+// See: https://github.com/paritytech/node-env/blob/main/lib/chain_spec.ts
+
+// Pre-computed twox128 storage keys (static, never change):
+//   twox128("Scheduler") ++ twox128("IncompleteSince")
+const SCHEDULER_INCOMPLETE_SINCE =
+    '0x3db7a24cfdc9de785974746c14a99df9f7be9b0bf16f84e559a58101c891d523'
+//   twox128("ParachainSystem") ++ twox128("LastRelayChainBlockNumber")
+const PARACHAIN_LAST_RELAY_BLOCK =
+    '0x45323df7cc47150b3930e2666b0aa313a2bca190d36bd834cc73a38fc213ecbd'
+
+function u32ToLeHex(n: number): string {
+    const buf = new Uint8Array(4)
+    new DataView(buf.buffer).setUint32(0, n, true)
+    return '0x' + [...buf].map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+async function runCommand(
+    cmd: string[],
+): Promise<string> {
+    const proc = new Deno.Command(cmd[0], {
+        args: cmd.slice(1),
+        stdout: 'piped',
+        stderr: 'piped',
+    })
+    const output = await proc.output()
+    if (!output.success) {
+        const stderr = new TextDecoder().decode(output.stderr)
+        throw new Error(`Command failed: ${cmd.join(' ')}\n${stderr}`)
+    }
+    return new TextDecoder().decode(output.stdout)
+}
+
+async function buildAssetHubWestendSpec(
+    sdkDir: string,
+    omniNode: string,
+): Promise<string> {
+    const runtime =
+        `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
+    const basePath = '/tmp/ah-westend-base.json'
+    const rawPath = '/tmp/ah-westend-raw.json'
+
+    // Step 1: Generate base chain spec (writes to file via --chain-spec-path)
+    console.log('📋 Generating asset-hub-westend chain spec ...')
+    await runCommand([
+        omniNode,
+        'chain-spec-builder',
+        '--chain-spec-path',
+        basePath,
+        'create',
+        '--relay-chain',
+        'dontcare',
+        '--para-id',
+        '1000',
+        '--runtime',
+        runtime,
+        'named-preset',
+        'development',
+    ])
+
+    // Step 1b: Patch the base spec to set Alice as sudo key
+    const baseSpec = JSON.parse(await Deno.readTextFile(basePath))
+    const ALICE_SS58 = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY'
+    baseSpec.genesis ??= {}
+    baseSpec.genesis.runtimeGenesis ??= {}
+    baseSpec.genesis.runtimeGenesis.patch ??= {}
+    baseSpec.genesis.runtimeGenesis.patch.sudo = { key: ALICE_SS58 }
+    await Deno.writeTextFile(basePath, JSON.stringify(baseSpec, null, 2))
+
+    // Step 2: Convert to raw format
+    const rawSpec = await runCommand([
+        omniNode,
+        'build-spec',
+        '--raw',
+        '--chain',
+        basePath,
+    ])
+
+    // Step 3: Inject scheduler keys so the parachain doesn't stall
+    const spec = JSON.parse(rawSpec)
+    const relayBlock = Math.floor((Date.now() - 2 * 3600_000) / 6000)
+    const value = u32ToLeHex(relayBlock)
+    spec.genesis.raw.top[SCHEDULER_INCOMPLETE_SINCE] = value
+    spec.genesis.raw.top[PARACHAIN_LAST_RELAY_BLOCK] = value
+
+    await Deno.writeTextFile(rawPath, JSON.stringify(spec))
+    console.log('📋 Chain spec ready')
+    return rawPath
 }

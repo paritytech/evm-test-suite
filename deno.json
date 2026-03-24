@@ -16,7 +16,7 @@
         "test:pvm:manual": "deno task build && USE_BYTECODE=pvm deno test -P",
         "test:geth": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P",
         "test:update": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P -- --update",
-        "test:polkadot": "USE_BYTECODE=evm START_KITCHENSINK=true START_ETH_RPC=true deno test -P src/polkadot-tests.ts",
+        "test:polkadot": "USE_BYTECODE=evm START_ASSET_HUB_WESTEND=true START_ETH_RPC=true deno test -P src/polkadot-tests.ts",
         "test:polkadot:manual": "USE_BYTECODE=evm deno test -P src/polkadot-tests.ts",
         "lint": "deno fmt --check && deno lint"
     },
