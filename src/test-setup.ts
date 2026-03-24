@@ -94,7 +94,7 @@ export async function setupTests() {
         const nodeProcess = new Deno.Command(omniNode, {
             args: nodeArgs,
             stdout: 'null',
-            stderr: 'null',
+            stderr: 'inherit',
         }).spawn()
         processes.push(nodeProcess)
         await waitForHealth('http://localhost:9944').catch(() => {})
@@ -251,7 +251,9 @@ async function buildAssetHubWestendSpec(
 
     // Step 3: Inject scheduler keys so the parachain doesn't stall
     const spec = JSON.parse(rawSpec)
-    const relayBlock = Math.floor((Date.now() - 2 * 3600_000) / 6000)
+    const RELAY_BLOCK_TIME_MS = 6000
+    const SAFETY_OFFSET_MS = 2 * 3600_000 // Start 2h behind "now" to avoid future-block issues
+    const relayBlock = Math.floor((Date.now() - SAFETY_OFFSET_MS) / RELAY_BLOCK_TIME_MS)
     const value = u32ToLeHex(relayBlock)
     spec.genesis.raw.top[SCHEDULER_INCOMPLETE_SINCE] = value
     spec.genesis.raw.top[PARACHAIN_LAST_RELAY_BLOCK] = value

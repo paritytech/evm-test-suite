@@ -486,6 +486,12 @@ Deno.test(
                     ethCall('0x18160ddd'), // totalSupply()
                 ])
 
+            // Sanity-check that the precompile address is correct and returned data.
+            for (const r of [nameResult, symbolResult, decimalsResult, supplyResult]) {
+                expect(r).toBeDefined()
+                expect(r).not.toEqual('0x')
+            }
+
             const [name] = decodeAbiParameters(
                 [{ type: 'string' }],
                 nameResult as Hex,
@@ -498,10 +504,16 @@ Deno.test(
             )
             expect(symbol).toEqual('TST')
 
-            const decimals = parseInt(decimalsResult as string, 16)
-            expect(decimals).toEqual(18)
+            const [decimals] = decodeAbiParameters(
+                [{ type: 'uint8' }],
+                decimalsResult as Hex,
+            )
+            expect(Number(decimals)).toEqual(18)
 
-            const supply = BigInt(supplyResult as string)
+            const [supply] = decodeAbiParameters(
+                [{ type: 'uint256' }],
+                supplyResult as Hex,
+            )
             expect(supply > 0n).toBe(true)
         }),
 )
