@@ -147,9 +147,6 @@ Deno.test('westend: web3_clientVersion', opts, async () => {
     expect(res).toBeTruthy()
 })
 
-// eth_estimateGas calls the eth_estimate_gas runtime API.
-// Without .unvalidated() (polkadot-sdk#11468), this fails with metadata mismatch
-// when eth-rpc is compiled against a newer runtime than the live chain.
 Deno.test('westend: eth_estimateGas', opts, async () => {
     const gas = await env.publicClient.estimateGas({
         account: ZERO_ADDR,
