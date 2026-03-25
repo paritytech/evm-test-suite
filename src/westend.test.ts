@@ -6,6 +6,7 @@ import { expect } from '@std/expect'
 const env = await getReadOnlyEnv()
 
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000' as const
+// Block at which pallet-revive was deployed on Westend Asset Hub.
 const REVIVE_DEPLOY_BLOCK = 13169391n
 
 const untypedRequest = (method: string, params?: unknown[]) =>
@@ -116,9 +117,19 @@ Deno.test('westend: eth_getStorageAt', opts, async () => {
     }
 })
 
+Deno.test('westend: eth_getLogs', opts, async () => {
+    const latest = await env.publicClient.getBlockNumber()
+    const logs = await env.publicClient.getLogs({
+        fromBlock: latest - 10n,
+        toBlock: latest,
+    })
+    expect(Array.isArray(logs)).toBe(true)
+})
+
 Deno.test('westend: eth_syncing', opts, async () => {
     const res = await untypedRequest('eth_syncing')
-    expect(res).toEqual(false)
+    // false when synced, object with sync progress otherwise
+    expect(res === false || typeof res === 'object').toBe(true)
 })
 
 Deno.test('westend: eth_feeHistory', opts, async () => {
@@ -159,6 +170,5 @@ Deno.test('westend: eth_call', opts, async () => {
     const result = await env.publicClient.call({
         to: '0x0000000000000000000000000000000000000001',
     })
-    // Just verify it returns without RPC error
-    expect(typeof result).toEqual('object')
+    expect(result).toBeTruthy()
 })
