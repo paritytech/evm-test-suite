@@ -1,4 +1,4 @@
-import { killProcessOnPort, waitForHealth } from './util.ts'
+import { getRpcUrl, killProcessOnPort, waitForHealth } from './util.ts'
 
 let processes: Deno.ChildProcess[] = []
 let setupComplete = false
@@ -142,9 +142,7 @@ export async function setupTests() {
     }
 
     // Detect and set the PLATFORM variable
-    const port = Deno.env.get('RPC_PORT') ?? '8545'
-    const url = `http://localhost:${port}`
-    await detectAndSetPlatform(url)
+    await detectAndSetPlatform(getRpcUrl())
 }
 
 export function cleanupTests() {

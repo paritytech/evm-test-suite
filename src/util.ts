@@ -90,29 +90,29 @@ function getEnvName(): string {
 
 export const jsonRpcErrors: JsonRpcError[] = []
 
-export type Env = Awaited<ReturnType<typeof getEnv>>
-export async function getEnv() {
+export function getRpcUrl() {
     const port = Deno.env.get('RPC_PORT') ?? '8545'
-    const url = `http://localhost:${port}`
-    const name = getEnvName()
+    return `http://localhost:${port}`
+}
 
-    const id = await (async (): Promise<number> => {
-        const resp = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_chainId',
-                id: 1,
-            }),
-        })
-        const { result } = (await resp.json()) as { result: Hex }
-        return hexToNumber(result)
-    })()
+async function fetchChainId(url: string): Promise<number> {
+    const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'eth_chainId',
+            id: 1,
+        }),
+    })
+    const { result } = (await resp.json()) as { result: Hex }
+    return hexToNumber(result)
+}
 
-    const chain = defineChain({
+function createChain(id: number, name: string, url: string) {
+    return defineChain({
         id,
         name,
         nativeCurrency: {
@@ -127,8 +127,10 @@ export async function getEnv() {
         },
         testnet: true,
     })
+}
 
-    const transport = http(url, {
+function createTransport(url: string) {
+    return http(url, {
         onFetchResponse: async (response) => {
             const raw = await response.clone().json()
             if (raw.error) {
@@ -136,6 +138,11 @@ export async function getEnv() {
             }
         },
     })
+}
+
+export type Env = Awaited<ReturnType<typeof getEnv>>
+export async function getEnv() {
+    const { chain, publicClient, transport, name } = await getReadOnlyEnv()
 
     const waitForTransactionReceiptExtension = (client: {
         getTransactionReceipt: (args: {
@@ -251,8 +258,6 @@ export async function getEnv() {
             disableStorage?: boolean
         }
     }
-
-    const publicClient = createPublicClient({ chain, transport })
 
     const debugClient = createClient({
         chain,
@@ -426,6 +431,22 @@ export function memoizedDeploy(env: Env, transact: () => Promise<Hex>) {
     return async () => {
         const receipt = await getReceipt()
         return receipt.contractAddress!
+    }
+}
+
+export async function getReadOnlyEnv() {
+    const url = getRpcUrl()
+    const name = getEnvName()
+    const id = await fetchChainId(url)
+    const chain = createChain(id, name, url)
+    const transport = createTransport(url)
+    const publicClient = createPublicClient({ chain, transport })
+
+    return {
+        chain,
+        publicClient,
+        transport,
+        name,
     }
 }
 
