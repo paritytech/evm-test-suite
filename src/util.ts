@@ -142,7 +142,12 @@ function createTransport(url: string) {
 
 export type Env = Awaited<ReturnType<typeof getEnv>>
 export async function getEnv() {
-    const { chain, publicClient, transport, name } = await getReadOnlyEnv()
+    const url = getRpcUrl()
+    const name = getEnvName()
+    const id = await fetchChainId(url)
+    const chain = createChain(id, name, url)
+    const transport = createTransport(url)
+    const publicClient = createPublicClient({ chain, transport })
 
     const waitForTransactionReceiptExtension = (client: {
         getTransactionReceipt: (args: {
@@ -431,22 +436,6 @@ export function memoizedDeploy(env: Env, transact: () => Promise<Hex>) {
     return async () => {
         const receipt = await getReceipt()
         return receipt.contractAddress!
-    }
-}
-
-export async function getReadOnlyEnv() {
-    const url = getRpcUrl()
-    const name = getEnvName()
-    const id = await fetchChainId(url)
-    const chain = createChain(id, name, url)
-    const transport = createTransport(url)
-    const publicClient = createPublicClient({ chain, transport })
-
-    return {
-        chain,
-        publicClient,
-        transport,
-        name,
     }
 }
 

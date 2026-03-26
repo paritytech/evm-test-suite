@@ -1,178 +1,116 @@
-import { type Hex, hexToBigInt, hexToNumber } from 'viem'
-import { getReadOnlyEnv, sanitizeOpts as opts } from './util.ts'
+import { type Hex, hexToBigInt, hexToNumber, parseEther } from 'viem'
+import { sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
-
-// Lightweight read-only environment — no wallets, no funding, no deployments.
-const env = await getReadOnlyEnv()
-
-const ZERO_ADDR = '0x0000000000000000000000000000000000000000' as const
-// Block at which pallet-revive was deployed on Westend Asset Hub.
-const REVIVE_DEPLOY_BLOCK = 13169391n
+import { TesterAbi } from '../codegen/abi/Tester.ts'
+import { EventExampleAbi } from '../codegen/abi/EventExample.ts'
+import { env, getEventExampleAddr, getTesterAddr } from './deploy_contracts.ts'
 
 const untypedRequest = (method: string, params?: unknown[]) =>
     // deno-lint-ignore no-explicit-any
     env.publicClient.request({ method, params } as any)
 
-Deno.test('westend: eth_accounts', opts, async () => {
-    const addresses = await untypedRequest('eth_accounts')
-    expect(Array.isArray(addresses)).toBe(true)
-})
+Deno.test('westend: eth_accounts and eth_chainId', opts, async () => {
+    const addresses = (await untypedRequest('eth_accounts')) as string[]
+    expect(addresses.length).toBeGreaterThanOrEqual(1)
+    expect(addresses[0].toLowerCase()).toEqual(
+        env.serverWallet.account.address.toLowerCase(),
+    )
 
-Deno.test('westend: eth_blockNumber', opts, async () => {
-    const res = await env.publicClient.request({
-        method: 'eth_blockNumber',
-    })
-    expect(typeof hexToBigInt(res)).toEqual('bigint')
-})
-
-Deno.test('westend: eth_chainId', opts, async () => {
     const res = await env.publicClient.request({
         method: 'eth_chainId',
     })
     expect(hexToNumber(res)).toEqual(env.chain.id)
 })
 
-Deno.test('westend: eth_gasPrice', opts, async () => {
-    const res = await env.publicClient.request({
+Deno.test('westend: eth_fees', opts, async () => {
+    const gasPrice = await env.publicClient.request({
         method: 'eth_gasPrice',
     })
-    expect(hexToBigInt(res) > 0n).toBe(true)
-})
+    expect(hexToBigInt(gasPrice) > 0n).toBe(true)
 
-Deno.test('westend: eth_getBalance', opts, async () => {
-    const balance = await env.publicClient.getBalance({
-        address: ZERO_ADDR,
-    })
-    expect(typeof balance).toEqual('bigint')
-})
+    const maxPriority = await untypedRequest(
+        'eth_maxPriorityFeePerGas',
+    ) as Hex
+    expect(hexToBigInt(maxPriority) >= 0n).toBe(true)
 
-Deno.test('westend: eth_getBlockByNumber (latest)', opts, async () => {
-    const block = await env.publicClient.getBlock({ blockTag: 'latest' })
-    expect(block).toBeTruthy()
-    expect(typeof block.number).toEqual('bigint')
-    expect(block.hash).toBeTruthy()
-    expect(typeof block.timestamp).toEqual('bigint')
-})
-
-Deno.test(
-    'westend: eth_getBlockByNumber (known block)',
-    {
-        ...opts,
-        ignore: !!Deno.env.get('START_ASSET_HUB_WESTEND'),
-    },
-    async () => {
-        const block = await env.publicClient.getBlock({
-            blockNumber: REVIVE_DEPLOY_BLOCK,
-        })
-        expect(block).toBeTruthy()
-        expect(block.number).toEqual(REVIVE_DEPLOY_BLOCK)
-    },
-)
-
-Deno.test('westend: eth_getBlockByHash', opts, async () => {
-    const latest = await env.publicClient.getBlock({ blockTag: 'latest' })
-    const byHash = await env.publicClient.getBlock({
-        blockHash: latest.hash!,
-    })
-    expect(byHash.number).toEqual(latest.number)
-})
-
-Deno.test(
-    'westend: eth_getBlockTransactionCount',
-    opts,
-    async () => {
-        const count = await env.publicClient.getBlockTransactionCount({
-            blockTag: 'latest',
-        })
-        expect(typeof count).toEqual('number')
-    },
-)
-
-Deno.test('westend: eth_getTransactionCount', opts, async () => {
-    const count = await env.publicClient.getTransactionCount({
-        address: ZERO_ADDR,
-    })
-    expect(typeof count).toEqual('number')
-})
-
-Deno.test('westend: eth_getCode', opts, async () => {
-    const code = await env.publicClient.getCode({
-        address: ZERO_ADDR,
-    })
-    // Zero address is an EOA — expect no code
-    expect(code === undefined || code === '0x').toBe(true)
-})
-
-// On a live network, querying storage at a non-contract address returns
-// an RPC error ("Contract not found") rather than a zero value.
-// We verify the runtime API is reachable by accepting either outcome.
-Deno.test('westend: eth_getStorageAt', opts, async () => {
-    try {
-        const storage = await env.publicClient.getStorageAt({
-            address: ZERO_ADDR,
-            slot:
-                '0x0000000000000000000000000000000000000000000000000000000000000000',
-        })
-        expect(typeof storage).toEqual('string')
-    } catch (err) {
-        // "Contract not found" is an expected response for non-contract addresses
-        expect(String(err)).toContain('Contract not found')
-    }
-})
-
-Deno.test('westend: eth_getLogs', opts, async () => {
-    const latest = await env.publicClient.getBlockNumber()
-    const fromBlock = latest > 10n ? latest - 10n : 0n
-    const logs = await env.publicClient.getLogs({
-        fromBlock,
-        toBlock: latest,
-    })
-    expect(Array.isArray(logs)).toBe(true)
-})
-
-Deno.test('westend: eth_syncing', opts, async () => {
-    const res = await untypedRequest('eth_syncing')
-    // false when synced, object with sync progress otherwise
-    expect(res === false || typeof res === 'object').toBe(true)
-})
-
-Deno.test('westend: eth_feeHistory', opts, async () => {
     const feeHistory = await env.publicClient.getFeeHistory({
         blockCount: 4,
         blockTag: 'latest',
         rewardPercentiles: [25, 75],
     })
-    expect(feeHistory.oldestBlock).toBeGreaterThanOrEqual(0)
-    expect(feeHistory.gasUsedRatio.length).toBeGreaterThanOrEqual(0)
+    expect(feeHistory.gasUsedRatio.length).toBeGreaterThan(0)
     expect(feeHistory.baseFeePerGas).toBeTruthy()
 })
 
-Deno.test('westend: eth_maxPriorityFeePerGas', opts, async () => {
-    const res = await untypedRequest('eth_maxPriorityFeePerGas') as Hex
-    expect(typeof hexToBigInt(res)).toEqual('bigint')
-})
-
-Deno.test('westend: net_version', opts, async () => {
-    const res = await untypedRequest('net_version')
-    expect(res).toBeTruthy()
-})
-
-Deno.test('westend: web3_clientVersion', opts, async () => {
-    const res = await untypedRequest('web3_clientVersion')
-    expect(res).toBeTruthy()
-})
-
-Deno.test('westend: eth_estimateGas', opts, async () => {
-    const gas = await env.publicClient.estimateGas({
-        account: ZERO_ADDR,
-        to: '0x0000000000000000000000000000000000000001',
+Deno.test('westend: eth_getBlock', opts, async () => {
+    const earliest = await env.publicClient.getBlock({
+        blockTag: 'earliest',
     })
-    expect(gas > 0n).toBe(true)
+    expect(earliest).toBeTruthy()
+    expect(earliest.number).toEqual(0n)
+
+    const byHash = await env.publicClient.getBlock({
+        blockHash: earliest.hash!,
+    })
+    expect(byHash.number).toEqual(earliest.number)
+    expect(byHash.timestamp).toEqual(earliest.timestamp)
+})
+
+Deno.test('westend: eth_contractState', opts, async () => {
+    const address = await getTesterAddr()
+
+    const code = await env.publicClient.getCode({ address })
+    expect(code).toBeTruthy()
+    expect(code !== '0x').toBe(true)
+
+    const storage = await env.serverWallet.getStorageAt({
+        address,
+        slot: '0x01',
+    })
+    expect(typeof storage).toEqual('string')
+    expect(storage !== '0x').toBe(true)
 })
 
 Deno.test('westend: eth_call', opts, async () => {
-    const result = await env.publicClient.call({
-        to: '0x0000000000000000000000000000000000000001',
+    const value = await env.serverWallet.readContract({
+        address: await getTesterAddr(),
+        abi: TesterAbi,
+        functionName: 'value',
     })
-    expect(result).toBeTruthy()
+    expect(value).toEqual(42n)
+})
+
+Deno.test('westend: eth_sendTransaction', opts, async () => {
+    const txParams = {
+        to: env.serverWallet.account.address,
+        value: parseEther('0.01'),
+    } as const
+
+    const gas = await env.accountWallet.estimateGas(txParams)
+    expect(gas > 0n).toBe(true)
+
+    const hash = await env.accountWallet.sendTransaction(txParams)
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+    expect(receipt.status).toEqual('success')
+
+    const tx = await env.serverWallet.getTransaction({ hash })
+    expect(tx).toBeTruthy()
+    expect(tx.hash).toEqual(hash)
+})
+
+Deno.test('westend: eth_getLogs', opts, async () => {
+    const address = await getEventExampleAddr()
+    const { request } = await env.serverWallet.simulateContract({
+        address,
+        abi: EventExampleAbi,
+        functionName: 'triggerEvent',
+    })
+    const hash = await env.serverWallet.writeContract(request)
+    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+    const logs = await env.publicClient.getLogs({
+        address,
+        blockHash: receipt.blockHash,
+    })
+    expect(logs.length).toBeGreaterThanOrEqual(1)
+    expect(logs[0].transactionHash).toEqual(hash)
 })

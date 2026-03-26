@@ -18,7 +18,7 @@
         "test:update": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P -- --update",
         "test:polkadot": "USE_BYTECODE=evm START_ASSET_HUB_WESTEND=true START_ETH_RPC=true deno test -P src/polkadot-tests.ts",
         "test:polkadot:manual": "USE_BYTECODE=evm deno test -P src/polkadot-tests.ts",
-        "test:westend": "USE_BYTECODE=evm START_ASSET_HUB_WESTEND=true USE_LIVE_RUNTIME=true START_ETH_RPC=true deno test -P src/westend-tests.ts",
+        "test:westend": "deno task build --solcOnly && USE_BYTECODE=evm START_ASSET_HUB_WESTEND=true USE_LIVE_RUNTIME=true START_ETH_RPC=true deno test -P src/westend-tests.ts",
         "test:westend:manual": "USE_BYTECODE=evm deno test -P src/westend-tests.ts",
         "lint": "deno fmt --check && deno lint"
     },

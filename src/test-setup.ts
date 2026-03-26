@@ -271,6 +271,15 @@ async function buildAssetHubWestendSpec(
     baseSpec.genesis.runtimeGenesis ??= {}
     baseSpec.genesis.runtimeGenesis.patch ??= {}
     baseSpec.genesis.runtimeGenesis.patch.sudo = { key: ALICE_SS58 }
+    // Fund alith so eth_accounts[0] has balance.
+    const ALITH_SS58 = '5HYRCKHYJN9z5xUtfFkyMj4JUhsAwWyvuU8vKB1FcnYTf9ZQ'
+    const balances =
+        baseSpec.genesis.runtimeGenesis.patch.balances?.balances ?? []
+    balances.push([ALITH_SS58, Number.MAX_SAFE_INTEGER])
+    baseSpec.genesis.runtimeGenesis.patch.balances = {
+        ...baseSpec.genesis.runtimeGenesis.patch.balances,
+        balances,
+    }
     await Deno.writeTextFile(basePath, JSON.stringify(baseSpec, null, 2))
 
     // Step 2: Convert to raw format
