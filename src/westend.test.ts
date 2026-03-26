@@ -22,41 +22,49 @@ Deno.test('westend: eth_accounts and eth_chainId', opts, async () => {
     expect(hexToNumber(res)).toEqual(env.chain.id)
 })
 
-Deno.test('westend: eth_fees', opts, async () => {
-    const gasPrice = await env.publicClient.request({
-        method: 'eth_gasPrice',
-    })
-    expect(hexToBigInt(gasPrice) > 0n).toBe(true)
+Deno.test(
+    'westend: eth_gasPrice, eth_maxPriorityFeePerGas, eth_feeHistory',
+    opts,
+    async () => {
+        const gasPrice = await env.publicClient.request({
+            method: 'eth_gasPrice',
+        })
+        expect(hexToBigInt(gasPrice) > 0n).toBe(true)
 
-    const maxPriority = await untypedRequest(
-        'eth_maxPriorityFeePerGas',
-    ) as Hex
-    expect(hexToBigInt(maxPriority) >= 0n).toBe(true)
+        const maxPriority = await untypedRequest(
+            'eth_maxPriorityFeePerGas',
+        ) as Hex
+        expect(hexToBigInt(maxPriority) >= 0n).toBe(true)
 
-    const feeHistory = await env.publicClient.getFeeHistory({
-        blockCount: 4,
-        blockTag: 'latest',
-        rewardPercentiles: [25, 75],
-    })
-    expect(feeHistory.gasUsedRatio.length).toBeGreaterThan(0)
-    expect(feeHistory.baseFeePerGas).toBeTruthy()
-})
+        const feeHistory = await env.publicClient.getFeeHistory({
+            blockCount: 4,
+            blockTag: 'latest',
+            rewardPercentiles: [25, 75],
+        })
+        expect(feeHistory.gasUsedRatio.length).toBeGreaterThan(0)
+        expect(feeHistory.baseFeePerGas).toBeTruthy()
+    },
+)
 
-Deno.test('westend: eth_getBlock', opts, async () => {
-    const earliest = await env.publicClient.getBlock({
-        blockTag: 'earliest',
-    })
-    expect(earliest).toBeTruthy()
-    expect(earliest.number).toEqual(0n)
+Deno.test(
+    'westend: eth_getBlockByNumber and eth_getBlockByHash',
+    opts,
+    async () => {
+        const earliest = await env.publicClient.getBlock({
+            blockTag: 'earliest',
+        })
+        expect(earliest).toBeTruthy()
+        expect(earliest.number).toEqual(0n)
 
-    const byHash = await env.publicClient.getBlock({
-        blockHash: earliest.hash!,
-    })
-    expect(byHash.number).toEqual(earliest.number)
-    expect(byHash.timestamp).toEqual(earliest.timestamp)
-})
+        const byHash = await env.publicClient.getBlock({
+            blockHash: earliest.hash!,
+        })
+        expect(byHash.number).toEqual(earliest.number)
+        expect(byHash.timestamp).toEqual(earliest.timestamp)
+    },
+)
 
-Deno.test('westend: eth_contractState', opts, async () => {
+Deno.test('westend: eth_getCode and eth_getStorageAt', opts, async () => {
     const address = await getTesterAddr()
 
     const code = await env.publicClient.getCode({ address })
@@ -71,7 +79,7 @@ Deno.test('westend: eth_contractState', opts, async () => {
     expect(storage !== '0x').toBe(true)
 })
 
-Deno.test('westend: eth_call', opts, async () => {
+Deno.test('westend: eth_call reads contract state', opts, async () => {
     const value = await env.serverWallet.readContract({
         address: await getTesterAddr(),
         abi: TesterAbi,
@@ -80,37 +88,45 @@ Deno.test('westend: eth_call', opts, async () => {
     expect(value).toEqual(42n)
 })
 
-Deno.test('westend: eth_sendTransaction', opts, async () => {
-    const txParams = {
-        to: env.serverWallet.account.address,
-        value: parseEther('0.01'),
-    } as const
+Deno.test(
+    'westend: eth_estimateGas, eth_sendTransaction, eth_getTransactionByHash',
+    opts,
+    async () => {
+        const txParams = {
+            to: env.serverWallet.account.address,
+            value: parseEther('0.01'),
+        } as const
 
-    const gas = await env.accountWallet.estimateGas(txParams)
-    expect(gas > 0n).toBe(true)
+        const gas = await env.accountWallet.estimateGas(txParams)
+        expect(gas > 0n).toBe(true)
 
-    const hash = await env.accountWallet.sendTransaction(txParams)
-    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
-    expect(receipt.status).toEqual('success')
+        const hash = await env.accountWallet.sendTransaction(txParams)
+        const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+        expect(receipt.status).toEqual('success')
 
-    const tx = await env.serverWallet.getTransaction({ hash })
-    expect(tx).toBeTruthy()
-    expect(tx.hash).toEqual(hash)
-})
+        const tx = await env.serverWallet.getTransaction({ hash })
+        expect(tx).toBeTruthy()
+        expect(tx.hash).toEqual(hash)
+    },
+)
 
-Deno.test('westend: eth_getLogs', opts, async () => {
-    const address = await getEventExampleAddr()
-    const { request } = await env.serverWallet.simulateContract({
-        address,
-        abi: EventExampleAbi,
-        functionName: 'triggerEvent',
-    })
-    const hash = await env.serverWallet.writeContract(request)
-    const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
-    const logs = await env.publicClient.getLogs({
-        address,
-        blockHash: receipt.blockHash,
-    })
-    expect(logs.length).toBeGreaterThanOrEqual(1)
-    expect(logs[0].transactionHash).toEqual(hash)
-})
+Deno.test(
+    'westend: eth_getLogs returns events from contract call',
+    opts,
+    async () => {
+        const address = await getEventExampleAddr()
+        const { request } = await env.serverWallet.simulateContract({
+            address,
+            abi: EventExampleAbi,
+            functionName: 'triggerEvent',
+        })
+        const hash = await env.serverWallet.writeContract(request)
+        const receipt = await env.serverWallet.waitForTransactionReceipt(hash)
+        const logs = await env.publicClient.getLogs({
+            address,
+            blockHash: receipt.blockHash,
+        })
+        expect(logs.length).toBeGreaterThanOrEqual(1)
+        expect(logs[0].transactionHash).toEqual(hash)
+    },
+)

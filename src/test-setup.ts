@@ -206,7 +206,10 @@ async function runCommand(
 const WESTEND_ASSET_HUB_RPC = 'https://westend-asset-hub-rpc.polkadot.io'
 const CODE_STORAGE_KEY = toHex(':code')
 
-async function downloadLiveRuntime(rpcUrl: string): Promise<string> {
+async function downloadLiveRuntime(
+    tmpDir: string,
+    rpcUrl: string,
+): Promise<string> {
     console.log(`📦 Downloading runtime from ${rpcUrl} ...`)
     const resp = await fetch(rpcUrl, {
         method: 'POST',
@@ -218,12 +221,17 @@ async function downloadLiveRuntime(rpcUrl: string): Promise<string> {
             id: 1,
         }),
     })
+    if (!resp.ok) {
+        throw new Error(
+            `RPC request failed: ${resp.status} ${resp.statusText}`,
+        )
+    }
     const { result } = (await resp.json()) as { result: string }
     if (!result || result === '0x') {
         throw new Error('Failed to fetch runtime wasm from live network')
     }
     const runtimeCode = hexToBytes(result as `0x${string}`)
-    const path = '/tmp/westend-asset-hub-runtime.wasm'
+    const path = `${tmpDir}/westend-asset-hub-runtime.wasm`
     await Deno.writeFile(path, runtimeCode)
     console.log(
         `📦 Runtime downloaded (${
@@ -238,13 +246,15 @@ async function buildAssetHubWestendSpec(
     omniNode: string,
     useLiveRuntime = false,
 ): Promise<string> {
+    const tmpDir = await Deno.makeTempDir({ prefix: 'ah-westend-' })
     const runtime = useLiveRuntime
         ? await downloadLiveRuntime(
+            tmpDir,
             Deno.env.get('WESTEND_RPC_URL') ?? WESTEND_ASSET_HUB_RPC,
         )
         : `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
-    const basePath = '/tmp/ah-westend-base.json'
-    const rawPath = '/tmp/ah-westend-raw.json'
+    const basePath = `${tmpDir}/ah-westend-base.json`
+    const rawPath = `${tmpDir}/ah-westend-raw.json`
 
     // Step 1: Generate base chain spec (writes to file via --chain-spec-path)
     console.log('📋 Generating asset-hub-westend chain spec ...')
@@ -271,10 +281,10 @@ async function buildAssetHubWestendSpec(
     baseSpec.genesis.runtimeGenesis ??= {}
     baseSpec.genesis.runtimeGenesis.patch ??= {}
     baseSpec.genesis.runtimeGenesis.patch.sudo = { key: ALICE_SS58 }
-    // Fund alith so eth_accounts[0] has balance.
+    // Fund alith (0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac) so eth_accounts[0] has balance.
     const ALITH_SS58 = '5HYRCKHYJN9z5xUtfFkyMj4JUhsAwWyvuU8vKB1FcnYTf9ZQ'
-    const balances =
-        baseSpec.genesis.runtimeGenesis.patch.balances?.balances ?? []
+    const balances = baseSpec.genesis.runtimeGenesis.patch.balances?.balances ??
+        []
     balances.push([ALITH_SS58, Number.MAX_SAFE_INTEGER])
     baseSpec.genesis.runtimeGenesis.patch.balances = {
         ...baseSpec.genesis.runtimeGenesis.patch.balances,
