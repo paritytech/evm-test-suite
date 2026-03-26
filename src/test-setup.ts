@@ -1,3 +1,4 @@
+import { hexToBytes, toHex } from 'viem/utils'
 import { getRpcUrl, killProcessOnPort, waitForHealth } from './util.ts'
 
 let processes: Deno.ChildProcess[] = []

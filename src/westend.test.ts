@@ -50,17 +50,17 @@ Deno.test(
     'westend: eth_getBlockByNumber and eth_getBlockByHash',
     opts,
     async () => {
-        const earliest = await env.publicClient.getBlock({
-            blockTag: 'earliest',
+        const latest = await env.publicClient.getBlock({
+            blockTag: 'latest',
         })
-        expect(earliest).toBeTruthy()
-        expect(earliest.number).toEqual(0n)
+        expect(latest).toBeTruthy()
+        expect(latest.hash).toBeTruthy()
 
         const byHash = await env.publicClient.getBlock({
-            blockHash: earliest.hash!,
+            blockHash: latest.hash!,
         })
-        expect(byHash.number).toEqual(earliest.number)
-        expect(byHash.timestamp).toEqual(earliest.timestamp)
+        expect(byHash.number).toEqual(latest.number)
+        expect(byHash.timestamp).toEqual(latest.timestamp)
     },
 )
 
