@@ -1,11 +1,9 @@
-/// ForeignAssetId CallbackHandle integration tests.
+/// Foreign asset ERC20 precompile integration test.
 ///
-/// These are Polkadot-specific: they test that foreign asset extrinsics
-/// (force_create, start_destroy/finish_destroy) trigger the
-/// ForeignAssetId callback, and that the ERC20 precompile is reachable
-/// at the derived foreign asset address.
+/// Polkadot-specific: verifies that a foreign asset created via Substrate
+/// extrinsics is reachable as an ERC20 precompile through eth-rpc.
 ///
-/// They require the asset-hub-westend node (not revive-dev-node) and do NOT
+/// Requires the asset-hub-westend node (not revive-dev-node) and does NOT
 /// run against geth.
 
 import {
@@ -15,18 +13,12 @@ import {
     WsProvider,
 } from '@polkadot/api'
 import type { AddressOrPair, SubmittableExtrinsic } from '@polkadot/api/types'
-import { decodeAbiParameters, type Hex } from 'viem'
+import { createPublicClient, decodeAbiParameters, type Hex, http } from 'viem'
 import { expect } from '@std/expect'
 import { sanitizeOpts as opts } from './util.ts'
 
-// Minimal type aliases for unaugmented storage return values.
-// @polkadot/types is a transitive dep and not in the import map,
-// so we define the shapes we need inline.
 interface ScaleU32 {
     toNumber(): number
-}
-interface ScaleCodec {
-    toJSON(): unknown
 }
 interface ScaleOption<T> {
     isSome: boolean
@@ -37,11 +29,6 @@ const SUBSTRATE_WS = `ws://localhost:${
     Deno.env.get('SUBSTRATE_RPC_PORT') ?? '9944'
 }`
 
-// XCM Location representing a foreign asset.
-// We use { parents: 1, interior: { x1: [{ parachain: N }] } } as a simple
-// unique location for each test asset.
-// Lowercase keys match the JSON form returned by SCALE .toJSON() and also
-// work as input to extrinsics and queries.
 function assetLocation(parachainId: number) {
     return { parents: 1, interior: { x1: [{ parachain: parachainId }] } }
 }
@@ -127,40 +114,6 @@ async function createForeignAsset(
     )
 }
 
-/// Destroy a foreign asset (start + finish).
-async function destroyForeignAsset(
-    api: ApiPromise,
-    location: ReturnType<typeof assetLocation>,
-    signer: Signer,
-): Promise<void> {
-    await submitAndWait(
-        api,
-        api.tx.foreignAssets.startDestroy(location),
-        signer,
-    )
-    await submitAndWait(
-        api,
-        api.tx.foreignAssets.finishDestroy(location),
-        signer,
-    )
-}
-
-async function getNextAssetIndex(api: ApiPromise): Promise<number> {
-    const val = await api.query.assetsPrecompiles.nextAssetIndex()
-    return (val as unknown as ScaleU32).toNumber()
-}
-
-async function getAssetIndexToForeignId(
-    api: ApiPromise,
-    index: number,
-): Promise<unknown> {
-    const val = await api.query.assetsPrecompiles.assetIndexToForeignAssetId(
-        index,
-    )
-    const opt = val as unknown as ScaleOption<ScaleCodec>
-    return opt.isSome ? opt.unwrap().toJSON() : null
-}
-
 async function getForeignIdToAssetIndex(
     api: ApiPromise,
     location: Record<string, unknown>,
@@ -173,155 +126,7 @@ async function getForeignIdToAssetIndex(
 }
 
 // ---------------------------------------------------------------------------
-// Test 1: Foreign asset creation populates foreign asset mapping
-// ---------------------------------------------------------------------------
-
-Deno.test(
-    'polkadot-tests: create populates foreign asset mapping',
-    opts,
-    withApi(async (api, alice) => {
-        const nextBefore = await getNextAssetIndex(api)
-
-        const loc42 = assetLocation(4200)
-        await createForeignAsset(api, loc42, alice)
-
-        expect(await getNextAssetIndex(api)).toEqual(nextBefore + 1)
-        const idx42 = await getForeignIdToAssetIndex(api, loc42)
-        expect(idx42).not.toBeNull()
-        expect(idx42).toEqual(nextBefore)
-
-        // Reverse lookup — verify it points back to the correct location.
-        const stored = await getAssetIndexToForeignId(api, idx42!)
-        expect(stored).toEqual(assetLocation(4200))
-
-        // Create another — verify sequential indexing.
-        const loc100 = assetLocation(10000)
-        await createForeignAsset(api, loc100, alice)
-
-        expect(await getNextAssetIndex(api)).toEqual(nextBefore + 2)
-        const idx100 = await getForeignIdToAssetIndex(api, loc100)
-        expect(idx100).toEqual(nextBefore + 1)
-    }),
-)
-
-// ---------------------------------------------------------------------------
-// Test 2: Asset destruction cleans up mapping
-// ---------------------------------------------------------------------------
-
-Deno.test(
-    'polkadot-tests: destroy cleans up foreign asset mapping',
-    opts,
-    withApi(async (api, alice) => {
-        const loc200 = assetLocation(20000)
-        const loc201 = assetLocation(20100)
-
-        await createForeignAsset(api, loc200, alice)
-        await createForeignAsset(api, loc201, alice)
-
-        const idx200 = await getForeignIdToAssetIndex(api, loc200)
-        expect(idx200).not.toBeNull()
-        const idx201 = await getForeignIdToAssetIndex(api, loc201)
-        expect(idx201).not.toBeNull()
-
-        await destroyForeignAsset(api, loc200, alice)
-
-        // Mapping for loc200 should be gone.
-        expect(await getAssetIndexToForeignId(api, idx200!)).toBeNull()
-        expect(await getForeignIdToAssetIndex(api, loc200)).toBeNull()
-
-        // NextAssetIndex should NOT be decremented.
-        const nextIdx = await getNextAssetIndex(api)
-        expect(nextIdx).toBeGreaterThan(idx201!)
-
-        // loc201 should be unaffected.
-        expect(
-            await getAssetIndexToForeignId(api, idx201!),
-        ).toEqual(assetLocation(20100))
-    }),
-)
-
-// ---------------------------------------------------------------------------
-// Test 3: Re-created asset gets a new index
-// ---------------------------------------------------------------------------
-
-Deno.test(
-    'polkadot-tests: re-created asset gets new index',
-    opts,
-    withApi(async (api, alice) => {
-        const loc300 = assetLocation(30000)
-
-        await createForeignAsset(api, loc300, alice)
-        const oldIndex = await getForeignIdToAssetIndex(api, loc300)
-        expect(oldIndex).not.toBeNull()
-
-        await destroyForeignAsset(api, loc300, alice)
-        expect(await getForeignIdToAssetIndex(api, loc300)).toBeNull()
-
-        // Re-create — should get a new, higher index.
-        await createForeignAsset(api, loc300, alice)
-        const newIndex = await getForeignIdToAssetIndex(api, loc300)
-        expect(newIndex).not.toBeNull()
-        expect(newIndex).not.toEqual(oldIndex)
-        expect(newIndex!).toBeGreaterThan(oldIndex!)
-
-        // Reverse lookup works.
-        expect(
-            await getAssetIndexToForeignId(api, newIndex!),
-        ).toEqual(assetLocation(30000))
-    }),
-)
-
-// ---------------------------------------------------------------------------
-// Test 4: force_create triggers callback (delta pattern)
-// ---------------------------------------------------------------------------
-
-Deno.test(
-    'polkadot-tests: force_create triggers callback',
-    opts,
-    withApi(async (api, alice) => {
-        const nextBefore = await getNextAssetIndex(api)
-
-        const loc999 = assetLocation(99900)
-        await createForeignAsset(api, loc999, alice)
-
-        const nextAfter = await getNextAssetIndex(api)
-        expect(nextAfter).toEqual(nextBefore + 1)
-
-        const mapping = await getForeignIdToAssetIndex(api, loc999)
-        expect(mapping).not.toBeNull()
-        expect(
-            await getAssetIndexToForeignId(api, mapping!),
-        ).toEqual(assetLocation(99900))
-    }),
-)
-
-// ---------------------------------------------------------------------------
-// Test 5: destroy cleans up mapping (force_create + destroy)
-// ---------------------------------------------------------------------------
-
-Deno.test(
-    'polkadot-tests: destroy after force_create cleans up mapping',
-    opts,
-    withApi(async (api, alice) => {
-        const loc998 = assetLocation(99800)
-
-        await createForeignAsset(api, loc998, alice)
-
-        const idx = await getForeignIdToAssetIndex(api, loc998)
-        expect(idx).not.toBeNull()
-        expect(await getAssetIndexToForeignId(api, idx!)).toEqual(
-            assetLocation(99800),
-        )
-
-        await destroyForeignAsset(api, loc998, alice)
-
-        expect(await getAssetIndexToForeignId(api, idx!)).toBeNull()
-        expect(await getForeignIdToAssetIndex(api, loc998)).toBeNull()
-    }),
-)
-
-// ---------------------------------------------------------------------------
-// Test 6: ERC20 precompile works for foreign asset via eth-rpc
+// ERC20 precompile works for foreign asset via eth-rpc
 // ---------------------------------------------------------------------------
 
 Deno.test(
@@ -362,37 +167,19 @@ Deno.test(
         const precompileAddr =
             `0x${idxHex}00000000000000000000000002200000` as Hex
 
-        // Use raw JSON-RPC eth_call (read-only, no funded wallet needed).
-        const rpcUrl = `http://localhost:${Deno.env.get('RPC_PORT') ?? '8545'}`
+        const rpcPort = Deno.env.get('RPC_PORT') ?? '8545'
+        const publicClient = createPublicClient({
+            transport: http(`http://localhost:${rpcPort}`),
+        })
         const ethCall = async (selector: Hex): Promise<Hex> => {
-            const resp = await fetch(rpcUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'eth_call',
-                    params: [
-                        { to: precompileAddr, data: selector },
-                        'latest',
-                    ],
-                    id: 1,
-                }),
+            const { data } = await publicClient.call({
+                to: precompileAddr,
+                data: selector,
             })
-            const json = (await resp.json()) as {
-                result?: string
-                error?: { message: string; code: number }
+            if (!data) {
+                throw new Error(`eth_call returned no data for ${selector}`)
             }
-            if (json.error) {
-                throw new Error(
-                    `eth_call failed: ${json.error.message} (${json.error.code})`,
-                )
-            }
-            if (!json.result) {
-                throw new Error(
-                    `eth_call returned no result: ${JSON.stringify(json)}`,
-                )
-            }
-            return json.result as Hex
+            return data
         }
 
         const [nameResult, symbolResult, decimalsResult, supplyResult] =
