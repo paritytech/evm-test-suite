@@ -334,7 +334,18 @@ export function timeout(ms: number) {
 }
 
 // Wait for an Ethereum JSON-RPC endpoint to respond with HTTP 200.
-export function waitForHealth(url: string) {
+export function waitForHealth(
+    url: string,
+    options: {
+        rpcMethod?: string
+        isReady?: (result: unknown) => boolean
+        timeout?: number
+    } = {},
+) {
+    const method = options.rpcMethod ?? 'eth_syncing'
+    const timeout = options.timeout ?? 120_000
+    const isReady = options.isReady ?? ((result: unknown) => result === false)
+
     return new Promise<void>((resolve, reject) => {
         const start = Date.now()
         const interval = setInterval(async () => {
@@ -346,7 +357,7 @@ export function waitForHealth(url: string) {
                     },
                     body: JSON.stringify({
                         jsonrpc: '2.0',
-                        method: 'eth_syncing',
+                        method,
                         params: [],
                         id: 1,
                     }),
@@ -356,54 +367,20 @@ export function waitForHealth(url: string) {
                     return
                 }
 
-                clearInterval(interval)
-                resolve()
-            } catch (_err) {
-                const elapsed = Date.now() - start
-                if (elapsed > 60_000) {
-                    clearInterval(interval)
-                    reject(new Error('hit timeout'))
-                }
-            }
-        }, 1000)
-    })
-}
-
-// Wait for a Substrate node to be ready via system_health RPC.
-// Unlike waitForHealth, this uses a Substrate-native method and validates
-// the JSON-RPC response body (not just HTTP status).
-export function waitForSubstrateHealth(url: string) {
-    return new Promise<void>((resolve, reject) => {
-        const start = Date.now()
-        const interval = setInterval(async () => {
-            try {
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'system_health',
-                        params: [],
-                        id: 1,
-                    }),
-                })
                 const json = (await res.json()) as {
-                    result?: { isSyncing: boolean }
-                    error?: { code: number; message: string }
+                    result?: unknown
                 }
-                if (json.result && !json.result.isSyncing) {
+                if (isReady(json.result)) {
                     clearInterval(interval)
                     resolve()
                 }
             } catch (_err) {
                 const elapsed = Date.now() - start
-                if (elapsed > 120_000) {
+                if (elapsed > timeout) {
                     clearInterval(interval)
                     reject(
                         new Error(
-                            `substrate node health check timed out after 120s (${url})`,
+                            `health check timed out after ${timeout / 1000}s (${url})`,
                         ),
                     )
                 }
