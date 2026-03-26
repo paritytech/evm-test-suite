@@ -47,20 +47,22 @@ function assetLocation(parachainId: number) {
 }
 
 /// Connect to the substrate node and run a callback with the API and Alice signer.
-async function withApi(
+function withApi(
     fn: (
         api: ApiPromise,
         alice: ReturnType<Keyring['addFromUri']>,
     ) => Promise<void>,
-): Promise<void> {
-    const provider = new WsProvider(SUBSTRATE_WS)
-    const api = await ApiPromise.create({ provider })
-    const keyring = new Keyring({ type: 'sr25519' })
-    const alice = keyring.addFromUri('//Alice')
-    try {
-        await fn(api, alice)
-    } finally {
-        await api.disconnect()
+): () => Promise<void> {
+    return async () => {
+        const provider = new WsProvider(SUBSTRATE_WS)
+        const api = await ApiPromise.create({ provider })
+        const keyring = new Keyring({ type: 'sr25519' })
+        const alice = keyring.addFromUri('//Alice')
+        try {
+            await fn(api, alice)
+        } finally {
+            await api.disconnect()
+        }
     }
 }
 
@@ -103,6 +105,46 @@ function submitAndWait(
     })
 }
 
+type Signer = ReturnType<Keyring['addFromUri']>
+
+/// Create a foreign asset via sudo (ForceOrigin required).
+async function createForeignAsset(
+    api: ApiPromise,
+    location: ReturnType<typeof assetLocation>,
+    signer: Signer,
+): Promise<void> {
+    await submitAndWait(
+        api,
+        api.tx.sudo.sudo(
+            api.tx.foreignAssets.forceCreate(
+                location,
+                signer.address,
+                false,
+                1,
+            ),
+        ),
+        signer,
+    )
+}
+
+/// Destroy a foreign asset (start + finish).
+async function destroyForeignAsset(
+    api: ApiPromise,
+    location: ReturnType<typeof assetLocation>,
+    signer: Signer,
+): Promise<void> {
+    await submitAndWait(
+        api,
+        api.tx.foreignAssets.startDestroy(location),
+        signer,
+    )
+    await submitAndWait(
+        api,
+        api.tx.foreignAssets.finishDestroy(location),
+        signer,
+    )
+}
+
 async function getNextAssetIndex(api: ApiPromise): Promise<number> {
     const val = await api.query.assetsPrecompiles.nextAssetIndex()
     return (val as unknown as ScaleU32).toNumber()
@@ -137,53 +179,29 @@ async function getForeignIdToAssetIndex(
 Deno.test(
     'polkadot-tests: create populates foreign asset mapping',
     opts,
-    () =>
-        withApi(async (api, alice) => {
-            const nextBefore = await getNextAssetIndex(api)
+    withApi(async (api, alice) => {
+        const nextBefore = await getNextAssetIndex(api)
 
-            const loc42 = assetLocation(4200)
-            // Foreign assets require ForceOrigin (root) to create.
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc42,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
+        const loc42 = assetLocation(4200)
+        await createForeignAsset(api, loc42, alice)
 
-            expect(await getNextAssetIndex(api)).toEqual(nextBefore + 1)
-            const idx42 = await getForeignIdToAssetIndex(api, loc42)
-            expect(idx42).not.toBeNull()
-            expect(idx42).toEqual(nextBefore)
+        expect(await getNextAssetIndex(api)).toEqual(nextBefore + 1)
+        const idx42 = await getForeignIdToAssetIndex(api, loc42)
+        expect(idx42).not.toBeNull()
+        expect(idx42).toEqual(nextBefore)
 
-            // Reverse lookup — verify it points back to the correct location.
-            const stored = await getAssetIndexToForeignId(api, idx42!)
-            expect(stored).toEqual(assetLocation(4200))
+        // Reverse lookup — verify it points back to the correct location.
+        const stored = await getAssetIndexToForeignId(api, idx42!)
+        expect(stored).toEqual(assetLocation(4200))
 
-            // Create another — verify sequential indexing.
-            const loc100 = assetLocation(10000)
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc100,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
+        // Create another — verify sequential indexing.
+        const loc100 = assetLocation(10000)
+        await createForeignAsset(api, loc100, alice)
 
-            expect(await getNextAssetIndex(api)).toEqual(nextBefore + 2)
-            const idx100 = await getForeignIdToAssetIndex(api, loc100)
-            expect(idx100).toEqual(nextBefore + 1)
-        }),
+        expect(await getNextAssetIndex(api)).toEqual(nextBefore + 2)
+        const idx100 = await getForeignIdToAssetIndex(api, loc100)
+        expect(idx100).toEqual(nextBefore + 1)
+    }),
 )
 
 // ---------------------------------------------------------------------------
@@ -193,66 +211,33 @@ Deno.test(
 Deno.test(
     'polkadot-tests: destroy cleans up foreign asset mapping',
     opts,
-    () =>
-        withApi(async (api, alice) => {
-            const loc200 = assetLocation(20000)
-            const loc201 = assetLocation(20100)
+    withApi(async (api, alice) => {
+        const loc200 = assetLocation(20000)
+        const loc201 = assetLocation(20100)
 
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc200,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc201,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
+        await createForeignAsset(api, loc200, alice)
+        await createForeignAsset(api, loc201, alice)
 
-            const idx200 = await getForeignIdToAssetIndex(api, loc200)
-            expect(idx200).not.toBeNull()
-            const idx201 = await getForeignIdToAssetIndex(api, loc201)
-            expect(idx201).not.toBeNull()
+        const idx200 = await getForeignIdToAssetIndex(api, loc200)
+        expect(idx200).not.toBeNull()
+        const idx201 = await getForeignIdToAssetIndex(api, loc201)
+        expect(idx201).not.toBeNull()
 
-            // Destroy asset loc200.
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.startDestroy(loc200),
-                alice,
-            )
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.finishDestroy(loc200),
-                alice,
-            )
+        await destroyForeignAsset(api, loc200, alice)
 
-            // Mapping for loc200 should be gone.
-            expect(await getAssetIndexToForeignId(api, idx200!)).toBeNull()
-            expect(await getForeignIdToAssetIndex(api, loc200)).toBeNull()
+        // Mapping for loc200 should be gone.
+        expect(await getAssetIndexToForeignId(api, idx200!)).toBeNull()
+        expect(await getForeignIdToAssetIndex(api, loc200)).toBeNull()
 
-            // NextAssetIndex should NOT be decremented.
-            const nextIdx = await getNextAssetIndex(api)
-            expect(nextIdx).toBeGreaterThan(idx201!)
+        // NextAssetIndex should NOT be decremented.
+        const nextIdx = await getNextAssetIndex(api)
+        expect(nextIdx).toBeGreaterThan(idx201!)
 
-            // loc201 should be unaffected.
-            expect(
-                await getAssetIndexToForeignId(api, idx201!),
-            ).toEqual(assetLocation(20100))
-        }),
+        // loc201 should be unaffected.
+        expect(
+            await getAssetIndexToForeignId(api, idx201!),
+        ).toEqual(assetLocation(20100))
+    }),
 )
 
 // ---------------------------------------------------------------------------
@@ -262,61 +247,28 @@ Deno.test(
 Deno.test(
     'polkadot-tests: re-created asset gets new index',
     opts,
-    () =>
-        withApi(async (api, alice) => {
-            const loc300 = assetLocation(30000)
+    withApi(async (api, alice) => {
+        const loc300 = assetLocation(30000)
 
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc300,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
-            const oldIndex = await getForeignIdToAssetIndex(api, loc300)
-            expect(oldIndex).not.toBeNull()
+        await createForeignAsset(api, loc300, alice)
+        const oldIndex = await getForeignIdToAssetIndex(api, loc300)
+        expect(oldIndex).not.toBeNull()
 
-            // Destroy it.
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.startDestroy(loc300),
-                alice,
-            )
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.finishDestroy(loc300),
-                alice,
-            )
-            expect(await getForeignIdToAssetIndex(api, loc300)).toBeNull()
+        await destroyForeignAsset(api, loc300, alice)
+        expect(await getForeignIdToAssetIndex(api, loc300)).toBeNull()
 
-            // Re-create — should get a new, higher index.
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc300,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
-            const newIndex = await getForeignIdToAssetIndex(api, loc300)
-            expect(newIndex).not.toBeNull()
-            expect(newIndex).not.toEqual(oldIndex)
-            expect(newIndex!).toBeGreaterThan(oldIndex!)
+        // Re-create — should get a new, higher index.
+        await createForeignAsset(api, loc300, alice)
+        const newIndex = await getForeignIdToAssetIndex(api, loc300)
+        expect(newIndex).not.toBeNull()
+        expect(newIndex).not.toEqual(oldIndex)
+        expect(newIndex!).toBeGreaterThan(oldIndex!)
 
-            // Reverse lookup works.
-            expect(
-                await getAssetIndexToForeignId(api, newIndex!),
-            ).toEqual(assetLocation(30000))
-        }),
+        // Reverse lookup works.
+        expect(
+            await getAssetIndexToForeignId(api, newIndex!),
+        ).toEqual(assetLocation(30000))
+    }),
 )
 
 // ---------------------------------------------------------------------------
@@ -326,33 +278,21 @@ Deno.test(
 Deno.test(
     'polkadot-tests: force_create triggers callback',
     opts,
-    () =>
-        withApi(async (api, alice) => {
-            const nextBefore = await getNextAssetIndex(api)
+    withApi(async (api, alice) => {
+        const nextBefore = await getNextAssetIndex(api)
 
-            const loc999 = assetLocation(99900)
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc999,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
+        const loc999 = assetLocation(99900)
+        await createForeignAsset(api, loc999, alice)
 
-            const nextAfter = await getNextAssetIndex(api)
-            expect(nextAfter).toEqual(nextBefore + 1)
+        const nextAfter = await getNextAssetIndex(api)
+        expect(nextAfter).toEqual(nextBefore + 1)
 
-            const mapping = await getForeignIdToAssetIndex(api, loc999)
-            expect(mapping).not.toBeNull()
-            expect(
-                await getAssetIndexToForeignId(api, mapping!),
-            ).toEqual(assetLocation(99900))
-        }),
+        const mapping = await getForeignIdToAssetIndex(api, loc999)
+        expect(mapping).not.toBeNull()
+        expect(
+            await getAssetIndexToForeignId(api, mapping!),
+        ).toEqual(assetLocation(99900))
+    }),
 )
 
 // ---------------------------------------------------------------------------
@@ -362,44 +302,22 @@ Deno.test(
 Deno.test(
     'polkadot-tests: destroy after force_create cleans up mapping',
     opts,
-    () =>
-        withApi(async (api, alice) => {
-            const loc998 = assetLocation(99800)
+    withApi(async (api, alice) => {
+        const loc998 = assetLocation(99800)
 
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc998,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
+        await createForeignAsset(api, loc998, alice)
 
-            const idx = await getForeignIdToAssetIndex(api, loc998)
-            expect(idx).not.toBeNull()
-            expect(await getAssetIndexToForeignId(api, idx!)).toEqual(
-                assetLocation(99800),
-            )
+        const idx = await getForeignIdToAssetIndex(api, loc998)
+        expect(idx).not.toBeNull()
+        expect(await getAssetIndexToForeignId(api, idx!)).toEqual(
+            assetLocation(99800),
+        )
 
-            // Destroy it.
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.startDestroy(loc998),
-                alice,
-            )
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.finishDestroy(loc998),
-                alice,
-            )
+        await destroyForeignAsset(api, loc998, alice)
 
-            expect(await getAssetIndexToForeignId(api, idx!)).toBeNull()
-            expect(await getForeignIdToAssetIndex(api, loc998)).toBeNull()
-        }),
+        expect(await getAssetIndexToForeignId(api, idx!)).toBeNull()
+        expect(await getForeignIdToAssetIndex(api, loc998)).toBeNull()
+    }),
 )
 
 // ---------------------------------------------------------------------------
@@ -409,123 +327,111 @@ Deno.test(
 Deno.test(
     'polkadot-tests: ERC20 precompile works for foreign asset',
     opts,
-    () =>
-        withApi(async (api, alice) => {
-            const loc500 = assetLocation(50000)
+    withApi(async (api, alice) => {
+        const loc500 = assetLocation(50000)
 
-            // Create foreign asset with metadata and mint tokens.
-            await submitAndWait(
-                api,
-                api.tx.sudo.sudo(
-                    api.tx.foreignAssets.forceCreate(
-                        loc500,
-                        alice.address,
-                        false,
-                        1,
-                    ),
-                ),
-                alice,
-            )
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.setMetadata(
-                    loc500,
-                    'Test Token',
-                    'TST',
-                    18,
-                ),
-                alice,
-            )
-            await submitAndWait(
-                api,
-                api.tx.foreignAssets.mint(
-                    loc500,
-                    alice.address,
-                    '1000000000000000000000',
-                ),
-                alice,
-            )
+        // Create foreign asset with metadata and mint tokens.
+        await createForeignAsset(api, loc500, alice)
+        await submitAndWait(
+            api,
+            api.tx.foreignAssets.setMetadata(
+                loc500,
+                'Test Token',
+                'TST',
+                18,
+            ),
+            alice,
+        )
+        await submitAndWait(
+            api,
+            api.tx.foreignAssets.mint(
+                loc500,
+                alice.address,
+                '1000000000000000000000',
+            ),
+            alice,
+        )
 
-            const index = await getForeignIdToAssetIndex(api, loc500)
-            expect(index).not.toBeNull()
+        const index = await getForeignIdToAssetIndex(api, loc500)
+        expect(index).not.toBeNull()
 
-            // Foreign assets use ForeignIdConfig<0x220>.
-            // The precompile address encodes the sequential index, not the Location.
-            // Layout: prefix 0x0220 at bytes 16-17, index at bytes 0-3.
-            const idxHex = index!.toString(16).padStart(8, '0')
-            const precompileAddr =
-                `0x${idxHex}00000000000000000000000002200000` as Hex
+        // Foreign assets use ForeignIdConfig<0x220>.
+        // The precompile address encodes the sequential index, not the Location.
+        // Layout: prefix 0x0220 at bytes 16-17, index at bytes 0-3.
+        const idxHex = index!.toString(16).padStart(8, '0')
+        const precompileAddr =
+            `0x${idxHex}00000000000000000000000002200000` as Hex
 
-            // Use raw JSON-RPC eth_call (read-only, no funded wallet needed).
-            const rpcUrl = `http://localhost:${
-                Deno.env.get('RPC_PORT') ?? '8545'
-            }`
-            const ethCall = async (selector: Hex): Promise<Hex> => {
-                const resp = await fetch(rpcUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'eth_call',
-                        params: [
-                            { to: precompileAddr, data: selector },
-                            'latest',
-                        ],
-                        id: 1,
-                    }),
-                })
-                const json = (await resp.json()) as {
-                    result?: string
-                    error?: { message: string; code: number }
-                }
-                if (json.error) {
-                    throw new Error(
-                        `eth_call failed: ${json.error.message} (${json.error.code})`,
-                    )
-                }
-                if (!json.result) {
-                    throw new Error(
-                        `eth_call returned no result: ${JSON.stringify(json)}`,
-                    )
-                }
-                return json.result as Hex
+        // Use raw JSON-RPC eth_call (read-only, no funded wallet needed).
+        const rpcUrl = `http://localhost:${Deno.env.get('RPC_PORT') ?? '8545'}`
+        const ethCall = async (selector: Hex): Promise<Hex> => {
+            const resp = await fetch(rpcUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'eth_call',
+                    params: [
+                        { to: precompileAddr, data: selector },
+                        'latest',
+                    ],
+                    id: 1,
+                }),
+            })
+            const json = (await resp.json()) as {
+                result?: string
+                error?: { message: string; code: number }
             }
-
-            const [nameResult, symbolResult, decimalsResult, supplyResult] =
-                await Promise.all([
-                    ethCall('0x06fdde03'), // name()
-                    ethCall('0x95d89b41'), // symbol()
-                    ethCall('0x313ce567'), // decimals()
-                    ethCall('0x18160ddd'), // totalSupply()
-                ])
-
-            // Sanity-check that the precompile address is correct and returned data.
-            for (const r of [nameResult, symbolResult, decimalsResult, supplyResult]) {
-                expect(r).not.toEqual('0x')
+            if (json.error) {
+                throw new Error(
+                    `eth_call failed: ${json.error.message} (${json.error.code})`,
+                )
             }
+            if (!json.result) {
+                throw new Error(
+                    `eth_call returned no result: ${JSON.stringify(json)}`,
+                )
+            }
+            return json.result as Hex
+        }
 
-            const [name] = decodeAbiParameters(
-                [{ type: 'string' }],
-                nameResult,
-            )
-            expect(name).toEqual('Test Token')
+        const [nameResult, symbolResult, decimalsResult, supplyResult] =
+            await Promise.all([
+                ethCall('0x06fdde03'), // name()
+                ethCall('0x95d89b41'), // symbol()
+                ethCall('0x313ce567'), // decimals()
+                ethCall('0x18160ddd'), // totalSupply()
+            ])
 
-            const [symbol] = decodeAbiParameters(
-                [{ type: 'string' }],
-                symbolResult,
-            )
-            expect(symbol).toEqual('TST')
+        // Sanity-check that the precompile address is correct and returned data.
+        for (
+            const r of [nameResult, symbolResult, decimalsResult, supplyResult]
+        ) {
+            expect(r).not.toEqual('0x')
+        }
 
-            const [decimals] = decodeAbiParameters(
-                [{ type: 'uint8' }],
-                decimalsResult,
-            )
-            expect(Number(decimals)).toEqual(18)
+        const [name] = decodeAbiParameters(
+            [{ type: 'string' }],
+            nameResult,
+        )
+        expect(name).toEqual('Test Token')
 
-            const [supply] = decodeAbiParameters(
-                [{ type: 'uint256' }],
-                supplyResult,
-            )
-            expect(supply > 0n).toBe(true)
-        }),
+        const [symbol] = decodeAbiParameters(
+            [{ type: 'string' }],
+            symbolResult,
+        )
+        expect(symbol).toEqual('TST')
+
+        const [decimals] = decodeAbiParameters(
+            [{ type: 'uint8' }],
+            decimalsResult,
+        )
+        expect(Number(decimals)).toEqual(18)
+
+        const [supply] = decodeAbiParameters(
+            [{ type: 'uint256' }],
+            supplyResult,
+        )
+        expect(supply > 0n).toBe(true)
+    }),
 )
