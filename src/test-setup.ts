@@ -1,6 +1,7 @@
 import { getRpcUrl, killProcessOnPort, waitForHealth } from './util.ts'
 
 let processes: Deno.ChildProcess[] = []
+let tmpDirs: string[] = []
 let setupComplete = false
 
 async function detectAndSetPlatform(url: string) {
@@ -151,7 +152,7 @@ export async function setupTests() {
 }
 
 export function cleanupTests() {
-    if (processes.length === 0) {
+    if (processes.length === 0 && tmpDirs.length === 0) {
         return
     }
     console.log('🔌 Shutting down servers...')
@@ -162,7 +163,15 @@ export function cleanupTests() {
             // Process might already be dead
         }
     }
+    for (const dir of tmpDirs) {
+        try {
+            Deno.removeSync(dir, { recursive: true })
+        } catch {
+            // Directory might already be gone
+        }
+    }
     processes = []
+    tmpDirs = []
 }
 
 // ---------------------------------------------------------------------------
@@ -214,6 +223,7 @@ async function downloadLiveRuntime(
     const resp = await fetch(rpcUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(120_000 /* 2 min */),
         body: JSON.stringify({
             jsonrpc: '2.0',
             method: 'state_getStorage',
@@ -247,6 +257,7 @@ async function buildAssetHubWestendSpec(
     useLiveRuntime = false,
 ): Promise<string> {
     const tmpDir = await Deno.makeTempDir({ prefix: 'ah-westend-' })
+    tmpDirs.push(tmpDir)
     const runtime = useLiveRuntime
         ? await downloadLiveRuntime(
             tmpDir,

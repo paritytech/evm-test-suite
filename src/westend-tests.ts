@@ -1,7 +1,5 @@
-// Entry point for Westend live network tests.
-// These tests run stateless RPC queries against eth-rpc connected to
-// the live Westend asset-hub, validating runtime API compatibility.
-//
+// Westend live runtime smoke tests — validates eth-rpc requests
+// against the live Westend asset-hub runtime.
 // Run with: deno task test:westend
 
 import { cleanupTests, setupTests } from './test-setup.ts'
