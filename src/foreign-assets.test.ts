@@ -38,15 +38,11 @@ const SUBSTRATE_WS = `ws://localhost:${
 }`
 
 // XCM Location representing a foreign asset.
-// We use { parents: 1, interior: { X1: [{ Parachain: N }] } } as a simple
+// We use { parents: 1, interior: { x1: [{ parachain: N }] } } as a simple
 // unique location for each test asset.
+// Lowercase keys match the JSON form returned by SCALE .toJSON() and also
+// work as input to extrinsics and queries.
 function assetLocation(parachainId: number) {
-    return { parents: 1, interior: { X1: [{ Parachain: parachainId }] } }
-}
-
-// .toJSON() on SCALE-encoded XCM Locations lowercases keys (x1, parachain).
-// This returns the expected JSON form for use with toEqual().
-function assetLocationJson(parachainId: number) {
     return { parents: 1, interior: { x1: [{ parachain: parachainId }] } }
 }
 
@@ -167,7 +163,7 @@ Deno.test(
 
             // Reverse lookup — verify it points back to the correct location.
             const stored = await getAssetIndexToForeignId(api, idx42!)
-            expect(stored).toEqual(assetLocationJson(4200))
+            expect(stored).toEqual(assetLocation(4200))
 
             // Create another — verify sequential indexing.
             const loc100 = assetLocation(10000)
@@ -255,7 +251,7 @@ Deno.test(
             // loc201 should be unaffected.
             expect(
                 await getAssetIndexToForeignId(api, idx201!),
-            ).toEqual(assetLocationJson(20100))
+            ).toEqual(assetLocation(20100))
         }),
 )
 
@@ -319,7 +315,7 @@ Deno.test(
             // Reverse lookup works.
             expect(
                 await getAssetIndexToForeignId(api, newIndex!),
-            ).toEqual(assetLocationJson(30000))
+            ).toEqual(assetLocation(30000))
         }),
 )
 
@@ -355,7 +351,7 @@ Deno.test(
             expect(mapping).not.toBeNull()
             expect(
                 await getAssetIndexToForeignId(api, mapping!),
-            ).toEqual(assetLocationJson(99900))
+            ).toEqual(assetLocation(99900))
         }),
 )
 
@@ -386,7 +382,7 @@ Deno.test(
             const idx = await getForeignIdToAssetIndex(api, loc998)
             expect(idx).not.toBeNull()
             expect(await getAssetIndexToForeignId(api, idx!)).toEqual(
-                assetLocationJson(99800),
+                assetLocation(99800),
             )
 
             // Destroy it.
