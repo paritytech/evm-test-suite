@@ -129,13 +129,10 @@ export async function setupTests() {
         ]
 
         await killProcessOnPort(8545)
-        const defaultProfile = Deno.env.get('START_ASSET_HUB_WESTEND')
-            ? 'release'
-            : 'debug'
         const ethRpcPath = Deno.env.get('ETH_RPC_PATH') ??
             `${
                 Deno.env.get('HOME')
-            }/polkadot-sdk/target/${defaultProfile}/eth-rpc`
+            }/polkadot-sdk/target/debug/eth-rpc`
         console.log('🚀 Start eth-rpc ...')
         const ethRpcProcess = new Deno.Command(ethRpcPath, {
             args: ethRpcArgs,
