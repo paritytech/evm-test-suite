@@ -13,8 +13,9 @@ import {
     WsProvider,
 } from '@polkadot/api'
 import type { AddressOrPair, SubmittableExtrinsic } from '@polkadot/api/types'
-import { createPublicClient, decodeAbiParameters, type Hex, http } from 'viem'
+import { createPublicClient, type Hex, http } from 'viem'
 import { expect } from '@std/expect'
+import { ERC20Abi } from '../codegen/abi/ERC20.ts'
 import { sanitizeOpts as opts } from './util.ts'
 
 interface ScaleU32 {
@@ -171,54 +172,23 @@ Deno.test(
         const publicClient = createPublicClient({
             transport: http(`http://localhost:${rpcPort}`),
         })
-        const ethCall = async (selector: Hex): Promise<Hex> => {
-            const { data } = await publicClient.call({
-                to: precompileAddr,
-                data: selector,
+        const read = (functionName: 'name' | 'symbol' | 'decimals' | 'totalSupply') =>
+            publicClient.readContract({
+                address: precompileAddr,
+                abi: ERC20Abi,
+                functionName,
             })
-            if (!data) {
-                throw new Error(`eth_call returned no data for ${selector}`)
-            }
-            return data
-        }
 
-        const [nameResult, symbolResult, decimalsResult, supplyResult] =
-            await Promise.all([
-                ethCall('0x06fdde03'), // name()
-                ethCall('0x95d89b41'), // symbol()
-                ethCall('0x313ce567'), // decimals()
-                ethCall('0x18160ddd'), // totalSupply()
-            ])
+        const [name, symbol, decimals, totalSupply] = await Promise.all([
+            read('name'),
+            read('symbol'),
+            read('decimals'),
+            read('totalSupply'),
+        ])
 
-        // Sanity-check that the precompile address is correct and returned data.
-        for (
-            const r of [nameResult, symbolResult, decimalsResult, supplyResult]
-        ) {
-            expect(r).not.toEqual('0x')
-        }
-
-        const [name] = decodeAbiParameters(
-            [{ type: 'string' }],
-            nameResult,
-        )
         expect(name).toEqual('Test Token')
-
-        const [symbol] = decodeAbiParameters(
-            [{ type: 'string' }],
-            symbolResult,
-        )
         expect(symbol).toEqual('TST')
-
-        const [decimals] = decodeAbiParameters(
-            [{ type: 'uint8' }],
-            decimalsResult,
-        )
         expect(Number(decimals)).toEqual(18)
-
-        const [supply] = decodeAbiParameters(
-            [{ type: 'uint256' }],
-            supplyResult,
-        )
-        expect(supply > 0n).toBe(true)
+        expect((totalSupply as bigint) > 0n).toBe(true)
     }),
 )
