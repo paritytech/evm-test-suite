@@ -172,12 +172,13 @@ Deno.test(
         const publicClient = createPublicClient({
             transport: http(`http://localhost:${rpcPort}`),
         })
-        const read = (functionName: 'name' | 'symbol' | 'decimals' | 'totalSupply') =>
-            publicClient.readContract({
-                address: precompileAddr,
-                abi: ERC20Abi,
-                functionName,
-            })
+        const read = (
+            functionName: 'name' | 'symbol' | 'decimals' | 'totalSupply',
+        ) => publicClient.readContract({
+            address: precompileAddr,
+            abi: ERC20Abi,
+            functionName,
+        })
 
         const [name, symbol, decimals, totalSupply] = await Promise.all([
             read('name'),

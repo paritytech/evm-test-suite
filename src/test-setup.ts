@@ -1,7 +1,4 @@
-import {
-    killProcessOnPort,
-    waitForHealth,
-} from './util.ts'
+import { killProcessOnPort, waitForHealth } from './util.ts'
 
 let processes: Deno.ChildProcess[] = []
 let setupComplete = false
@@ -135,9 +132,7 @@ export async function setupTests() {
 
         await killProcessOnPort(8545)
         const ethRpcPath = Deno.env.get('ETH_RPC_PATH') ??
-            `${
-                Deno.env.get('HOME')
-            }/polkadot-sdk/target/debug/eth-rpc`
+            `${Deno.env.get('HOME')}/polkadot-sdk/target/debug/eth-rpc`
         console.log('🚀 Start eth-rpc ...')
         const ethRpcProcess = new Deno.Command(ethRpcPath, {
             args: ethRpcArgs,
@@ -259,7 +254,9 @@ async function buildAssetHubWestendSpec(
     const spec = JSON.parse(rawSpec)
     const RELAY_BLOCK_TIME_MS = 6000
     const SAFETY_OFFSET_MS = 2 * 3600_000 // Start 2h behind "now" to avoid future-block issues
-    const relayBlock = Math.floor((Date.now() - SAFETY_OFFSET_MS) / RELAY_BLOCK_TIME_MS)
+    const relayBlock = Math.floor(
+        (Date.now() - SAFETY_OFFSET_MS) / RELAY_BLOCK_TIME_MS,
+    )
     const value = u32ToLeHex(relayBlock)
     spec.genesis.raw.top[SCHEDULER_INCOMPLETE_SINCE] = value
     spec.genesis.raw.top[PARACHAIN_LAST_RELAY_BLOCK] = value

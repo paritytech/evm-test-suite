@@ -380,7 +380,9 @@ export function waitForHealth(
                     clearInterval(interval)
                     reject(
                         new Error(
-                            `health check timed out after ${timeout / 1000}s (${url})`,
+                            `health check timed out after ${
+                                timeout / 1000
+                            }s (${url})`,
                         ),
                     )
                 }
