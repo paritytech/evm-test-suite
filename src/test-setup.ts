@@ -76,7 +76,12 @@ export async function setupTests() {
             `${Deno.env.get('HOME')}/polkadot-sdk`
         const omniNode = Deno.env.get('OMNI_NODE_PATH') ??
             `${sdkDir}/target/release/polkadot-omni-node`
-        const chainSpec = await buildAssetHubWestendSpec(sdkDir, omniNode)
+        const useLiveRuntime = !!Deno.env.get('USE_LIVE_RUNTIME')
+        const chainSpec = await buildAssetHubWestendSpec(
+            sdkDir,
+            omniNode,
+            useLiveRuntime,
+        )
 
         const nodeArgs = [
             '--dev',
@@ -198,12 +203,46 @@ async function runCommand(
     return new TextDecoder().decode(output.stdout)
 }
 
+const WESTEND_ASSET_HUB_RPC = 'https://westend-asset-hub-rpc.polkadot.io'
+const CODE_STORAGE_KEY = toHex(':code')
+
+async function downloadLiveRuntime(rpcUrl: string): Promise<string> {
+    console.log(`📦 Downloading runtime from ${rpcUrl} ...`)
+    const resp = await fetch(rpcUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'state_getStorage',
+            params: [CODE_STORAGE_KEY],
+            id: 1,
+        }),
+    })
+    const { result } = (await resp.json()) as { result: string }
+    if (!result || result === '0x') {
+        throw new Error('Failed to fetch runtime wasm from live network')
+    }
+    const runtimeCode = hexToBytes(result as `0x${string}`)
+    const path = '/tmp/westend-asset-hub-runtime.wasm'
+    await Deno.writeFile(path, runtimeCode)
+    console.log(
+        `📦 Runtime downloaded (${
+            (runtimeCode.length / 1024 / 1024).toFixed(1)
+        } MB)`,
+    )
+    return path
+}
+
 async function buildAssetHubWestendSpec(
     sdkDir: string,
     omniNode: string,
+    useLiveRuntime = false,
 ): Promise<string> {
-    const runtime =
-        `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
+    const runtime = useLiveRuntime
+        ? await downloadLiveRuntime(
+            Deno.env.get('WESTEND_RPC_URL') ?? WESTEND_ASSET_HUB_RPC,
+        )
+        : `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
     const basePath = '/tmp/ah-westend-base.json'
     const rawPath = '/tmp/ah-westend-raw.json'
 

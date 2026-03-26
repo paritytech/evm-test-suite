@@ -49,14 +49,17 @@ Deno.test('westend: eth_getBalance', opts, async () => {
 Deno.test('westend: eth_getBlockByNumber (latest)', opts, async () => {
     const block = await env.publicClient.getBlock({ blockTag: 'latest' })
     expect(block).toBeTruthy()
-    expect(block.number).toBeTruthy()
+    expect(typeof block.number).toEqual('bigint')
     expect(block.hash).toBeTruthy()
-    expect(block.timestamp).toBeTruthy()
+    expect(typeof block.timestamp).toEqual('bigint')
 })
 
 Deno.test(
     'westend: eth_getBlockByNumber (known block)',
-    opts,
+    {
+        ...opts,
+        ignore: !!Deno.env.get('START_ASSET_HUB_WESTEND'),
+    },
     async () => {
         const block = await env.publicClient.getBlock({
             blockNumber: REVIVE_DEPLOY_BLOCK,
@@ -119,8 +122,9 @@ Deno.test('westend: eth_getStorageAt', opts, async () => {
 
 Deno.test('westend: eth_getLogs', opts, async () => {
     const latest = await env.publicClient.getBlockNumber()
+    const fromBlock = latest > 10n ? latest - 10n : 0n
     const logs = await env.publicClient.getLogs({
-        fromBlock: latest - 10n,
+        fromBlock,
         toBlock: latest,
     })
     expect(Array.isArray(logs)).toBe(true)
