@@ -18,7 +18,7 @@
         "test:update": "deno task build --solcOnly && USE_BYTECODE=evm START_GETH=true deno test -P -- --update",
         "test:polkadot": "USE_BYTECODE=evm START_ASSET_HUB_WESTEND=true START_ETH_RPC=true deno test -P src/polkadot-tests.ts",
         "test:polkadot:manual": "USE_BYTECODE=evm deno test -P src/polkadot-tests.ts",
-        "lint": "deno fmt --check && deno lint"
+        "lint": "deno fmt --check && deno task build && deno check && deno lint"
     },
     "test": {
         "include": ["src/all-tests.ts"]
