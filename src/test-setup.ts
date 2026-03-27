@@ -180,6 +180,7 @@ export function cleanupTests() {
 const SCHEDULER_INCOMPLETE_SINCE =
     '0x3db7a24cfdc9de785974746c14a99df9f7be9b0bf16f84e559a58101c891d523'
 //   twox128("ParachainSystem") ++ twox128("LastRelayChainBlockNumber")
+// TODO: no longer necessary if this issue gets fixed: https://github.com/paritytech/polkadot-sdk/pull/10807#issuecomment-3966008358
 const PARACHAIN_LAST_RELAY_BLOCK =
     '0x45323df7cc47150b3930e2666b0aa313a2bca190d36bd834cc73a38fc213ecbd'
 
