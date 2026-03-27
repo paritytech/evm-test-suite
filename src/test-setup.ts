@@ -213,13 +213,11 @@ async function runCommand(
     return new TextDecoder().decode(output.stdout)
 }
 
-const WESTEND_ASSET_HUB_RPC = 'https://westend-asset-hub-rpc.polkadot.io'
-const CODE_STORAGE_KEY = toHex(':code')
-
 async function downloadLiveRuntime(
     tmpDir: string,
     rpcUrl: string,
 ): Promise<string> {
+    const codeStorageKey = toHex(':code')
     console.log(`📦 Downloading runtime from ${rpcUrl} ...`)
     const resp = await fetch(rpcUrl, {
         method: 'POST',
@@ -228,7 +226,7 @@ async function downloadLiveRuntime(
         body: JSON.stringify({
             jsonrpc: '2.0',
             method: 'state_getStorage',
-            params: [CODE_STORAGE_KEY],
+            params: [codeStorageKey],
             id: 1,
         }),
     })
@@ -262,7 +260,8 @@ async function buildAssetHubWestendSpec(
     const runtime = useLiveRuntime
         ? await downloadLiveRuntime(
             tmpDir,
-            Deno.env.get('WESTEND_RPC_URL') ?? WESTEND_ASSET_HUB_RPC,
+            Deno.env.get('WESTEND_RPC_URL') ??
+                'https://westend-asset-hub-rpc.polkadot.io',
         )
         : `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
     const basePath = `${tmpDir}/ah-westend-base.json`
