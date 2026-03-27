@@ -333,19 +333,8 @@ export function timeout(ms: number) {
     )
 }
 
-// Wait for an Ethereum JSON-RPC endpoint to respond with HTTP 200.
-export function waitForHealth(
-    url: string,
-    options: {
-        rpcMethod?: string
-        isReady?: (result: unknown) => boolean
-        timeout?: number
-    } = {},
-) {
-    const method = options.rpcMethod ?? 'eth_syncing'
-    const timeout = options.timeout ?? 120_000
-    const isReady = options.isReady ?? ((result: unknown) => result === false)
-
+// wait for http request to return 200
+export function waitForHealth(url: string) {
     return new Promise<void>((resolve, reject) => {
         const start = Date.now()
         const interval = setInterval(async () => {
@@ -357,7 +346,7 @@ export function waitForHealth(
                     },
                     body: JSON.stringify({
                         jsonrpc: '2.0',
-                        method,
+                        method: 'eth_syncing',
                         params: [],
                         id: 1,
                     }),
@@ -367,24 +356,13 @@ export function waitForHealth(
                     return
                 }
 
-                const json = (await res.json()) as {
-                    result?: unknown
-                }
-                if (isReady(json.result)) {
-                    clearInterval(interval)
-                    resolve()
-                }
+                clearInterval(interval)
+                resolve()
             } catch (_err) {
                 const elapsed = Date.now() - start
-                if (elapsed > timeout) {
+                if (elapsed > 60_000) {
                     clearInterval(interval)
-                    reject(
-                        new Error(
-                            `health check timed out after ${
-                                timeout / 1000
-                            }s (${url})`,
-                        ),
-                    )
+                    reject(new Error('hit timeout'))
                 }
             }
         }, 1000)

@@ -97,13 +97,7 @@ export async function setupTests() {
             stderr: 'inherit',
         }).spawn()
         processes.push(nodeProcess)
-        await waitForHealth('http://localhost:9944', {
-            rpcMethod: 'system_health',
-            isReady: (result) =>
-                !!result &&
-                !(result as { isSyncing: boolean }).isSyncing,
-            timeout: 120_000,
-        })
+        await waitForHealth('http://localhost:9944')
     } else if (Deno.env.get('START_REVIVE_DEV_NODE')) {
         const devNodeArgs = [
             '--dev',
