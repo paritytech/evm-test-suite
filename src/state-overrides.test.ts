@@ -2,7 +2,6 @@ import {
     decodeFunctionResult,
     encodeFunctionData,
     type Hex,
-    parseEther,
     zeroAddress,
 } from 'viem'
 import { getRuntimeByteCode, sanitizeOpts as opts } from './util.ts'
@@ -93,7 +92,6 @@ Deno.test('state_override: code on empty address', opts, async () => {
 
 Deno.test('state_override: code on existing contract', opts, async () => {
     const testerAddr = await getTesterAddr()
-    const flipperAddr = await getFlipperContractAddr()
     const flipperRuntime = getRuntimeByteCode('Flipper', env.evm)
 
     // Override Tester's code with Flipper's runtime code, then call Flipper's
