@@ -10,6 +10,7 @@ await import('./others.test.ts')
 await import('./tracing-call-trace.test.ts')
 await import('./tracing-opcode.test.ts')
 await import('./tracing-prestate.test.ts')
+await import('./state-overrides.test.ts')
 
 globalThis.addEventListener('unload', () => {
     cleanupTests()
