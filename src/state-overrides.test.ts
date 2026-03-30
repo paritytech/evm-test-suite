@@ -8,11 +8,7 @@ import { getRuntimeByteCode, sanitizeOpts as opts } from './util.ts'
 import { expect } from '@std/expect'
 import { TesterAbi } from '../codegen/abi/Tester.ts'
 import { FlipperAbi } from '../codegen/abi/Flipper.ts'
-import {
-    env,
-    getFlipperContractAddr,
-    getTesterAddr,
-} from './deploy_contracts.ts'
+import { env, getTesterAddr } from './deploy_contracts.ts'
 
 /// Helper to make an eth_call with state overrides via raw JSON-RPC request.
 ///
