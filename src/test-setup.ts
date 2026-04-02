@@ -1,6 +1,8 @@
-import { killProcessOnPort, waitForHealth } from './util.ts'
+import { hexToBytes, toHex } from 'viem/utils'
+import { getRpcUrl, killProcessOnPort, waitForHealth } from './util.ts'
 
 let processes: Deno.ChildProcess[] = []
+let tmpDirs: string[] = []
 let setupComplete = false
 
 async function detectAndSetPlatform(url: string) {
@@ -76,7 +78,12 @@ export async function setupTests() {
             `${Deno.env.get('HOME')}/polkadot-sdk`
         const omniNode = Deno.env.get('OMNI_NODE_PATH') ??
             `${sdkDir}/target/release/polkadot-omni-node`
-        const chainSpec = await buildAssetHubWestendSpec(sdkDir, omniNode)
+        const useLiveRuntime = !!Deno.env.get('USE_LIVE_RUNTIME')
+        const chainSpec = await buildAssetHubWestendSpec(
+            sdkDir,
+            omniNode,
+            useLiveRuntime,
+        )
 
         const nodeArgs = [
             '--dev',
@@ -142,13 +149,11 @@ export async function setupTests() {
     }
 
     // Detect and set the PLATFORM variable
-    const port = Deno.env.get('RPC_PORT') ?? '8545'
-    const url = `http://localhost:${port}`
-    await detectAndSetPlatform(url)
+    await detectAndSetPlatform(getRpcUrl())
 }
 
 export function cleanupTests() {
-    if (processes.length === 0) {
+    if (processes.length === 0 && tmpDirs.length === 0) {
         return
     }
     console.log('🔌 Shutting down servers...')
@@ -159,7 +164,15 @@ export function cleanupTests() {
             // Process might already be dead
         }
     }
+    for (const dir of tmpDirs) {
+        try {
+            Deno.removeSync(dir, { recursive: true })
+        } catch {
+            // Directory might already be gone
+        }
+    }
     processes = []
+    tmpDirs = []
 }
 
 // ---------------------------------------------------------------------------
@@ -200,14 +213,59 @@ async function runCommand(
     return new TextDecoder().decode(output.stdout)
 }
 
+async function downloadLiveRuntime(
+    tmpDir: string,
+    rpcUrl: string,
+): Promise<string> {
+    const codeStorageKey = toHex(':code')
+    console.log(`📦 Downloading runtime from ${rpcUrl} ...`)
+    const resp = await fetch(rpcUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(120_000 /* 2 min */),
+        body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'state_getStorage',
+            params: [codeStorageKey],
+            id: 1,
+        }),
+    })
+    if (!resp.ok) {
+        throw new Error(
+            `RPC request failed: ${resp.status} ${resp.statusText}`,
+        )
+    }
+    const { result } = (await resp.json()) as { result: string }
+    if (!result || result === '0x') {
+        throw new Error('Failed to fetch runtime wasm from live network')
+    }
+    const runtimeCode = hexToBytes(result as `0x${string}`)
+    const path = `${tmpDir}/westend-asset-hub-runtime.wasm`
+    await Deno.writeFile(path, runtimeCode)
+    console.log(
+        `📦 Runtime downloaded (${
+            (runtimeCode.length / 1024 / 1024).toFixed(1)
+        } MB)`,
+    )
+    return path
+}
+
 async function buildAssetHubWestendSpec(
     sdkDir: string,
     omniNode: string,
+    useLiveRuntime = false,
 ): Promise<string> {
-    const runtime =
-        `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
-    const basePath = '/tmp/ah-westend-base.json'
-    const rawPath = '/tmp/ah-westend-raw.json'
+    const tmpDir = await Deno.makeTempDir({ prefix: 'ah-westend-' })
+    tmpDirs.push(tmpDir)
+    const runtime = useLiveRuntime
+        ? await downloadLiveRuntime(
+            tmpDir,
+            Deno.env.get('WESTEND_RPC_URL') ??
+                'https://westend-asset-hub-rpc.polkadot.io',
+        )
+        : `${sdkDir}/target/release/wbuild/asset-hub-westend-runtime/asset_hub_westend_runtime.compact.compressed.wasm`
+    const basePath = `${tmpDir}/ah-westend-base.json`
+    const rawPath = `${tmpDir}/ah-westend-raw.json`
 
     // Step 1: Generate base chain spec (writes to file via --chain-spec-path)
     console.log('📋 Generating asset-hub-westend chain spec ...')
@@ -234,6 +292,15 @@ async function buildAssetHubWestendSpec(
     baseSpec.genesis.runtimeGenesis ??= {}
     baseSpec.genesis.runtimeGenesis.patch ??= {}
     baseSpec.genesis.runtimeGenesis.patch.sudo = { key: ALICE_SS58 }
+    // Fund alith (0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac) so eth_accounts[0] has balance.
+    const ALITH_SS58 = '5HYRCKHYJN9z5xUtfFkyMj4JUhsAwWyvuU8vKB1FcnYTf9ZQ'
+    const balances = baseSpec.genesis.runtimeGenesis.patch.balances?.balances ??
+        []
+    balances.push([ALITH_SS58, Number.MAX_SAFE_INTEGER])
+    baseSpec.genesis.runtimeGenesis.patch.balances = {
+        ...baseSpec.genesis.runtimeGenesis.patch.balances,
+        balances,
+    }
     await Deno.writeTextFile(basePath, JSON.stringify(baseSpec, null, 2))
 
     // Step 2: Convert to raw format
